@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<script>(function(){try{var t=localStorage.getItem('ap-theme')||'light';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}}());</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings — Anjan Patel Engineering</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B1D2D">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --navy:#0B1D2D;--orange:#F28C18;
+  --bg:#F0F4FA;--surface:#FFFFFF;--surface-2:#F7F9FC;
+  --text:#0B1D2D;--muted:#5E728A;--line:#D8E1EC;
+  --err:#DC2626;--ok:#16A34A;
+  --sidebar-bg:#0B1D2D;--sidebar-text:#C8D8E8;--sidebar-active:#FFFFFF;
+  --sidebar-w:220px;--topbar-h:56px;--radius:10px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#07111C;--surface:#0D1B2A;--surface-2:#111F2E;
+  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
+}}
+:root[data-theme="dark"]{
+  --bg:#07111C;--surface:#0D1B2A;--surface-2:#111F2E;
+  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* sidebar (shared) */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100%;background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:200;transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-logo-text{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;line-height:1.2}
+.sidebar-logo-sub{font-size:9px;color:var(--sidebar-text);letter-spacing:.06em}
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-section{padding:16px 20px 6px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(200,216,232,.35)}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 20px;font-size:13px;font-weight:500;color:var(--sidebar-text);text-decoration:none;transition:background .15s,color .15s;border-left:2px solid transparent;cursor:pointer;background:none;border-right:none;border-top:none;border-bottom:none;width:100%;text-align:left;font-family:inherit}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(242,140,24,.12);color:#fff;border-left-color:var(--orange)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active svg,.nav-item:hover svg{opacity:1}
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+.user-row{display:flex;align-items:center;gap:10px}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font:700 13px 'IBM Plex Sans',sans-serif;color:#fff;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-email{font-size:11px;color:var(--sidebar-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.user-role{font-size:9px;color:rgba(200,216,232,.5);letter-spacing:.04em}
+.signout-btn{background:none;border:none;color:rgba(200,216,232,.45);cursor:pointer;padding:2px;border-radius:4px;display:grid;place-items:center;transition:color .15s}
+.signout-btn:hover{color:var(--orange)}
+
+/* main */
+.main-wrap{margin-left:var(--sidebar-w);min-height:100%;display:flex;flex-direction:column}
+.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100}
+.hamburger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px;border-radius:6px}
+.hamburger:hover{background:var(--surface-2)}
+.topbar-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.theme-btn{width:32px;height:32px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:border-color .15s}
+.theme-btn:hover{border-color:var(--orange);color:var(--orange)}
+.topbar-avatar{width:30px;height:30px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font:700 12px 'IBM Plex Sans',sans-serif;color:#fff}
+
+.content{flex:1;padding:28px 28px 48px}
+.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:4px}
+.page-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:24px}
+
+/* Tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:24px}
+.tab{padding:9px 18px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+
+/* Settings card */
+.settings-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);max-width:520px;overflow:hidden}
+.card-section{padding:22px 24px;border-bottom:1px solid var(--line)}
+.card-section:last-child{border-bottom:none}
+.card-section-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+input[type="text"],input[type="email"],input[type="password"]{
+  width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:7px;
+  font:400 14px 'IBM Plex Sans',sans-serif;color:var(--text);background:var(--surface-2);
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(242,140,24,.12)}
+input:read-only{opacity:.55;cursor:default}
+
+.btn-row{display:flex;align-items:center;gap:10px;margin-top:16px}
+.btn-primary{padding:9px 18px;border-radius:7px;border:none;background:var(--navy);color:#fff;font:600 13px 'IBM Plex Sans',sans-serif;cursor:pointer;transition:background .15s}
+.btn-primary:hover{background:#142840}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-danger{padding:9px 18px;border-radius:7px;border:1px solid rgba(220,38,38,.3);background:rgba(220,38,38,.06);color:var(--err);font:600 13px 'IBM Plex Sans',sans-serif;cursor:pointer;transition:background .15s,border-color .15s}
+.btn-danger:hover{background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.5)}
+
+/* Theme selector */
+.theme-options{display:flex;gap:10px;margin-top:4px}
+.theme-opt{flex:1;padding:10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--muted);transition:border-color .15s,color .15s}
+.theme-opt:hover,.theme-opt.active{border-color:var(--orange);color:var(--text)}
+.theme-opt.active{background:rgba(242,140,24,.07)}
+.theme-swatch{width:32px;height:20px;border-radius:4px;border:1px solid var(--line)}
+
+/* Info badge */
+.info-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);padding:3px 0}
+
+/* Status message */
+.status-msg{font-size:12px;margin-top:8px;display:none}
+.status-msg.ok{display:block;color:var(--ok)}
+.status-msg.err{display:block;color:var(--err)}
+
+/* Mobile overlay */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:190;backdrop-filter:blur(2px)}
+
+@media(max-width:680px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay{display:block}
+  .sidebar-overlay.open{opacity:1}
+  .sidebar-overlay:not(.open){opacity:0;pointer-events:none;transition:opacity .25s}
+  .main-wrap{margin-left:0}
+  .hamburger{display:grid}
+  .content{padding:18px 16px 40px}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="100" height="100" rx="14" fill="rgba(255,255,255,.1)"/>
+      <text x="50" y="50" font-family="'IBM Plex Sans',system-ui,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text>
+    </svg>
+    <div>
+      <div class="sidebar-logo-text">Anjan Patel</div>
+      <div class="sidebar-logo-sub">Engineering Tools</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav" role="navigation" aria-label="Main">
+    <div class="nav-section">Workspace</div>
+    <a class="nav-item" href="/dashboard.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" href="/dashboard.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Engineering Tools
+    </a>
+    <a class="nav-item" href="/dashboard.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Calc Logs
+    </a>
+    <div class="nav-section">Account</div>
+    <a class="nav-item active" href="/settings.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div class="user-info">
+        <span class="user-email" id="userEmail">Loading…</span>
+        <span class="user-role" id="userRole">Member</span>
+      </div>
+      <button class="signout-btn" onclick="signOut()" title="Sign out" aria-label="Sign out">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="main-wrap">
+  <header class="topbar">
+    <button class="hamburger" id="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="topbar-title">Settings</span>
+    <div class="topbar-right">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span id="themeIcon"></span></button>
+      <div class="topbar-avatar" id="topbarAvatar">?</div>
+    </div>
+  </header>
+
+  <main class="content">
+    <p class="page-eyebrow">Account</p>
+    <h1 class="page-title">Settings</h1>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-general" onclick="switchTab('general')">General</button>
+      <button class="tab" id="tab-security" onclick="switchTab('security')">Security</button>
+    </div>
+
+    <!-- GENERAL TAB -->
+    <div id="pane-general">
+      <div class="settings-card">
+        <div class="card-section">
+          <div class="card-section-title">Profile</div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="profileEmail" readonly>
+          </div>
+          <div class="field">
+            <label>Account ID</label>
+            <input type="text" id="profileId" readonly style="font-family:'IBM Plex Mono',monospace;font-size:12px">
+          </div>
+          <div class="field">
+            <label>Role</label>
+            <input type="text" id="profileRole" readonly>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="card-section-title">Appearance</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Theme</div>
+          <div class="theme-options">
+            <button class="theme-opt" id="opt-light" onclick="setTheme('light')">
+              <div class="theme-swatch" style="background:#F0F4FA;border-color:#D8E1EC"></div>
+              Light
+            </button>
+            <button class="theme-opt" id="opt-dark" onclick="setTheme('dark')">
+              <div class="theme-swatch" style="background:#07111C;border-color:#1C2E40"></div>
+              Dark
+            </button>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="card-section-title">Danger Zone</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Sign out of your account on this device.</p>
+          <button class="btn-danger" onclick="signOut()">Sign out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECURITY TAB -->
+    <div id="pane-security" style="display:none">
+      <div class="settings-card">
+        <div class="card-section">
+          <div class="card-section-title">Change Password</div>
+          <div class="field">
+            <label>New Password</label>
+            <input type="password" id="newPass" placeholder="Min. 6 characters" minlength="6" autocomplete="new-password">
+          </div>
+          <div class="field">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPass" placeholder="Repeat password" autocomplete="new-password">
+          </div>
+          <div class="status-msg" id="passStatus"></div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="changePassword()" id="changePassBtn">Update Password</button>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="card-section-title">Session</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Sign out and invalidate your current session token.</p>
+          <button class="btn-danger" onclick="signOut()">Sign out everywhere</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+var SUPABASE_URL='https://uejlrooupfcrqimffgsn.supabase.co';
+var SUPABASE_ANON='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+
+/* Theme */
+(function(){
+  var root=document.documentElement,icon=document.getElementById('themeIcon');
+  function isDark(){return root.dataset.theme==='dark'}
+  function apply(t){
+    root.dataset.theme=t;
+    icon.textContent=isDark()?'☀':'☾';
+    document.getElementById('opt-light').className='theme-opt'+(t==='light'?' active':'');
+    document.getElementById('opt-dark').className='theme-opt'+(t==='dark'?' active':'');
+  }
+  function stored(){try{return localStorage.getItem('ap-theme')||'light'}catch(e){return'light'}}
+  window._apThemeApply=apply;
+  apply(stored());
+  document.getElementById('themeBtn').addEventListener('click',function(){setTheme(isDark()?'light':'dark')});
+})();
+
+function setTheme(t){
+  try{localStorage.setItem('ap-theme',t)}catch(e){}
+  window._apThemeApply(t);
+}
+
+/* Sidebar */
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  var ov=document.getElementById('sidebarOverlay');
+  ov.classList.add('open');ov.style.display='block';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  var ov=document.getElementById('sidebarOverlay');
+  ov.classList.remove('open');
+  setTimeout(function(){ov.style.display=''},260);
+}
+
+/* Tabs */
+function switchTab(name){
+  ['general','security'].forEach(function(t){
+    document.getElementById('pane-'+t).style.display=t===name?'':'none';
+    document.getElementById('tab-'+t).className='tab'+(t===name?' active':'');
+  });
+}
+
+/* Auth guard + profile */
+async function init(){
+  var r=await sb.auth.getSession();
+  if(!r.data||!r.data.session){window.location.href='/';return}
+  var user=r.data.session.user;
+  var email=user.email||'';
+  var initial=email.charAt(0).toUpperCase();
+  document.getElementById('userEmail').textContent=email;
+  document.getElementById('userAvatar').textContent=initial;
+  document.getElementById('topbarAvatar').textContent=initial;
+  document.getElementById('profileEmail').value=email;
+  document.getElementById('profileId').value=user.id;
+  var meta=user.user_metadata||{};
+  var role=meta.is_admin===true?'Admin':'Member';
+  document.getElementById('userRole').textContent=role;
+  document.getElementById('profileRole').value=role;
+}
+
+async function signOut(){
+  await sb.auth.signOut();
+  window.location.href='/';
+}
+
+async function changePassword(){
+  var np=document.getElementById('newPass').value;
+  var cp=document.getElementById('confirmPass').value;
+  var btn=document.getElementById('changePassBtn');
+  var status=document.getElementById('passStatus');
+  if(np.length<6){setStatus(status,'err','Password must be at least 6 characters.');return}
+  if(np!==cp){setStatus(status,'err','Passwords do not match.');return}
+  btn.disabled=true;btn.textContent='Updating…';
+  var r=await sb.auth.updateUser({password:np});
+  btn.disabled=false;btn.textContent='Update Password';
+  if(r.error){setStatus(status,'err',r.error.message);return}
+  setStatus(status,'ok','Password updated successfully.');
+  document.getElementById('newPass').value='';
+  document.getElementById('confirmPass').value='';
+}
+
+function setStatus(el,type,msg){
+  el.textContent=msg;el.className='status-msg '+type;
+}
+
+init();
+</script>
+</body>
+</html>

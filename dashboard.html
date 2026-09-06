@@ -10,479 +10,546 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-/* ── Tokens ── */
 :root{
-  --navy:#0B1D2D; --orange:#F28C18;
-  --bg:#EFF3FA; --surface:#FFFFFF; --surface-2:#E6ECF6; --surface-3:#F5F8FD;
-  --text:#0B1D2D; --text-2:#2D3E52; --muted:#5E728A;
-  --line:#D3DCE9; --line-2:#C5D0DF;
-  --header-bg:rgba(255,255,255,.92);
-  --card-shadow:0 1px 3px rgba(11,29,45,.07),0 1px 2px rgba(11,29,45,.04);
-  --card-hover-shadow:0 8px 24px rgba(11,29,45,.14),0 2px 6px rgba(11,29,45,.08);
-  --pill-bg:rgba(242,140,24,.08); --pill-border:rgba(242,140,24,.22);
-  --tag-bg:#FEF3C7; --tag-text:#92400E;
+  --navy:#0B1D2D;--orange:#F28C18;
+  --bg:#F0F4FA;--surface:#FFFFFF;--surface-2:#F7F9FC;
+  --text:#0B1D2D;--muted:#5E728A;--line:#D8E1EC;
+  --sidebar-bg:#0B1D2D;--sidebar-text:#C8D8E8;--sidebar-active:#FFFFFF;
+  --sidebar-w:220px;--topbar-h:56px;
+  --ok:#16A34A;--warn:#D97706;--err:#DC2626;
+  --radius:10px;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#04080F; --surface:#091522; --surface-2:#06101C; --surface-3:#0B1928;
-  --text:#EDF2F8; --text-2:#B8CBDC; --muted:#7A96B0;
-  --line:#122030; --line-2:#1A3045;
-  --header-bg:rgba(6,16,28,.88);
-  --card-shadow:0 1px 3px rgba(0,0,0,.24);
-  --card-hover-shadow:0 8px 28px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.24);
-  --tag-bg:#2A1C06; --tag-text:#F59E0B;
+  --bg:#07111C;--surface:#0D1B2A;--surface-2:#111F2E;
+  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
 }}
 :root[data-theme="dark"]{
-  --bg:#04080F; --surface:#091522; --surface-2:#06101C; --surface-3:#0B1928;
-  --text:#EDF2F8; --text-2:#B8CBDC; --muted:#7A96B0;
-  --line:#122030; --line-2:#1A3045;
-  --header-bg:rgba(6,16,28,.88);
-  --card-shadow:0 1px 3px rgba(0,0,0,.24);
-  --card-hover-shadow:0 8px 28px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.24);
-  --tag-bg:#2A1C06; --tag-text:#F59E0B;
+  --bg:#07111C;--surface:#0D1B2A;--surface-2:#111F2E;
+  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
 }
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%}
-body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+html,body{height:100%;font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
-/* ── Aurora ── */
-@keyframes au1{0%,100%{transform:translate(-6%,-10%) scale(1.12)}50%{transform:translate(7%,8%) scale(.9)}}
-@keyframes au2{0%,100%{transform:translate(7%,7%) scale(.86)}50%{transform:translate(-8%,-5%) scale(1.16)}}
-.aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.ab{position:absolute;border-radius:50%;filter:blur(110px);will-change:transform}
-.ab1{width:85vmax;height:58vmax;top:-18%;left:-24%;background:radial-gradient(ellipse,rgba(242,140,24,.22) 0%,rgba(242,100,18,.06) 52%,transparent 76%);animation:au1 16s ease-in-out infinite;opacity:.4}
-.ab2{width:65vmax;height:50vmax;bottom:-10%;right:-15%;background:radial-gradient(ellipse,rgba(11,29,45,.5) 0%,transparent 70%);animation:au2 22s ease-in-out infinite;opacity:.35}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .ab1{opacity:.55}}
-:root[data-theme="dark"] .ab1{opacity:.55}
-@media(prefers-reduced-motion:reduce){.ab{animation:none}}
-
-/* ── Header ── */
-.site-header{position:sticky;top:0;z-index:100;width:100%;border-bottom:1px solid var(--line);background:var(--header-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:background .22s,border-color .22s}
-.header-inner{max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
-.brand-mark{width:36px;height:36px;background:var(--navy);border-radius:9px;display:grid;place-items:center;flex-shrink:0;border:1px solid rgba(242,140,24,.25)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand-mark{background:rgba(242,140,24,.1);border-color:rgba(242,140,24,.3)}}
-:root[data-theme="dark"] .brand-mark{background:rgba(242,140,24,.1);border-color:rgba(242,140,24,.3)}
-.brand-copy{display:flex;flex-direction:column;line-height:1.1}
-.brand-name{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--text)}
-.brand-sub{font-size:9.5px;color:var(--muted);letter-spacing:.04em}
-.header-right{display:flex;align-items:center;gap:10px}
-.user-pill{display:flex;align-items:center;gap:7px;padding:4px 10px 4px 6px;border:1px solid var(--line);border-radius:20px;background:var(--surface-2);font-size:12px;color:var(--text-2)}
-.user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--orange) 0%,#C97012 100%);display:grid;place-items:center;font:700 10px 'IBM Plex Sans',Arial,sans-serif;color:#fff;flex-shrink:0}
-.user-email{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-.hdr-btn{appearance:none;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;height:36px;padding:0 12px;font:600 12px 'IBM Plex Sans',Arial,sans-serif;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .15s,background .15s;letter-spacing:.03em}
-.hdr-btn:hover{border-color:var(--orange)}
-.hdr-btn.signout{color:var(--muted)}
-.theme-btn{appearance:none;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;width:36px;height:36px;cursor:pointer;display:grid;place-items:center;color:var(--text);font-size:14px;transition:border-color .15s}
-.theme-btn:hover{border-color:var(--orange)}
-@media(max-width:600px){.user-email{display:none}.brand-sub{display:none}}
-
-/* ── Main ── */
-main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
-
-/* ── Section label ── */
-.section-eyebrow{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:.6rem}
-.section-title{font-size:22px;font-weight:700;letter-spacing:.02em;color:var(--text);margin-bottom:.4rem}
-.section-sub{font-size:13px;color:var(--muted);margin-bottom:1.75rem}
-
-/* ── Tool cards ── */
-.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:3.5rem}
-.tool-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem 1.25rem;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:.5rem;box-shadow:var(--card-shadow);transition:transform .22s,box-shadow .22s,border-color .22s;cursor:pointer;overflow:hidden}
-.tool-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(242,140,24,.06) 0%, transparent 65%);opacity:0;transition:opacity .2s;pointer-events:none}
-.tool-card:hover{transform:translateY(-3px);box-shadow:var(--card-hover-shadow);border-color:rgba(242,140,24,.35)}
-.tool-card:hover::before{opacity:1}
-.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
-.card-icon{width:44px;height:44px;border-radius:11px;background:var(--surface-3);border:1px solid var(--line);display:grid;place-items:center;flex-shrink:0}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .card-icon{background:#102236}}
-:root[data-theme="dark"] .card-icon{background:#102236}
-.card-badge{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#16A34A;background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);border-radius:5px;padding:2px 7px}
-.card-title{font-size:15px;font-weight:700;color:var(--text)}
-.card-desc{font-size:12px;color:var(--muted);line-height:1.55;flex:1}
-.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:.25rem}
-.card-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--tag-bg);color:var(--tag-text)}
-.card-cta{display:flex;align-items:center;gap:5px;margin-top:.75rem;font-size:12px;font-weight:700;color:var(--orange);letter-spacing:.04em}
-.cta-arrow{width:12px;height:12px;transition:transform .15s}
-.tool-card:hover .cta-arrow{transform:translateX(3px)}
-
-/* ── Saved lookups ── */
-.lookups-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:12px;flex-wrap:wrap}
-.lookup-count{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
-
-/* Table */
-.lookup-table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--card-shadow)}
-table{width:100%;border-collapse:collapse}
-thead th{padding:.7rem 1rem;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;border-bottom:1px solid var(--line);background:var(--surface-3)}
-tbody tr{border-bottom:1px solid var(--line);transition:background .12s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:var(--surface-2)}
-tbody td{padding:.7rem 1rem;font-size:12.5px;vertical-align:middle}
-.td-tool{display:inline-flex;align-items:center;gap:6px}
-.tool-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.dot-flange{background:#F28C18}
-.dot-tubing{background:#3B82F6}
-.td-params{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-2);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.td-date{font-size:11px;color:var(--muted);white-space:nowrap;font-family:'IBM Plex Mono',monospace}
-.td-label{font-size:12px;color:var(--text-2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.td-label.empty{color:var(--muted);font-style:italic}
-.btn-delete{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px 6px;border-radius:6px;font-size:14px;transition:color .12s,background .12s}
-.btn-delete:hover{color:#DC2626;background:rgba(220,38,38,.08)}
-
-/* Empty state */
-.empty-state{text-align:center;padding:3rem 1.5rem}
-.empty-icon{font-size:2.5rem;margin-bottom:1rem;opacity:.4}
-.empty-title{font-size:14px;font-weight:700;color:var(--text-2);margin-bottom:.4rem}
-.empty-sub{font-size:12px;color:var(--muted);line-height:1.6}
-
-/* Loading skeleton */
-.skeleton{background:linear-gradient(90deg,var(--surface-2) 25%,var(--line) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:5px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-@media(prefers-reduced-motion:reduce){.skeleton{animation:none}}
-
-/* Toast */
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(6px);background:var(--navy);color:#fff;font-size:12.5px;font-weight:600;padding:.55rem 1.1rem;border-radius:9px;border:1px solid rgba(242,140,24,.35);box-shadow:0 4px 20px rgba(0,0,0,.3);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;z-index:9999}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* Footer */
-footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);flex-wrap:wrap;gap:.5rem}
-footer a{color:var(--orange);text-decoration:none}
-
-/* Mobile tweaks */
-@media(max-width:680px){
-  main{padding:1.5rem .85rem 3rem}
-  table thead th:nth-child(3),table tbody td:nth-child(3){display:none}
-  .td-params{max-width:140px}
+.sidebar{
+  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100%;
+  background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:200;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
 }
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-logo-text{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sidebar-active);line-height:1.2}
+.sidebar-logo-sub{font-size:9px;color:var(--sidebar-text);letter-spacing:.06em}
+
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-section{padding:16px 20px 6px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(200,216,232,.35)}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 20px;font-size:13px;font-weight:500;color:var(--sidebar-text);text-decoration:none;transition:background .15s,color .15s;border-left:2px solid transparent;cursor:pointer;background:none;border-right:none;border-top:none;border-bottom:none;width:100%;text-align:left;font-family:inherit}
+.nav-item:hover{background:rgba(255,255,255,.06);color:var(--sidebar-active)}
+.nav-item.active{background:rgba(242,140,24,.12);color:var(--sidebar-active);border-left-color:var(--orange)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active svg,.nav-item:hover svg{opacity:1}
+
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+.user-row{display:flex;align-items:center;gap:10px}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font:700 13px 'IBM Plex Sans',sans-serif;color:#fff;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-email{font-size:11px;color:var(--sidebar-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.user-role{font-size:9px;color:rgba(200,216,232,.5);letter-spacing:.04em}
+.signout-btn{background:none;border:none;color:rgba(200,216,232,.45);cursor:pointer;padding:2px;border-radius:4px;display:grid;place-items:center;transition:color .15s}
+.signout-btn:hover{color:var(--orange)}
+
+.main-wrap{margin-left:var(--sidebar-w);min-height:100%;display:flex;flex-direction:column;transition:margin .25s cubic-bezier(.4,0,.2,1)}
+
+.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100}
+.hamburger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px;border-radius:6px;line-height:1}
+.hamburger:hover{background:var(--surface-2)}
+.topbar-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.theme-btn{width:32px;height:32px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:border-color .15s}
+.theme-btn:hover{border-color:var(--orange);color:var(--orange)}
+.topbar-avatar{width:30px;height:30px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font:700 12px 'IBM Plex Sans',sans-serif;color:#fff}
+
+.content{flex:1;padding:28px 28px 48px}
+.page-header{margin-bottom:24px}
+.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:4px}
+.page-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.page-sub{font-size:13px;color:var(--muted);margin-top:3px}
+
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.metric-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.metric-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.metric-value{font:700 28px/1 'IBM Plex Mono',monospace;color:var(--text);letter-spacing:-.03em}
+.metric-value span{font-size:13px;color:var(--muted);font-weight:400;letter-spacing:0;font-family:'IBM Plex Sans',sans-serif}
+.metric-footer{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.metric-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex-shrink:0}
+.metric-dot.idle{background:var(--muted);opacity:.4}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tool-cards{display:grid;gap:12px}
+.tool-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;text-decoration:none;color:inherit;display:flex;align-items:center;gap:14px;transition:border-color .15s,box-shadow .15s;cursor:pointer}
+.tool-card:hover{border-color:var(--orange);box-shadow:0 4px 16px rgba(242,140,24,.1)}
+.tool-icon{width:40px;height:40px;border-radius:9px;background:rgba(242,140,24,.1);display:grid;place-items:center;flex-shrink:0}
+.tool-info{flex:1;min-width:0}
+.tool-name{font-size:13px;font-weight:700;color:var(--text)}
+.tool-desc{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tool-arrow{color:var(--muted);transition:color .15s,transform .15s}
+.tool-card:hover .tool-arrow{color:var(--orange);transform:translateX(3px)}
+.tool-badge{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:20px;background:rgba(22,163,74,.12);color:#16a34a}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.panel-header{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.panel-count{font:600 11px 'IBM Plex Mono',monospace;color:var(--orange)}
+.lookup-table{width:100%;border-collapse:collapse}
+.lookup-table th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 16px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.lookup-table td{padding:10px 16px;font-size:12px;color:var(--text);border-bottom:1px solid var(--line)}
+.lookup-table tr:last-child td{border-bottom:none}
+.lookup-table tbody tr:hover{background:var(--surface-2)}
+.td-tool{display:flex;align-items:center;gap:6px;font-weight:600;font-size:11px}
+.tool-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-flange{background:var(--orange)}
+.dot-tubing{background:#3B82F6}
+.td-params{font:500 11px 'IBM Plex Mono',monospace;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.td-label{font-size:11px;color:var(--text)}
+.td-label.empty{color:var(--muted);opacity:.5}
+.td-date{font:400 11px 'IBM Plex Mono',monospace;color:var(--muted)}
+.btn-delete{background:none;border:none;color:var(--muted);cursor:pointer;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;font-size:12px;transition:background .12s,color .12s}
+.btn-delete:hover{background:rgba(220,38,38,.1);color:var(--err)}
+.empty-state{padding:40px 20px;text-align:center}
+.empty-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.empty-sub{font-size:11px;color:var(--muted);opacity:.7}
+
+.admin-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(242,140,24,.12);color:var(--orange);margin-left:8px}
+
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font:600 12px 'IBM Plex Sans',sans-serif;padding:.6rem 1.2rem;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
+.toast.show{opacity:1}
+
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:190;backdrop-filter:blur(2px)}
+
+@media(max-width:900px){
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .two-col{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay{display:block}
+  .sidebar-overlay.open{display:block;opacity:1}
+  .sidebar-overlay:not(.open){opacity:0;pointer-events:none;transition:opacity .25s}
+  .main-wrap{margin-left:0}
+  .hamburger{display:grid}
+  .content{padding:18px 16px 40px}
+  .metrics{grid-template-columns:1fr 1fr;gap:10px}
+  .metric-value{font-size:22px}
+  .lookup-table th:nth-child(3),.lookup-table td:nth-child(3){display:none}
+}
+@media(max-width:380px){.metrics{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="aurora" aria-hidden="true">
-  <div class="ab ab1"></div>
-  <div class="ab ab2"></div>
-</div>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a class="brand" href="/">
-      <div class="brand-mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="30" y="50" font-family="'IBM Plex Sans',system-ui,-apple-system,sans-serif" font-weight="700" font-size="50" text-anchor="middle" dominant-baseline="central" fill="#F28C18">A</text><text x="70" y="50" font-family="'IBM Plex Sans',system-ui,-apple-system,sans-serif" font-weight="700" font-size="50" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF">P</text></svg></div>
-      <div class="brand-copy">
-        <span class="brand-name">ANJAN PATEL</span>
-        <span class="brand-sub">Dashboard</span>
-      </div>
-    </a>
-    <div class="header-right">
-      <div class="user-pill">
-        <div class="user-avatar" id="userAvatar">?</div>
-        <span class="user-email" id="userEmail">Loading…</span>
-      </div>
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span id="themeIcon"></span></button>
-      <button class="hdr-btn signout" id="signOutBtn" onclick="signOut()">Sign out</button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <!-- Tools section -->
-  <div style="margin-bottom:3rem">
-    <p class="section-eyebrow">Your Workspace</p>
-    <h1 class="section-title">Engineering Tools</h1>
-    <p class="section-sub">Launch a tool — use the Save button inside to record lookups here.</p>
-    <div class="tool-grid">
-
-      <a class="tool-card" href="/flange/"
-         onmousemove="tiltCard(event,this)" onmouseleave="resetCard(this)">
-        <div class="card-top">
-          <span class="card-icon">
-            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
-              <polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7" stroke="#F28C18" stroke-width="1.6" stroke-linejoin="round"/>
-              <circle cx="13" cy="13" r="5.2" stroke="#F28C18" stroke-width="1.5"/>
-              <circle cx="13" cy="13" r="1.8" fill="#F28C18"/>
-              <circle cx="13" cy="5.8" r="1.1" fill="#F28C18" opacity=".7"/>
-              <circle cx="20.2" cy="13" r="1.1" fill="#F28C18" opacity=".7"/>
-              <circle cx="13" cy="20.2" r="1.1" fill="#F28C18" opacity=".7"/>
-              <circle cx="5.8" cy="13" r="1.1" fill="#F28C18" opacity=".7"/>
-            </svg>
-          </span>
-          <span class="card-badge">Live</span>
-        </div>
-        <div class="card-title">Flange Slide Rule</div>
-        <div class="card-desc">API 6A / ISO 10423 flange dimensional reference — bore, OD, bolt pattern, ring gasket. 3K–15K across 10 nominal sizes.</div>
-        <div class="card-tags">
-          <span class="card-tag">API 6A</span>
-          <span class="card-tag">ISO 10423</span>
-          <span class="card-tag">Ring Gaskets</span>
-        </div>
-        <div class="card-cta">Launch Tool
-          <svg class="cta-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="2" y1="7" x2="12" y2="7"/><polyline points="7,2 12,7 7,12"/>
-          </svg>
-        </div>
-      </a>
-
-      <a class="tool-card" href="/tubing/"
-         onmousemove="tiltCard(event,this)" onmouseleave="resetCard(this)">
-        <div class="card-top">
-          <span class="card-icon">
-            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
-              <rect x="4" y="9" width="18" height="11" rx="1.5" stroke="#F28C18" stroke-width="1.6"/>
-              <line x1="4" y1="14.5" x2="22" y2="14.5" stroke="#F28C18" stroke-width="1" opacity=".5" stroke-dasharray="2.5 2"/>
-              <line x1="13" y1="2" x2="13" y2="7.5" stroke="#F28C18" stroke-width="1.6" stroke-linecap="round"/>
-              <polyline points="10,5 13,8 16,5" stroke="#F28C18" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <circle cx="8.5" cy="18.5" r="1.1" fill="#F28C18" opacity=".7"/>
-              <circle cx="13" cy="18.5" r="1.1" fill="#F28C18" opacity=".7"/>
-              <circle cx="17.5" cy="18.5" r="1.1" fill="#F28C18" opacity=".7"/>
-            </svg>
-          </span>
-          <span class="card-badge">Live</span>
-        </div>
-        <div class="card-title">Safety Block Calculator</div>
-        <div class="card-desc">SWL from Brinell hardness, width, and thickness. Von Mises shear calculation with step-by-step breakdown and PDF export.</div>
-        <div class="card-tags">
-          <span class="card-tag">SWL</span>
-          <span class="card-tag">BHN</span>
-          <span class="card-tag">Field Calc</span>
-        </div>
-        <div class="card-cta">Launch Tool
-          <svg class="cta-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="2" y1="7" x2="12" y2="7"/><polyline points="7,2 12,7 7,12"/>
-          </svg>
-        </div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- Saved lookups section -->
-  <div>
-    <div class="lookups-header">
-      <div>
-        <p class="section-eyebrow">History</p>
-        <h2 class="section-title" style="font-size:18px">Saved Lookups</h2>
-      </div>
-      <span class="lookup-count" id="lookupCount">—</span>
-    </div>
-
-    <div id="lookupContent">
-      <!-- Loading skeleton -->
-      <div class="lookup-table-wrap" id="skeletonWrap">
-        <table>
-          <thead><tr>
-            <th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th>
-          </tr></thead>
-          <tbody id="skeletonRows">
-            <tr><td colspan="5" style="padding:2rem;text-align:center">
-              <div class="skeleton" style="height:12px;width:60%;margin:0 auto"></div>
-            </td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-<!-- Admin panel (injected at runtime for admin only) -->
-<div id="adminPanel" style="display:none;margin-top:3rem">
-  <div class="lookups-header">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="100" height="100" rx="14" fill="rgba(255,255,255,.1)"/>
+      <text x="50" y="50" font-family="'IBM Plex Sans',system-ui,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text>
+    </svg>
     <div>
-      <p class="section-eyebrow">Admin</p>
-      <h2 class="section-title" style="font-size:18px">All Lookups</h2>
-    </div>
-    <span class="lookup-count" id="adminLookupCount">—</span>
-  </div>
-  <div id="adminContent">
-    <div class="lookup-table-wrap">
-      <table>
-        <thead><tr>
-          <th>User</th><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th>
-        </tr></thead>
-        <tbody id="adminRows"><tr><td colspan="5" style="padding:2rem;text-align:center">Loading…</td></tr></tbody>
-      </table>
+      <div class="sidebar-logo-text">Anjan Patel</div>
+      <div class="sidebar-logo-sub">Engineering Tools</div>
     </div>
   </div>
-</div>
-</main>
 
-<footer>
-  <span>&copy; <span id="yr"></span> Anjan Patel. All rights reserved.</span>
-  <span>
-    <a href="/terms.html">Terms</a>
-    &nbsp;·&nbsp;
-    <a href="https://tools.anjanpatel.ca" target="_blank" rel="noopener noreferrer">Public Tools</a>
-  </span>
-</footer>
+  <nav class="sidebar-nav" role="navigation" aria-label="Main">
+    <div class="nav-section">Workspace</div>
+    <button class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" id="nav-tools" onclick="showSection('tools')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Engineering Tools
+    </button>
+    <button class="nav-item" id="nav-logs" onclick="showSection('logs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Calc Logs
+    </button>
+    <div class="nav-section">Account</div>
+    <a class="nav-item" href="/settings.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div class="user-info">
+        <span class="user-email" id="userEmail">Loading…</span>
+        <span class="user-role" id="userRole">Member</span>
+      </div>
+      <button class="signout-btn" onclick="signOut()" title="Sign out" aria-label="Sign out">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="main-wrap">
+  <header class="topbar">
+    <button class="hamburger" id="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="topbar-title" id="topbarTitle">Dashboard</span>
+    <div class="topbar-right">
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span id="themeIcon"></span></button>
+      <div class="topbar-avatar" id="topbarAvatar">?</div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section id="sec-dashboard">
+      <div class="page-header">
+        <p class="page-eyebrow">Overview</p>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub">Your engineering workspace at a glance.</p>
+      </div>
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-label">Saved Lookups</div>
+          <div class="metric-value" id="mSaved">—</div>
+          <div class="metric-footer"><span class="metric-dot idle" id="mSavedDot"></span><span id="mSavedLabel">Loading…</span></div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Tools Available</div>
+          <div class="metric-value">2 <span>tools</span></div>
+          <div class="metric-footer"><span class="metric-dot"></span>Flange · Safety Block</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Last Active</div>
+          <div class="metric-value" id="mLast" style="font-size:18px;letter-spacing:-.01em">—</div>
+          <div class="metric-footer"><span class="metric-dot idle" id="mLastDot"></span><span id="mLastLabel">—</span></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="section-head"><span class="section-label">Engineering Tools</span></div>
+          <div class="tool-cards">
+            <a class="tool-card" href="/flange/">
+              <div class="tool-icon">
+                <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7" stroke="#F28C18"/>
+                  <circle cx="13" cy="13" r="5.2" stroke="#F28C18"/>
+                  <circle cx="13" cy="13" r="1.8" fill="#F28C18"/>
+                </svg>
+              </div>
+              <div class="tool-info">
+                <div class="tool-name">Flange Slide Rule</div>
+                <div class="tool-desc">API 6A / ISO 10423 · 3K–15K · 10 sizes</div>
+              </div>
+              <span class="tool-badge">Live</span>
+              <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <a class="tool-card" href="/tubing/">
+              <div class="tool-icon">
+                <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="9" width="18" height="11" rx="1.5" stroke="#F28C18"/>
+                  <line x1="13" y1="2" x2="13" y2="7.5" stroke="#F28C18"/>
+                  <polyline points="10,5 13,8 16,5" stroke="#F28C18"/>
+                </svg>
+              </div>
+              <div class="tool-info">
+                <div class="tool-name">Safety Block Calculator</div>
+                <div class="tool-desc">SWL · BHN · Von Mises · PDF export</div>
+              </div>
+              <span class="tool-badge">Live</span>
+              <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <div class="section-head">
+            <span class="section-label">Recent Lookups</span>
+            <button onclick="showSection('logs')" style="background:none;border:none;font-size:11px;color:var(--orange);cursor:pointer;font-family:inherit;font-weight:600">View all →</button>
+          </div>
+          <div class="panel" id="recentPanel">
+            <div style="padding:32px;text-align:center;color:var(--muted);font-size:12px">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section id="sec-tools" style="display:none">
+      <div class="page-header">
+        <p class="page-eyebrow">Workspace</p>
+        <h1 class="page-title">Engineering Tools</h1>
+        <p class="page-sub">Launch a tool — use the Save button inside to record lookups.</p>
+      </div>
+      <div class="tool-cards" style="max-width:520px">
+        <a class="tool-card" href="/flange/">
+          <div class="tool-icon">
+            <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7" stroke="#F28C18"/>
+              <circle cx="13" cy="13" r="5.2" stroke="#F28C18"/>
+              <circle cx="13" cy="13" r="1.8" fill="#F28C18"/>
+            </svg>
+          </div>
+          <div class="tool-info">
+            <div class="tool-name">Flange Slide Rule</div>
+            <div class="tool-desc">API 6A / ISO 10423 · bore, OD, bolt pattern, ring gasket · 3K–15K across 10 nominal sizes</div>
+          </div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="tool-card" href="/tubing/">
+          <div class="tool-icon">
+            <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="9" width="18" height="11" rx="1.5" stroke="#F28C18"/>
+              <line x1="13" y1="2" x2="13" y2="7.5" stroke="#F28C18"/>
+              <polyline points="10,5 13,8 16,5" stroke="#F28C18"/>
+            </svg>
+          </div>
+          <div class="tool-info">
+            <div class="tool-name">Safety Block Calculator</div>
+            <div class="tool-desc">SWL from Brinell hardness, width, thickness · Von Mises shear · PDF export</div>
+          </div>
+          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- CALC LOGS -->
+    <section id="sec-logs" style="display:none">
+      <div class="page-header">
+        <p class="page-eyebrow">History</p>
+        <h1 class="page-title">Calc Logs</h1>
+        <p class="page-sub">All saved lookups from your sessions.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Saved Lookups</span>
+          <span class="panel-count" id="lookupCount">—</span>
+        </div>
+        <div id="lookupContent">
+          <div style="padding:32px;text-align:center;color:var(--muted);font-size:12px">Loading…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <div id="adminPanel" style="display:none;margin-top:28px">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">All Lookups <span class="admin-badge">Admin</span></span>
+          <span class="panel-count" id="adminLookupCount">—</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="lookup-table">
+            <thead><tr><th>User</th><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th></tr></thead>
+            <tbody id="adminRows"><tr><td colspan="5" style="padding:32px;text-align:center;color:var(--muted)">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ── Config ── */
-var SUPABASE_URL  = 'https://uejlrooupfcrqimffgsn.supabase.co';
-var SUPABASE_ANON = 'sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+var SUPABASE_URL='https://uejlrooupfcrqimffgsn.supabase.co';
+var SUPABASE_ANON='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+var currentSession=null;
 
-var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-var currentSession = null;
-
-document.getElementById('yr').textContent = new Date().getFullYear();
-
-/* ── Theme ── */
 (function(){
-  var root=document.documentElement,btn=document.getElementById('themeBtn'),icon=document.getElementById('themeIcon');
+  var root=document.documentElement,icon=document.getElementById('themeIcon');
   function isDark(){return root.dataset.theme==='dark'}
-  function apply(t){if(t)root.dataset.theme=t;else delete root.dataset.theme;icon.textContent=isDark()?'☀':'☾'}
-  function stored(){try{return localStorage.getItem('ap-theme')||''}catch(e){return''}}
+  function apply(t){root.dataset.theme=t;icon.textContent=isDark()?'☀':'☾'}
+  function stored(){try{return localStorage.getItem('ap-theme')||'light'}catch(e){return'light'}}
   function store(t){try{localStorage.setItem('ap-theme',t)}catch(e){}}
   apply(stored());
-  btn.addEventListener('click',function(){var n=isDark()?'light':'dark';store(n);apply(n)});
-  window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(!stored())apply('')});
+  document.getElementById('themeBtn').addEventListener('click',function(){var n=isDark()?'light':'dark';store(n);apply(n)});
 })();
 
-/* ── Card spotlight ── */
-function tiltCard(e,card){
-  var r=card.getBoundingClientRect();
-  card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
-  card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
-  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  var dx=(e.clientX-(r.left+r.width/2))/(r.width/2);
-  var dy=(e.clientY-(r.top+r.height/2))/(r.height/2);
-  card.style.transform='perspective(900px) rotateX('+(-dy*5)+'deg) rotateY('+(dx*5)+'deg) translateY(-3px)';
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  var ov=document.getElementById('sidebarOverlay');
+  ov.classList.add('open');ov.style.display='block';
 }
-function resetCard(card){
-  card.style.transform='';
-  card.style.setProperty('--mx','50%');card.style.setProperty('--my','50%');
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  var ov=document.getElementById('sidebarOverlay');
+  ov.classList.remove('open');
+  setTimeout(function(){ov.style.display=''},260);
 }
 
-/* ── Toast ── */
-function showToast(msg,dur){
+function showSection(name){
+  ['dashboard','tools','logs'].forEach(function(s){
+    document.getElementById('sec-'+s).style.display=s===name?'':'none';
+  });
+  var titles={dashboard:'Dashboard',tools:'Engineering Tools',logs:'Calc Logs'};
+  document.getElementById('topbarTitle').textContent=titles[name]||name;
+  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(function(el){el.classList.remove('active')});
+  var el=document.getElementById('nav-'+name);
+  if(el)el.classList.add('active');
+  if(name==='logs')loadLookups();
+  closeSidebar();
+}
+
+function showToast(msg){
   var t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
-  setTimeout(function(){t.classList.remove('show')},dur||2200);
+  setTimeout(function(){t.classList.remove('show')},2200);
 }
 
-/* ── Auth guard ── */
 async function init(){
   var r=await sb.auth.getSession();
   if(!r.data||!r.data.session){window.location.href='/';return}
   currentSession=r.data.session;
   var email=currentSession.user.email||'';
+  var initial=email.charAt(0).toUpperCase();
   document.getElementById('userEmail').textContent=email;
-  document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
-  loadLookups();
+  document.getElementById('userAvatar').textContent=initial;
+  document.getElementById('topbarAvatar').textContent=initial;
   var meta=currentSession.user.user_metadata||{};
   if(meta.is_admin===true){
+    document.getElementById('userRole').textContent='Admin';
     document.getElementById('adminPanel').style.display='';
     loadAdminLookups();
   }
+  loadDashboard();
 }
 
-/* ── Sign out ── */
 async function signOut(){
   await sb.auth.signOut();
   window.location.href='/';
 }
 
-/* ── Load saved lookups ── */
-async function loadLookups(){
-  var r=await sb.from('saved_lookups')
-    .select('*')
-    .order('created_at',{ascending:false});
-
+async function loadDashboard(){
+  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
   var lookups=r.data||[];
-  document.getElementById('lookupCount').textContent=lookups.length+' saved';
-  renderLookups(lookups);
+  var savedEl=document.getElementById('mSaved');
+  savedEl.innerHTML=lookups.length+'<span> total</span>';
+  var dot=document.getElementById('mSavedDot');
+  var lbl=document.getElementById('mSavedLabel');
+  if(lookups.length>0){dot.className='metric-dot';lbl.textContent='Last saved '+relTime(lookups[0].created_at)}
+  else{dot.className='metric-dot idle';lbl.textContent='No lookups yet'}
+  var lastEl=document.getElementById('mLast');
+  var lastLbl=document.getElementById('mLastLabel');
+  var lastDot=document.getElementById('mLastDot');
+  if(lookups.length>0){
+    var d=new Date(lookups[0].created_at);
+    lastEl.textContent=d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+    lastDot.className='metric-dot';
+    lastLbl.textContent=relTime(lookups[0].created_at);
+  } else {
+    lastEl.textContent='—';lastDot.className='metric-dot idle';lastLbl.textContent='No activity yet';
+  }
+  renderRecent(lookups.slice(0,4));
 }
 
-function renderLookups(lookups){
-  var wrap=document.getElementById('lookupContent');
+function relTime(iso){
+  var diff=Date.now()-new Date(iso).getTime();
+  var m=Math.floor(diff/60000);
+  if(m<1)return'just now';
+  if(m<60)return m+'m ago';
+  var h=Math.floor(m/60);
+  if(h<24)return h+'h ago';
+  return Math.floor(h/24)+'d ago';
+}
+
+function renderRecent(lookups){
+  var panel=document.getElementById('recentPanel');
   if(!lookups.length){
-    wrap.innerHTML='<div class="lookup-table-wrap"><div class="empty-state">'
-      +'<div class="empty-icon">📋</div>'
-      +'<div class="empty-title">No saved lookups yet</div>'
-      +'<div class="empty-sub">Launch a tool above and use the Save button to record a lookup here.</div>'
-      +'</div></div>';
+    panel.innerHTML='<div class="empty-state"><div class="empty-title">No saved lookups yet</div><div class="empty-sub">Launch a tool and hit Save to log it here.</div></div>';
     return;
   }
-
   var rows=lookups.map(function(l){
-    var params=formatParams(l.tool,l.params);
-    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
-    var label=l.label?('<span class="td-label">'+esc(l.label)+'</span>')
-                     :('<span class="td-label empty">—</span>');
     var dot=l.tool==='flange'?'dot-flange':'dot-tubing';
-    var toolName=l.tool==='flange'?'Flange':'Tubing';
+    var name=l.tool==='flange'?'Flange':'Tubing';
     return '<tr>'
-      +'<td><span class="td-tool"><span class="tool-dot '+dot+'"></span>'+toolName+'</span></td>'
-      +'<td><span class="td-params" title="'+esc(params)+'">'+esc(params)+'</span></td>'
-      +'<td>'+label+'</td>'
-      +'<td><span class="td-date">'+date+'</span></td>'
-      +'<td><button class="btn-delete" title="Delete" onclick="deleteLookup(\''+l.id+'\')">✕</button></td>'
+      +'<td><div class="td-tool"><span class="tool-dot '+dot+'"></span>'+name+'</div></td>'
+      +'<td><span class="td-params">'+esc(fmtParams(l.tool,l.params))+'</span></td>'
+      +'<td><span class="td-date">'+relTime(l.created_at)+'</span></td>'
       +'</tr>';
   }).join('');
-
-  wrap.innerHTML='<div class="lookup-table-wrap"><table>'
-    +'<thead><tr><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th></tr></thead>'
-    +'<tbody>'+rows+'</tbody>'
-    +'</table></div>';
+  panel.innerHTML='<div style="overflow-x:auto"><table class="lookup-table"><thead><tr><th>Tool</th><th>Params</th><th>When</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 
-function formatParams(tool,params){
-  if(!params)return '—';
-  if(tool==='flange'){
-    var s=params.size||params.nominal_size||'';
-    var r=params.rating||params.pressure_rating||'';
-    var j=params.job||'';
-    return [s&&('Size: '+s),r&&('Rating: '+r),j&&('Job: '+j)].filter(Boolean).join(' · ')||JSON.stringify(params);
+async function loadLookups(){
+  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
+  var lookups=r.data||[];
+  document.getElementById('lookupCount').textContent=lookups.length+' saved';
+  var wrap=document.getElementById('lookupContent');
+  if(!lookups.length){
+    wrap.innerHTML='<div class="empty-state"><div class="empty-title">No saved lookups yet</div><div class="empty-sub">Launch a tool above and use the Save button.</div></div>';
+    return;
   }
-  if(tool==='tubing'){
-    var bhn=params.bhn||params.hardness||'';
-    var w=params.width||params.w||'';
-    var t=params.thickness||params.t||'';
-    var units=params.units||'imp';
-    var u=units==='met'?'mm':'in';
-    return [bhn&&('BHN: '+bhn),w&&('W: '+w+u),t&&('T: '+t+u)].filter(Boolean).join(' · ')||JSON.stringify(params);
-  }
+  var rows=lookups.map(function(l){
+    var dot=l.tool==='flange'?'dot-flange':'dot-tubing';
+    var name=l.tool==='flange'?'Flange':'Tubing';
+    var label=l.label?'<span class="td-label">'+esc(l.label)+'</span>':'<span class="td-label empty">—</span>';
+    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
+    return '<tr>'
+      +'<td><div class="td-tool"><span class="tool-dot '+dot+'"></span>'+name+'</div></td>'
+      +'<td><span class="td-params" title="'+esc(fmtParams(l.tool,l.params))+'">'+esc(fmtParams(l.tool,l.params))+'</span></td>'
+      +'<td>'+label+'</td>'
+      +'<td><span class="td-date">'+date+'</span></td>'
+      +'<td><button class="btn-delete" onclick="deleteLookup(\''+l.id+'\')" title="Delete">✕</button></td>'
+      +'</tr>';
+  }).join('');
+  wrap.innerHTML='<div style="overflow-x:auto"><table class="lookup-table"><thead><tr><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function fmtParams(tool,params){
+  if(!params)return'—';
+  if(tool==='flange'){var s=params.size||'';var rt=params.rating||'';return[s&&'Size: '+s,rt&&'Rating: '+rt].filter(Boolean).join(' · ')||JSON.stringify(params)}
+  if(tool==='tubing'){var bhn=params.bhn||'';var w=params.width||'';var t=params.thickness||'';return[bhn&&'BHN: '+bhn,w&&'W: '+w+'"',t&&'T: '+t+'"'].filter(Boolean).join(' · ')||JSON.stringify(params)}
   return JSON.stringify(params);
 }
 
-function esc(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-/* ── Delete lookup ── */
 async function deleteLookup(id){
   var r=await sb.from('saved_lookups').delete().eq('id',id).eq('user_id',currentSession.user.id);
-  if(r.error){showToast('Could not delete. Try again.');return}
+  if(r.error){showToast('Could not delete.');return}
   showToast('Lookup deleted.');
-  loadLookups();
+  loadDashboard();
+  if(document.getElementById('sec-logs').style.display!=='none')loadLookups();
 }
 
-/* ── Admin: all lookups ── */
 async function loadAdminLookups(){
-  var r=await sb.from('saved_lookups')
-    .select('id,user_id,tool,label,params,result_summary,created_at')
-    .order('created_at',{ascending:false})
-    .limit(200);
+  var r=await sb.from('saved_lookups').select('id,user_id,tool,label,params,created_at').order('created_at',{ascending:false}).limit(200);
   var rows=r.data||[];
   document.getElementById('adminLookupCount').textContent=rows.length+' total';
   var tbody=document.getElementById('adminRows');
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="5" style="padding:2rem;text-align:center;color:var(--muted)">No lookups yet.</td></tr>';return;}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="5" style="padding:32px;text-align:center;color:var(--muted)">No lookups yet.</td></tr>';return}
   tbody.innerHTML=rows.map(function(l){
-    var params=formatParams(l.tool,l.params);
-    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
-    var label=l.label?('<span class="td-label">'+esc(l.label)+'</span>'):('<span class="td-label empty">—</span>');
-    var uid=l.user_id?l.user_id.substring(0,8)+'…':'';
     var dot=l.tool==='flange'?'dot-flange':'dot-tubing';
-    var toolName=l.tool==='flange'?'Flange':'Tubing';
+    var name=l.tool==='flange'?'Flange':'Tubing';
+    var label=l.label?'<span class="td-label">'+esc(l.label)+'</span>':'<span class="td-label empty">—</span>';
+    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
+    var uid=l.user_id?l.user_id.substring(0,8)+'…':'';
     return '<tr>'
       +'<td><span class="td-params" title="'+esc(l.user_id||'')+'">'+uid+'</span></td>'
-      +'<td><span class="td-tool"><span class="tool-dot '+dot+'"></span>'+toolName+'</span></td>'
-      +'<td><span class="td-params">'+esc(params)+'</span></td>'
+      +'<td><div class="td-tool"><span class="tool-dot '+dot+'"></span>'+name+'</div></td>'
+      +'<td><span class="td-params">'+esc(fmtParams(l.tool,l.params))+'</span></td>'
       +'<td>'+label+'</td>'
       +'<td><span class="td-date">'+date+'</span></td>'
       +'</tr>';
   }).join('');
 }
 
-/* ── Boot ── */
 init();
 </script>
 </body>
