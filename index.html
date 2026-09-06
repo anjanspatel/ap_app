@@ -47,12 +47,12 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'IB
 .page{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem}
 
 /* Brand */
-.brand{display:flex;align-items:center;gap:10px;margin-bottom:2rem;text-decoration:none}
-.brand-mark{width:40px;height:40px;background:var(--navy);border-radius:10px;display:grid;place-items:center;flex-shrink:0;border:1px solid rgba(242,140,24,.3)}
-:root[data-theme="dark"] .brand-mark,@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand-mark{background:rgba(242,140,24,.12)}}
-.brand-copy{display:flex;flex-direction:column;line-height:1.1}
-.brand-name{font-size:14px;font-weight:700;letter-spacing:.08em;color:var(--text)}
-.brand-sub{font-size:10px;color:var(--muted);letter-spacing:.05em}
+.brand{display:flex;flex-direction:column;align-items:center;margin-bottom:2rem;text-decoration:none}
+.brand-mark{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;flex-shrink:0}
+
+
+
+
 
 /* Card */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:2rem 2rem 1.75rem;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(11,29,45,.08)}
@@ -117,15 +117,13 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'IB
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span id="themeIcon"></span></button>
 
 <div class="page">
-  <a class="brand" href="/" aria-label="Anjan Patel Engineering">
-    <div class="brand-mark">
-      <img src="/favicon.svg" width="28" height="28" alt="" aria-hidden="true" style="border-radius:6px">
-    </div>
-    <div class="brand-copy">
-      <span class="brand-name">ANJAN PATEL</span>
-      <span class="brand-sub">Engineering Tools</span>
-    </div>
-  </a>
+  <div class="brand-mark" aria-hidden="true">
+    <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="18" fill="#0B1D2D"/>
+      <text x="30" y="50" font-family="'IBM Plex Sans',system-ui,sans-serif" font-weight="700" font-size="52" text-anchor="middle" dominant-baseline="central" fill="#F28C18">A</text>
+      <text x="70" y="50" font-family="'IBM Plex Sans',system-ui,sans-serif" font-weight="700" font-size="52" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF">P</text>
+    </svg>
+  </div>
 
   <div class="card">
     <div class="tabs">
