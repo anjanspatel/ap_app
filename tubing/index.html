@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script>(function(){try{var t=localStorage.getItem('ap-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}}());</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Safety Block Calculator — Anjan Patel</title>
+<meta name="description" content="Field calculator for tubing block and safety block safe working load. Enter BHN, width, and thickness to get SWL with step-by-step calculation.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.anjanpatel.ca/tubing/">
+<meta property="og:title" content="Safety Block Calculator — Anjan Patel">
+<meta property="og:description" content="Field calculator for tubing block and safety block safe working load — BHN, width, thickness to SWL.">
+<meta property="og:image" content="https://tools.anjanpatel.ca/tubing/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Safety Block Calculator — Anjan Patel">
+<meta name="twitter:description" content="Field calculator for tubing block and safety block safe working load.">
+<meta name="twitter:image" content="https://tools.anjanpatel.ca/tubing/og.png">
+<link rel="canonical" href="https://tools.anjanpatel.ca/tubing/">
+<meta name="theme-color" content="#0B1D2D">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── design tokens ── */
+:root{
+  --brand-navy:#0B1D2D;
+  --brand-orange:#F28C18;
+  --bg:#eef0f4;
+  --surface:#ffffff;
+  --surface-2:#f3f5f8;
+  --border:#dde2e8;
+  --text:#0B1D2D;
+  --muted:#5c6e80;
+  --header-bg:rgba(255,255,255,0.9);
+  --shadow:0 2px 14px rgba(11,29,45,.09);
+  --shadow-sm:0 1px 4px rgba(11,29,45,.06);
+  --step-line:#dde2e8;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#070f18;
+  --surface:#0c1a27;
+  --surface-2:#091523;
+  --border:#152538;
+  --text:#ddeaf6;
+  --muted:#5a7a96;
+  --header-bg:rgba(12,26,39,0.9);
+  --shadow:0 2px 14px rgba(0,0,0,.4);
+  --shadow-sm:0 1px 4px rgba(0,0,0,.25);
+  --step-line:#152538;
+}}
+:root[data-theme="dark"]{
+  --bg:#070f18;
+  --surface:#0c1a27;
+  --surface-2:#091523;
+  --border:#152538;
+  --text:#ddeaf6;
+  --muted:#5a7a96;
+  --header-bg:rgba(12,26,39,0.9);
+  --shadow:0 2px 14px rgba(0,0,0,.4);
+  --shadow-sm:0 1px 4px rgba(0,0,0,.25);
+  --step-line:#152538;
+}
+
+/* ── reset ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'IBM Plex Sans',Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+  transition:background .2s,color .2s;
+}
+
+/* ── header ── */
+.site-header{
+  position:sticky;top:0;z-index:100;
+  background:var(--header-bg);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.header-inner{
+  max-width:1140px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.logo-wrap{
+  width:38px;height:38px;border-radius:8px;
+  background:#fff;border:1px solid rgba(11,29,45,.1);
+  display:grid;place-items:center;overflow:hidden;flex:0 0 auto;
+  box-shadow:var(--shadow-sm);
+}
+.logo-wrap img{width:34px;height:31px;display:block}
+.brand-name{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--text)}
+.header-right{display:flex;align-items:center;gap:10px}
+.hub-link{
+  font-size:11px;color:var(--muted);text-decoration:none;
+  display:flex;align-items:center;gap:4px;
+  padding:5px 10px;border:1px solid var(--border);border-radius:7px;
+  transition:color .15s,border-color .15s;
+}
+.hub-link:hover{color:var(--text);border-color:var(--muted)}
+.theme-btn{
+  appearance:none;background:var(--surface-2,rgba(0,0,0,.04));border:1px solid var(--border);
+  border-radius:8px;width:36px;height:36px;cursor:pointer;
+  display:grid;place-items:center;color:var(--muted);font-size:14px;
+  transition:background .15s,border-color .15s,color .15s;flex:0 0 auto;padding:0;
+}
+.theme-btn:hover{border-color:var(--brand-orange);color:var(--brand-orange)}
+
+/* ── page layout ── */
+main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
+
+/* ── page hero ── */
+.page-hero{margin-bottom:32px}
+.eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brand-orange);margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.eyebrow::before{content:'';width:18px;height:2px;background:var(--brand-orange);border-radius:2px}
+.page-title{
+  font-size:clamp(24px,4.5vw,38px);font-weight:900;
+  letter-spacing:-.03em;line-height:1.12;color:var(--text);margin-bottom:8px;
+}
+.page-sub{font-size:13.5px;color:var(--muted);line-height:1.65;max-width:540px}
+
+/* ── two-col layout ── */
+.calc-layout{
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:20px;align-items:start;
+}
+@media(max-width:800px){.calc-layout{grid-template-columns:1fr}}
+
+/* ── card base ── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:var(--shadow);
+}
+.card+.card{margin-top:20px}
+.card-label{
+  font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:18px;
+  display:flex;align-items:center;gap:6px;
+}
+.card-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── unit toggle ── */
+.unit-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.unit-lbl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.unit-pill{
+  display:flex;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:8px;overflow:hidden;padding:2px;gap:2px;
+}
+.upill{
+  padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:.04em;
+  border:none;background:none;cursor:pointer;color:var(--muted);border-radius:6px;
+  transition:background .15s,color .15s;
+}
+.upill.active{background:var(--brand-orange);color:#fff}
+
+/* ── input groups ── */
+.input-group{margin-bottom:16px}
+.input-label{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:5px;
+}
+.unit-tag{
+  font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:none;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:4px;padding:1px 7px;color:var(--muted);
+}
+input[type=number]{
+  width:100%;padding:10px 13px;
+  font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:500;
+  background:var(--surface-2);color:var(--text);
+  border:1.5px solid var(--border);border-radius:9px;
+  outline:none;transition:border-color .15s,box-shadow .15s;
+  -moz-appearance:textfield;appearance:textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+input[type=number]:focus{
+  border-color:var(--brand-orange);
+  box-shadow:0 0 0 3px rgba(242,140,24,.12);
+}
+.sf-display{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 13px;
+  background:var(--surface-2);border:1.5px solid var(--border);border-radius:9px;
+  font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:500;
+  color:var(--muted);
+}
+.sf-display small{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'IBM Plex Sans',sans-serif}
+
+/* ── SWL hero ── */
+.swl-hero{
+  border-radius:14px;padding:28px 22px 24px;
+  margin-bottom:20px;
+  background:linear-gradient(140deg,var(--brand-navy) 0%,#0e2740 100%);
+  text-align:center;position:relative;overflow:hidden;
+}
+.swl-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 60% at 75% 30%,rgba(242,140,24,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.swl-lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px}
+.swl-num{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:clamp(32px,6vw,52px);font-weight:700;
+  color:#fff;line-height:1.05;letter-spacing:-.02em;
+}
+.swl-num .swl-u{font-size:.42em;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.04em;vertical-align:middle}
+.swl-alt{margin-top:8px;font-size:12px;color:rgba(255,255,255,.4);font-family:'IBM Plex Mono',monospace;letter-spacing:.02em}
+.swl-empty-msg{font-size:14px;font-weight:500;color:rgba(255,255,255,.3);letter-spacing:.04em}
+
+/* ── steps ── */
+.steps{display:flex;flex-direction:column;gap:0;margin-bottom:20px}
+.step{
+  display:grid;grid-template-columns:32px 1fr;gap:0 14px;
+  padding:14px 0;
+  border-bottom:1px solid var(--step-line);
+  position:relative;
+}
+.step:last-child{border-bottom:none}
+.step-num{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--brand-orange);color:#fff;
+  font-size:11px;font-weight:800;
+  display:grid;place-items:center;margin-top:1px;flex:0 0 auto;
+}
+.step.dimmed .step-num{background:var(--surface-2);border:1.5px solid var(--border);color:var(--muted)}
+.step-body{}
+.step-name{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.step-eq{
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);
+  margin-bottom:4px;line-height:1.5;
+}
+.step-val{
+  font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;
+  color:var(--text);line-height:1.2;
+}
+.step-val.pending{font-size:13px;font-weight:400;font-family:'IBM Plex Sans',sans-serif;color:var(--muted)}
+
+/* ── PDF button ── */
+.btn-pdf{
+  width:100%;padding:12px 16px;
+  background:var(--brand-orange);color:#fff;
+  border:none;border-radius:10px;cursor:pointer;
+  font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .15s,transform .1s;
+}
+.btn-pdf:hover{opacity:.88}
+.btn-pdf:active{transform:scale(.98)}
+
+
+/* ── footer ── */
+footer{
+  border-top:1px solid var(--border);padding:20px;
+  text-align:center;font-size:10.5px;color:var(--muted);
+}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+
+/* ── print ── */
+@media print{
+  .site-header,.btn-pdf,.unit-row,.about-wrap{display:none!important}
+  main{padding:0!important;max-width:100%!important}
+  .calc-layout{grid-template-columns:1fr!important;gap:16px!important}
+  .card,.step,.swl-hero{break-inside:avoid}
+  .swl-hero{background:var(--brand-navy)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body::after{
+    content:"REFERENCE ONLY \2014 NOT FOR CONSTRUCTION";
+    position:fixed;top:50%;left:50%;
+    transform:translate(-50%,-50%) rotate(-30deg);
+    font-size:44pt;font-weight:900;color:rgba(11,29,45,0.07);
+    pointer-events:none;white-space:nowrap;
+  }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+  var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
+  var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+  var _sb=supabase.createClient(SB_URL,SB_KEY);
+  window.__sb=_sb;
+  window.__sbReady=_sb.auth.getSession().then(function(r){
+    if(!r.data||!r.data.session){window.location.replace('/');return null;}
+    return r.data.session;
+  });
+})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/dashboard.html">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'IBM Plex Sans',system-ui,-apple-system,sans-serif" font-weight="700" font-size="50" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-4">AP</text></svg>
+      <span class="brand-name">ANJAN PATEL</span>
+    </a>
+    <div class="header-right">
+      <a class="hub-link" href="/dashboard.html">&#8592; Dashboard</a>
+      <button class="theme-btn" id="saveLookupBtn" type="button" title="Save this lookup to your dashboard" onclick="openSaveModal()" style="gap:6px;display:flex;align-items:center;padding:0 12px;width:auto;font-size:13px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
+      <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle colour theme"><span id="themeIcon" aria-hidden="true"></span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero">
+    <div class="eyebrow">Field Calculator</div>
+    <h1 class="page-title">Safety Block Calculator</h1>
+    <p class="page-sub">Safe working load for tubing blocks and safety blocks from BHN, width, and measured cross-section. All steps shown.</p>
+  </div>
+
+  <div class="calc-layout">
+
+    <!-- ── INPUTS ── -->
+    <div class="card">
+      <div class="card-label">Inputs</div>
+
+      <div class="unit-row">
+        <span class="unit-lbl">Units</span>
+        <div class="unit-pill">
+          <button class="upill active" id="btnImp" onclick="setUnits('imp')">Imperial</button>
+          <button class="upill" id="btnMet" onclick="setUnits('met')">Metric</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          BHN — Brinell Hardness
+          <span class="unit-tag">HB</span>
+        </div>
+        <input type="number" id="inBHN" min="1" max="900" step="1" placeholder="e.g. 250" oninput="calc()">
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          Width
+          <span class="unit-tag" id="lblW">in</span>
+        </div>
+        <input type="number" id="inW" min="0.001" step="0.001" placeholder="e.g. 4.000" oninput="calc()">
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">
+          Thickness
+          <span class="unit-tag" id="lblT">in</span>
+        </div>
+        <input type="number" id="inT" min="0.001" step="0.001" placeholder="e.g. 2.500" oninput="calc()">
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Safety Factor <span class="unit-tag">fixed</span></div>
+        <div class="sf-display"><small>SF</small> 3</div>
+      </div>
+    </div>
+
+    <!-- ── RESULTS ── -->
+    <div>
+
+      <!-- SWL hero answer -->
+      <div class="swl-hero">
+        <div class="swl-lbl">Safe Working Load</div>
+        <div id="swlNum" class="swl-num"><span class="swl-empty-msg">Enter values →</span></div>
+        <div id="swlAlt" class="swl-alt"></div>
+      </div>
+
+      <!-- Step breakdown -->
+      <div class="card">
+        <div class="card-label">Calculation Steps</div>
+
+        <div class="steps">
+          <div class="step dimmed" id="s1">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <div class="step-name">Ultimate Tensile Strength</div>
+              <div class="step-eq" id="eq1">UTS = 500 × BHN</div>
+              <div class="step-val pending" id="v1">—</div>
+            </div>
+          </div>
+
+          <div class="step dimmed" id="s2">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <div class="step-name">Shear Strength (von Mises)</div>
+              <div class="step-eq" id="eq2">τ = UTS × 0.577</div>
+              <div class="step-val pending" id="v2">—</div>
+            </div>
+          </div>
+
+          <div class="step dimmed" id="s3">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <div class="step-name">Cross-Section Area</div>
+              <div class="step-eq" id="eq3">A = Width × Thickness</div>
+              <div class="step-val pending" id="v3">—</div>
+            </div>
+          </div>
+
+          <div class="step dimmed" id="s4">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <div class="step-name">Safe Working Load — lbs</div>
+              <div class="step-eq" id="eq4">SWL = (τ ÷ SF) × A</div>
+              <div class="step-val pending" id="v4">—</div>
+            </div>
+          </div>
+
+          <div class="step dimmed" id="s5">
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <div class="step-name">Result</div>
+              <div class="step-eq" id="eq5">SWL (tons) = SWL (lbs) ÷ 2,000</div>
+              <div class="step-val pending" id="v5">—</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-pdf" onclick="window.print()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Export PDF
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- About -->
+</main>
+
+<footer>
+  <span>&copy; <span id="yr"></span> Anjan Patel. All rights reserved.</span>
+  &nbsp;&middot;&nbsp;
+  <a href="/">Home</a>
+  &nbsp;&middot;&nbsp;
+  <a href="/terms/">Terms &amp; Disclaimer</a>
+  &nbsp;&middot;&nbsp;
+  <a href="https://www.linkedin.com/in/anjanspatel" target="_blank" rel="noopener">LinkedIn</a>
+</footer>
+
+<script>
+/* ── theme ── */
+(function(){
+  var root = document.documentElement;
+  var btn  = document.getElementById('themeBtn');
+  var icon = document.getElementById('themeIcon');
+  function isDark(){
+    var t = root.dataset.theme;
+    return t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches);
+  }
+  function syncIcon(){ icon.textContent = isDark() ? '\u2600' : '\u263e'; }
+  function apply(t){
+    if(t){ root.dataset.theme = t; } else { delete root.dataset.theme; }
+    syncIcon();
+  }
+  function stored(){ try{return localStorage.getItem('ap-theme')||''}catch(e){return ''} }
+  function store(t){ try{localStorage.setItem('ap-theme',t)}catch(e){} }
+  apply(stored());
+  btn.addEventListener('click',function(){
+    var next = isDark()?'light':'dark';
+    store(next); apply(next);
+  });
+  window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){
+    if(!stored()) apply('');
+  });
+  document.getElementById('yr').textContent = new Date().getFullYear();
+})();
+
+/* ── calculator ── */
+var _u = 'imp';
+
+function setUnits(u){
+  _u = u;
+  document.getElementById('btnImp').classList.toggle('active', u==='imp');
+  document.getElementById('btnMet').classList.toggle('active', u==='met');
+  document.getElementById('lblW').textContent = u==='met'?'mm':'in';
+  document.getElementById('lblT').textContent = u==='met'?'mm':'in';
+  document.getElementById('inW').placeholder  = u==='met'?'e.g. 100.0':'e.g. 4.000';
+  document.getElementById('inT').placeholder  = u==='met'?'e.g. 60.0':'e.g. 2.500';
+  calc();
+}
+
+function n(x, dec){ return x.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}); }
+
+function setStep(idx, eq, val){
+  document.getElementById('eq'+idx).textContent = eq;
+  var vEl = document.getElementById('v'+idx);
+  vEl.textContent = val;
+  vEl.className = 'step-val';
+  document.getElementById('s'+idx).classList.remove('dimmed');
+}
+
+function clearAll(){
+  for(var i=1;i<=5;i++){
+    var vEl = document.getElementById('v'+i);
+    vEl.textContent = '—';
+    vEl.className = 'step-val pending';
+    document.getElementById('s'+i).classList.add('dimmed');
+  }
+  document.getElementById('swlNum').innerHTML = '<span class="swl-empty-msg">Enter values →</span>';
+  document.getElementById('swlAlt').textContent = '';
+}
+
+function calc(){
+  var bhn  = parseFloat(document.getElementById('inBHN').value);
+  var wRaw = parseFloat(document.getElementById('inW').value);
+  var tRaw = parseFloat(document.getElementById('inT').value);
+
+  if(!isFinite(bhn)||bhn<=0 || !isFinite(wRaw)||wRaw<=0 || !isFinite(tRaw)||tRaw<=0){
+    clearAll(); return;
+  }
+
+  /* convert to inches for calculation */
+  var w_in = _u==='met' ? wRaw/25.4 : wRaw;
+  var t_in = _u==='met' ? tRaw/25.4 : tRaw;
+
+  /* step 1: UTS */
+  var uts = 500 * bhn;
+  setStep(1,
+    'UTS = 500 × ' + n(bhn,0) + ' HB',
+    n(uts,0) + ' psi'
+  );
+
+  /* step 2: shear strength */
+  var tau = uts * 0.577;
+  setStep(2,
+    'τ = ' + n(uts,0) + ' × 0.577',
+    n(tau,0) + ' psi'
+  );
+
+  /* step 3: area */
+  var area = w_in * t_in;
+  var areaEq;
+  if(_u==='met'){
+    var area_mm2 = wRaw * tRaw;
+    areaEq = 'A = ' + n(wRaw,2) + ' mm × ' + n(tRaw,2) + ' mm';
+    setStep(3, areaEq, n(area_mm2,2) + ' mm²  =  ' + n(area,4) + ' in²');
+  } else {
+    areaEq = 'A = ' + n(w_in,3) + ' in × ' + n(t_in,3) + ' in';
+    setStep(3, areaEq, n(area,4) + ' in²');
+  }
+
+  /* step 4: SWL in lbs */
+  var swl_lbs = (tau / 3) * area;
+  setStep(4,
+    'SWL = (' + n(tau,0) + ' ÷ 3) × ' + n(area,4),
+    n(swl_lbs,0) + ' lbs'
+  );
+
+  /* step 5: convert */
+  var swl_tons = swl_lbs / 2000;
+  var swl_mt   = swl_lbs / 2204.622;
+  var swl_kn   = swl_lbs * 0.004448222;
+  setStep(5,
+    'SWL = ' + n(swl_lbs,0) + ' lbs ÷ 2,000',
+    n(swl_tons,2) + ' US tons  ·  ' + n(swl_mt,2) + ' t  ·  ' + n(swl_kn,1) + ' kN'
+  );
+
+  /* hero */
+  document.getElementById('swlNum').innerHTML =
+    n(swl_tons,1) + '<span class="swl-u">&nbsp;US tons</span>';
+  document.getElementById('swlAlt').textContent =
+    n(swl_mt,2) + ' t  ·  ' + n(swl_kn,1) + ' kN';
+}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(function(reg){
+    reg.addEventListener('updatefound',function(){
+      var sw=reg.installing;
+      sw.addEventListener('statechange',function(){
+        if(sw.state==='installed'&&navigator.serviceWorker.controller){
+          var b=document.getElementById('sw-update-banner');if(b)b.style.display='flex';
+        }
+      });
+    });
+  }).catch(function(){});
+  navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload()});
+}
+</script>
+<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0B1D2D;color:#EDF2F8;border:1px solid rgba(242,140,24,.45);border-radius:10px;padding:11px 16px;font-size:12.5px;font-family:'IBM Plex Sans',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
+  <span>Update available</span>
+  <button onclick="window.location.reload()" style="background:#F28C18;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Refresh</button>
+</div>
+
+<style>
+#saveModal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;display:none;align-items:center;justify-content:center;padding:20px}
+#saveModal.open{display:flex}
+#saveModalBox{background:var(--surface,#fff);border:1px solid var(--line,#d6dde7);border-radius:14px;padding:26px 28px 22px;width:100%;max-width:380px;box-shadow:0 16px 48px rgba(0,0,0,.22)}
+#saveModalBox h3{font-size:15px;font-weight:800;color:var(--text,#152033);margin:0 0 4px}
+#saveModalBox p{font-size:12px;color:var(--muted,#667085);margin:0 0 16px}
+#saveModalBox label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#667085);display:block;margin-bottom:5px}
+#saveModalBox input{width:100%;height:40px;border:1px solid var(--line,#d6dde7);border-radius:8px;background:var(--input-bg,var(--surface-2,#f8fafc));color:var(--text,#152033);font:600 14px inherit;padding:0 11px;outline:none;margin-bottom:14px}
+#saveModalBox input:focus{border-color:#F28C18;box-shadow:0 0 0 3px rgba(242,140,24,.15)}
+#saveModalBox .modal-row{display:flex;gap:8px}
+#saveModalBox .modal-row button{flex:1;height:40px;border-radius:9px;font:700 13px inherit;cursor:pointer;border:none;transition:opacity .15s}
+#saveModalBox .modal-row .btn-cancel{background:var(--surface-2,#f8fafc);border:1px solid var(--line,#d6dde7);color:var(--text,#152033)}
+#saveModalBox .modal-row .btn-save{background:#F28C18;color:#fff}
+#saveModalBox .modal-row button:hover{opacity:.88}
+#saveModalBox .modal-row button:disabled{opacity:.5;cursor:not-allowed}
+#saveToast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;font:700 13px inherit;padding:.6rem 1.2rem;border-radius:9px;box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
+#saveToast.show{opacity:1}
+</style>
+
+<div id="saveModal" aria-modal="true" role="dialog" aria-labelledby="saveModalTitle">
+  <div id="saveModalBox">
+    <h3 id="saveModalTitle">Save Lookup</h3>
+    <p id="saveModalDesc">Saves current calculation to your dashboard.</p>
+    <label for="saveLabel">Label (optional)</label>
+    <input type="text" id="saveLabel" placeholder="e.g. Wellbore — Job #12" maxlength="80" autocomplete="off">
+    <div class="modal-row">
+      <button class="btn-cancel" onclick="closeSaveModal()">Cancel</button>
+      <button class="btn-save" id="saveConfirmBtn" onclick="confirmSave()">Save to Dashboard</button>
+    </div>
+  </div>
+</div>
+<div id="saveToast">Saved to dashboard ✓</div>
+
+<script>
+/* ── Save lookup (tubing) ── */
+function openSaveModal(){
+  var bhn=document.getElementById('inBHN'),w=document.getElementById('inW'),t=document.getElementById('inT');
+  if(bhn||w||t){
+    var parts=[];
+    if(bhn&&bhn.value)parts.push('BHN '+bhn.value);
+    if(w&&w.value)parts.push(w.value+'" W');
+    if(t&&t.value)parts.push(t.value+'" T');
+    if(parts.length)document.getElementById('saveModalDesc').textContent='Saving: '+parts.join(' / ');
+  }
+  document.getElementById('saveModal').classList.add('open');
+  setTimeout(function(){document.getElementById('saveLabel').focus()},60);
+}
+function closeSaveModal(){document.getElementById('saveModal').classList.remove('open');}
+document.getElementById('saveModal').addEventListener('click',function(e){if(e.target===this)closeSaveModal();});
+async function confirmSave(){
+  var btn=document.getElementById('saveConfirmBtn');
+  btn.disabled=true;btn.textContent='Saving…';
+  var bhn=document.getElementById('inBHN'),w=document.getElementById('inW'),t=document.getElementById('inT');
+  var params={
+    bhn:bhn?bhn.value:'',
+    width:w?w.value:'',
+    thickness:t?t.value:''
+  };
+  var label=document.getElementById('saveLabel').value.trim()||null;
+  var summary=['BHN '+(params.bhn||'?'),params.width+'" W',params.thickness+'" T'].join(' / ');
+  try{
+    var session=await window.__sbReady;
+    if(!session){window.location.replace('/');return;}
+    var res=await window.__sb.from('saved_lookups').insert({
+      user_id:session.user.id,
+      tool:'tubing',
+      label:label,
+      params:params,
+      result_summary:summary
+    });
+    if(res.error)throw res.error;
+    closeSaveModal();
+    document.getElementById('saveLabel').value='';
+    var toast=document.getElementById('saveToast');
+    toast.classList.add('show');
+    setTimeout(function(){toast.classList.remove('show')},2800);
+  }catch(e){
+    alert('Could not save: '+(e.message||'unknown error'));
+  }finally{btn.disabled=false;btn.textContent='Save to Dashboard';}
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSaveModal();});
+</script>
+</body>
+</html>

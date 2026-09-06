@@ -198,7 +198,7 @@ footer a{color:var(--orange);text-decoration:none}
     <p class="section-sub">Launch a tool — use the Save button inside to record lookups here.</p>
     <div class="tool-grid">
 
-      <a class="tool-card" href="https://tools.anjanpatel.ca/flange/" target="_blank" rel="noopener"
+      <a class="tool-card" href="/flange/"
          onmousemove="tiltCard(event,this)" onmouseleave="resetCard(this)">
         <div class="card-top">
           <span class="card-icon">
@@ -228,7 +228,7 @@ footer a{color:var(--orange);text-decoration:none}
         </div>
       </a>
 
-      <a class="tool-card" href="https://tools.anjanpatel.ca/tubing/" target="_blank" rel="noopener"
+      <a class="tool-card" href="/tubing/"
          onmousemove="tiltCard(event,this)" onmouseleave="resetCard(this)">
         <div class="card-top">
           <span class="card-icon">
@@ -287,14 +287,35 @@ footer a{color:var(--orange);text-decoration:none}
       </div>
     </div>
   </div>
+
+<!-- Admin panel (injected at runtime for admin only) -->
+<div id="adminPanel" style="display:none;margin-top:3rem">
+  <div class="lookups-header">
+    <div>
+      <p class="section-eyebrow">Admin</p>
+      <h2 class="section-title" style="font-size:18px">All Lookups</h2>
+    </div>
+    <span class="lookup-count" id="adminLookupCount">—</span>
+  </div>
+  <div id="adminContent">
+    <div class="lookup-table-wrap">
+      <table>
+        <thead><tr>
+          <th>User</th><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th>
+        </tr></thead>
+        <tbody id="adminRows"><tr><td colspan="5" style="padding:2rem;text-align:center">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 </main>
 
 <footer>
   <span>&copy; <span id="yr"></span> Anjan Patel. All rights reserved.</span>
   <span>
-    <a href="https://tools.anjanpatel.ca/terms/" target="_blank" rel="noopener">Terms</a>
+    <a href="/terms.html">Terms</a>
     &nbsp;·&nbsp;
-    <a href="https://tools.anjanpatel.ca" target="_blank" rel="noopener">Public Tools</a>
+    <a href="https://tools.anjanpatel.ca" target="_blank" rel="noopener noreferrer">Public Tools</a>
   </span>
 </footer>
 
@@ -315,8 +336,8 @@ document.getElementById('yr').textContent = new Date().getFullYear();
   var root=document.documentElement,btn=document.getElementById('themeBtn'),icon=document.getElementById('themeIcon');
   function isDark(){var t=root.dataset.theme;return t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)}
   function apply(t){if(t)root.dataset.theme=t;else delete root.dataset.theme;icon.textContent=isDark()?'☀':'☾'}
-  function stored(){try{return localStorage.getItem('pd-theme')||''}catch(e){return''}}
-  function store(t){try{localStorage.setItem('pd-theme',t)}catch(e){}}
+  function stored(){try{return localStorage.getItem('ap-theme')||''}catch(e){return''}}
+  function store(t){try{localStorage.setItem('ap-theme',t)}catch(e){}}
   apply(stored());
   btn.addEventListener('click',function(){var n=isDark()?'light':'dark';store(n);apply(n)});
   window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(){if(!stored())apply('')});
@@ -345,6 +366,8 @@ function showToast(msg,dur){
 }
 
 /* ── Auth guard ── */
+var ADMIN_EMAIL='anjan'+'@'+'anjanpatel'+'.'+'ca';
+
 async function init(){
   var r=await sb.auth.getSession();
   if(!r.data||!r.data.session){window.location.href='/';return}
@@ -353,6 +376,10 @@ async function init(){
   document.getElementById('userEmail').textContent=email;
   document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
   loadLookups();
+  if(email===ADMIN_EMAIL){
+    document.getElementById('adminPanel').style.display='';
+    loadAdminLookups();
+  }
 }
 
 /* ── Sign out ── */
@@ -434,6 +461,33 @@ async function deleteLookup(id){
   if(r.error){showToast('Could not delete. Try again.');return}
   showToast('Lookup deleted.');
   loadLookups();
+}
+
+/* ── Admin: all lookups ── */
+async function loadAdminLookups(){
+  var r=await sb.from('saved_lookups')
+    .select('id,user_id,tool,label,params,result_summary,created_at')
+    .order('created_at',{ascending:false})
+    .limit(200);
+  var rows=r.data||[];
+  document.getElementById('adminLookupCount').textContent=rows.length+' total';
+  var tbody=document.getElementById('adminRows');
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="5" style="padding:2rem;text-align:center;color:var(--muted)">No lookups yet.</td></tr>';return;}
+  tbody.innerHTML=rows.map(function(l){
+    var params=formatParams(l.tool,l.params);
+    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
+    var label=l.label?('<span class="td-label">'+esc(l.label)+'</span>'):('<span class="td-label empty">—</span>');
+    var uid=l.user_id?l.user_id.substring(0,8)+'…':'';
+    var dot=l.tool==='flange'?'dot-flange':'dot-tubing';
+    var toolName=l.tool==='flange'?'Flange':'Tubing';
+    return '<tr>'
+      +'<td><span class="td-params" title="'+esc(l.user_id||'')+'">'+uid+'</span></td>'
+      +'<td><span class="td-tool"><span class="tool-dot '+dot+'"></span>'+toolName+'</span></td>'
+      +'<td><span class="td-params">'+esc(params)+'</span></td>'
+      +'<td>'+label+'</td>'
+      +'<td><span class="td-date">'+date+'</span></td>'
+      +'</tr>';
+  }).join('');
 }
 
 /* ── Boot ── */
