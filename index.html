@@ -2,328 +2,329 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In — anjanpatel.ca</title>
-<meta name="description" content="Access the engineering workspace at app.anjanpatel.ca">
-<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AP Workspace — Sign In</title>
+<meta name="description" content="Sign in to AP Workspace — engineering tools for the field.">
+<meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root {
-  --canvas:   #0b0f19;
-  --surface:  #171e2e;
-  --elevated: #1b2435;
-  --spotlight:#1e2638;
-  --border:   #2d3748;
-  --text:     #f8fafc;
-  --muted:    #94a3b8;
-  --dim:      #64748b;
-  --emerald:  #00d27a;
-  --emerald-t:#040811;
-  --indigo:   #6366f1;
-  --error:    #ef4444;
-  --warn:     #f59e0b;
-  --ease:     150ms ease-in-out;
+/* ── Design tokens ── */
+:root{
+  --canvas:  #0b0f19;
+  --surface: #131929;
+  --card:    #161d2e;
+  --edge:    #1e2a3d;
+  --border:  #2a3650;
+  --border2: #1e2a3d;
+  --text:    #f0f4f8;
+  --muted:   #8fa0b8;
+  --dim:     #516078;
+  --emerald: #00d27a;
+  --indigo:  #6366f1;
+  --error:   #ef4444;
+  --ease:    140ms cubic-bezier(.22,1,.36,1);
+  --font-ui: 'Inter',-apple-system,system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
 }
 
-*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-html,body { height:100%; }
-body {
-  background:var(--canvas);
-  color:var(--text);
-  font-family:'Inter',-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow-x:hidden;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{height:100%;overflow:hidden}
+body{
+  height:100%;overflow:hidden;
+  background:var(--canvas);color:var(--text);
+  font-family:var(--font-ui);-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
 }
-::selection { background:var(--indigo); color:var(--text); }
+::selection{background:var(--indigo);color:#fff}
+
+/* ── Blueprint dot-grid ── */
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(99,102,241,.18) 1px,transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(0,0,0,.6) 0%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(0,0,0,.6) 0%,transparent 100%);
+}
 
 /* ── Spotlight ── */
-.spotlight {
+.spotlight{
   position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 62% 55% at 50% 46%,var(--spotlight) 0%,#161d2e 34%,#10151f 58%,var(--canvas) 82%);
-  opacity:0;transform:scale(0.94);
-  animation:spotBloom 1600ms cubic-bezier(.22,1,.36,1) 120ms forwards;
-  will-change:transform,opacity;
+  background:radial-gradient(ellipse 55% 60% at 50% 46%,#1a2540 0%,#111826 40%,var(--canvas) 75%);
+  opacity:0;animation:bloom 1400ms var(--ease) 80ms forwards;
 }
-.spotlight::after {
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 34% 30% at 50% 44%,rgba(99,102,241,.06) 0%,transparent 70%);
-}
-@keyframes spotBloom { to { opacity:1;transform:scale(1); } }
+@keyframes bloom{to{opacity:1}}
 
 /* ── Stage ── */
-.stage {
+.stage{
   position:relative;z-index:1;flex:1;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:48px 20px 96px;
+  padding:0 20px;overflow:hidden;
 }
 
-/* ── Reveal animation ── */
-.reveal {
-  opacity:0;transform:translateY(18px);clip-path:inset(0 0 100% 0);
-  animation:maskReveal 900ms cubic-bezier(.22,1,.36,1) forwards;
-  will-change:transform,opacity,clip-path;
-}
-@keyframes maskReveal {
-  60% { clip-path:inset(0 0 0% 0); }
-  100% { opacity:1;transform:translateY(0);clip-path:inset(0 0 0% 0); }
-}
-.d1{animation-delay:220ms}.d2{animation-delay:340ms}.d3{animation-delay:460ms}
-.d4{animation-delay:560ms}.d5{animation-delay:660ms}.d6{animation-delay:760ms}
-
-/* ── AP mark ── */
-.ap-mark {
+/* ── AP Mark ── */
+.ap-mark{
   display:flex;align-items:center;gap:10px;
-  margin-bottom:36px;user-select:none;
+  margin-bottom:18px;user-select:none;
+  opacity:0;animation:riseIn 800ms var(--ease) 180ms forwards;
 }
-.ap-hex {
-  opacity:0;transform:scale(0.6) rotate(-15deg);
-  animation:hexIn 1000ms cubic-bezier(.22,1,.36,1) 200ms forwards;
-  will-change:transform,opacity;
-}
-@keyframes hexIn { to { opacity:1;transform:scale(1) rotate(0deg); } }
-.ap-wordmark {
-  display:flex;flex-direction:column;
-  opacity:0;animation:fadeIn 600ms ease 700ms forwards;
-}
-@keyframes fadeIn { to { opacity:1; } }
-.ap-wordmark-name { font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--text);line-height:1.2; }
-.ap-wordmark-sub  { font-size:10px;color:var(--dim);letter-spacing:.08em;font-family:'JetBrains Mono',monospace; }
+@keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ap-hex-svg{display:block;filter:drop-shadow(0 0 8px rgba(99,102,241,.25))}
+.ap-wordmark{display:flex;flex-direction:column;gap:1px}
+.ap-wordmark-name{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--text);line-height:1.2}
+.ap-wordmark-sub{font-size:9px;font-family:var(--font-mono);color:var(--dim);letter-spacing:.14em}
 
 /* ── Card ── */
-.card {
-  width:100%;max-width:420px;
-  background:var(--surface);
+.card{
+  width:100%;max-width:400px;
+  background:var(--card);
   border:1px solid var(--border);
   border-radius:10px;
-  padding:32px 32px 28px;
+  padding:26px 28px 22px;
+  box-shadow:0 4px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.03) inset;
+  opacity:0;animation:riseIn 800ms var(--ease) 320ms forwards;
 }
 
 /* ── Views ── */
-.view { display:none; }
-.view.active { display:block; animation:viewIn 260ms cubic-bezier(.22,1,.36,1) both; }
-@keyframes viewIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.view{display:none}
+.view.active{display:block;animation:viewIn 220ms var(--ease) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── Tabs ── */
-.tabs {
+.tabs{
   position:relative;display:grid;grid-template-columns:1fr 1fr;
-  background:rgba(11,15,25,.65);border:1px solid var(--border);
-  border-radius:7px;padding:3px;margin-bottom:24px;
+  background:rgba(9,13,22,.7);border:1px solid var(--border2);
+  border-radius:7px;padding:3px;margin-bottom:20px;
 }
-.tab-indicator {
+.tab-track{
   position:absolute;top:3px;left:3px;
   width:calc(50% - 3px);height:calc(100% - 6px);
-  background:var(--elevated);border:1px solid var(--border);
-  border-radius:5px;
-  transition:transform 220ms cubic-bezier(.22,1,.36,1);
-  will-change:transform;
+  background:var(--edge);border:1px solid var(--border);border-radius:5px;
+  transition:transform 200ms cubic-bezier(.22,1,.36,1);will-change:transform;
 }
-.tab {
-  position:relative;z-index:1;appearance:none;background:none;border:none;
-  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
-  color:var(--muted);padding:8px 0;cursor:pointer;border-radius:5px;
+.tab{
+  position:relative;z-index:1;background:none;border:none;
+  font:500 12px var(--font-ui);color:var(--muted);
+  padding:7px 0;cursor:pointer;border-radius:5px;letter-spacing:.01em;
   transition:color var(--ease);
 }
-.tab:hover { color:var(--text); }
-.tab[aria-selected="true"] { color:var(--text); }
-.tab:focus-visible { outline:2px solid var(--indigo);outline-offset:2px; }
+.tab:hover{color:var(--text)}
+.tab[aria-selected="true"]{color:var(--text);font-weight:600}
+.tab:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 
 /* ── Fields ── */
-.field { margin-bottom:16px; }
-.field-row { display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px; }
-.field label { font-size:12px;font-weight:500;color:var(--text);letter-spacing:.02em; }
-.inline-btn {
-  font-size:11px;color:var(--dim);text-decoration:none;
-  background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;
+.field{margin-bottom:12px}
+.field-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px}
+.field label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.link-btn{
+  font-size:10px;font-family:var(--font-ui);color:var(--dim);
+  background:none;border:none;cursor:pointer;padding:0;letter-spacing:.02em;
   transition:color var(--ease);
 }
-.inline-btn:hover { color:var(--text); }
-.inline-btn:focus-visible { outline:2px solid var(--indigo);outline-offset:2px;border-radius:2px; }
+.link-btn:hover{color:var(--muted)}
+.link-btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:2px}
 
-.field input {
-  width:100%;height:40px;
-  background:rgba(11,15,25,.65);
+.field input{
+  width:100%;height:38px;
+  background:rgba(9,13,22,.6);
   border:1px solid var(--border);border-radius:6px;
-  padding:0 12px;
-  font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);
-  caret-color:var(--indigo);
+  padding:0 11px;
+  font:500 13px var(--font-mono);color:var(--text);caret-color:var(--indigo);
   transition:border-color var(--ease),box-shadow var(--ease);
 }
-.field input::placeholder { color:#3d4e63;font-family:'Inter',sans-serif;font-size:13px; }
-.field input:hover { border-color:#3a4658; }
-.field input:focus { outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.15); }
-.field input[aria-invalid="true"] { border-color:var(--error); }
-.field input[aria-invalid="true"]:focus { box-shadow:0 0 0 3px rgba(239,68,68,.12); }
+.field input::placeholder{color:var(--dim);font-family:var(--font-ui);font-size:12px;font-weight:400;letter-spacing:0}
+.field input:hover{border-color:#3a4e68}
+.field input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.14)}
+.field input[aria-invalid="true"]{border-color:var(--error)}
+.field input[aria-invalid="true"]:focus{box-shadow:0 0 0 3px rgba(239,68,68,.12)}
 
-.err-msg {
-  min-height:16px;margin-top:4px;
-  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--error);
-  opacity:0;transform:translateY(-2px);
-  transition:opacity var(--ease),transform var(--ease);
+.err-txt{
+  margin-top:3px;min-height:14px;
+  font:400 10px var(--font-mono);color:var(--error);
+  opacity:0;transform:translateY(-2px);transition:opacity var(--ease),transform var(--ease);
 }
-.err-msg.visible { opacity:1;transform:translateY(0); }
+.err-txt.on{opacity:1;transform:translateY(0)}
 
-.form-note {
-  min-height:16px;margin:4px 0 8px;
-  font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;
-  color:var(--error);opacity:0;transform:translateY(-2px);
-  transition:opacity var(--ease),transform var(--ease);
+.note{
+  min-height:14px;margin:3px 0 6px;
+  font:400 10px var(--font-mono);color:var(--error);
+  opacity:0;transform:translateY(-2px);transition:opacity var(--ease),transform var(--ease);
 }
-.form-note.visible { opacity:1;transform:translateY(0); }
-.form-note.ok { color:var(--emerald); }
-.form-note.info { color:var(--muted); }
+.note.on{opacity:1;transform:translateY(0)}
+.note.ok{color:var(--emerald)}
+.note.inf{color:var(--muted)}
+.shake{animation:shake 280ms cubic-bezier(.36,.07,.19,.97) both}
+@keyframes shake{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
 
-.shake { animation:shake 320ms cubic-bezier(.36,.07,.19,.97); }
-@keyframes shake { 20%,60%{transform:translateX(-4px)} 40%,80%{transform:translateX(4px)} }
-
-/* ── CTA button ── */
-.cta {
-  width:100%;height:42px;margin-top:4px;
-  appearance:none;border:none;border-radius:6px;
-  background:var(--emerald);color:var(--emerald-t);
-  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;letter-spacing:.01em;
-  cursor:pointer;
-  transition:background-color var(--ease),transform var(--ease),opacity var(--ease);
+/* ── CTA ── */
+.cta{
+  width:100%;height:40px;margin-top:2px;
+  background:var(--emerald);color:#060e07;
+  font:700 13px var(--font-ui);letter-spacing:.04em;
+  border:none;border-radius:6px;cursor:pointer;
+  transition:filter var(--ease),transform var(--ease);
 }
-.cta:hover:not(:disabled) { background:#17e58c;transform:translateY(-1px); }
-.cta:active:not(:disabled) { transform:translateY(0); }
-.cta:disabled { cursor:default;opacity:.7; }
-.cta:focus-visible { outline:2px solid var(--indigo);outline-offset:3px; }
-.cta-label { display:inline-block;transition:opacity var(--ease); }
-.cta-label.fading { opacity:0; }
+.cta:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
+.cta:active:not(:disabled){transform:none}
+.cta:disabled{opacity:.55;cursor:default}
+.cta:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+.cta-lbl{display:inline-block;transition:opacity var(--ease)}
+.cta-lbl.fade{opacity:0}
 
 /* ── Divider ── */
-.divider {
-  display:flex;align-items:center;gap:12px;margin:20px 0;
-  color:var(--dim);font-family:'JetBrains Mono',monospace;
-  font-size:10px;letter-spacing:.14em;
+.or{
+  display:flex;align-items:center;gap:10px;
+  margin:16px 0 12px;
+  font:600 9px var(--font-mono);color:var(--dim);letter-spacing:.16em;
 }
-.divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--border); }
+.or::before,.or::after{content:'';flex:1;height:1px;background:var(--border2)}
 
-/* ── OAuth buttons ── */
-.oauth { display:flex;flex-direction:column;gap:10px; }
-.oauth-btn {
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;height:40px;appearance:none;
-  background:rgba(11,15,25,.45);border:1px solid var(--border);border-radius:6px;
-  color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
-  cursor:pointer;
-  transition:border-color var(--ease),background-color var(--ease),transform var(--ease);
+/* ── OAuth ── */
+.oauth{display:flex;flex-direction:column;gap:8px}
+.oauth-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ob{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  height:36px;background:rgba(9,13,22,.5);
+  border:1px solid var(--border2);border-radius:6px;
+  font:500 12px var(--font-ui);color:var(--muted);
+  cursor:pointer;letter-spacing:.01em;
+  transition:border-color var(--ease),color var(--ease),background var(--ease),transform var(--ease);
 }
-.oauth-btn:hover:not(:disabled) {
-  border-color:#46536a;background:rgba(30,38,56,.55);transform:translateY(-1px);
-}
-.oauth-btn:disabled { opacity:.5;cursor:default; }
-.oauth-btn:focus-visible { outline:2px solid var(--indigo);outline-offset:3px; }
-.oauth-btn svg { flex-shrink:0; }
+.ob:hover{border-color:var(--border);color:var(--text);background:rgba(30,42,61,.55);transform:translateY(-1px)}
+.ob:active{transform:none}
+.ob:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+.ob svg{flex-shrink:0}
+.ob-full{grid-column:1/-1}
 
-/* ── Back / sub-heading ── */
-.back-row { margin-bottom:20px; }
-.view-heading { font-size:16px;font-weight:600;margin-bottom:4px; }
-.view-sub { font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:20px; }
+/* ── Back / view headings ── */
+.back{margin-bottom:16px}
+.vhd{font:700 15px var(--font-ui);color:var(--text);margin-bottom:3px}
+.vsub{font:400 11px var(--font-ui);color:var(--muted);line-height:1.6;margin-bottom:16px}
 
-/* ── Footer ── */
-.footer {
-  position:relative;z-index:1;padding:16px 20px 20px;
-  text-align:center;
-  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);
-  opacity:0;animation:fadeIn 900ms ease 900ms forwards;
+/* ── Legal footer ── */
+.legal{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;
+  padding:10px 20px 12px;
+  font:400 10px var(--font-mono);color:var(--dim);letter-spacing:.04em;
+  opacity:0;animation:riseIn 600ms var(--ease) 700ms forwards;
 }
-.footer a { color:var(--dim);text-decoration:none;transition:color var(--ease); }
-.footer a:hover { color:var(--muted); }
-.footer .sep { margin:0 8px;opacity:.4; }
+.legal a,.legal button.lbtn{
+  color:var(--dim);text-decoration:none;background:none;border:none;cursor:pointer;
+  font:400 10px var(--font-mono);letter-spacing:.04em;padding:0;
+  transition:color var(--ease);
+}
+.legal a:hover,.legal button.lbtn:hover{color:var(--muted)}
+.legal .sep{opacity:.35;margin:0 2px}
+.legal .mail-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  color:var(--dim);background:none;border:none;cursor:pointer;
+  font:400 10px var(--font-mono);letter-spacing:.04em;padding:0;
+  transition:color var(--ease);
+}
+.legal .mail-btn:hover{color:var(--muted)}
+.legal .mail-btn svg{opacity:.6}
 
-@media (max-width:480px) {
-  .card { padding:24px 20px 22px;border-radius:8px; }
-  .stage { padding:32px 16px 80px; }
-  .ap-mark { margin-bottom:28px; }
+@media(max-width:440px){
+  .card{padding:20px 18px 18px;border-radius:8px}
+  .oauth-row{grid-template-columns:1fr}
 }
-@media (prefers-reduced-motion:reduce) {
-  .reveal,.spotlight,.footer,.ap-hex,.ap-wordmark { animation-duration:1ms;animation-delay:0ms; }
-  * { transition-duration:1ms !important; }
+@media(max-height:640px){
+  .ap-mark{margin-bottom:10px}
+  .card{padding:18px 20px 16px}
+  .field{margin-bottom:8px}
+  .field input{height:34px}
+  .cta{height:36px}
+  .or{margin:10px 0 8px}
+  .ob{height:32px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}
 }
 </style>
 </head>
 <body>
 
-<div class="spotlight" id="spotlight" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="spotlight" aria-hidden="true"></div>
 
 <main class="stage">
 
   <!-- AP Mark -->
-  <div class="ap-mark reveal d1" aria-label="Anjan Patel Engineering">
-    <svg class="ap-hex" width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- Hexagon engineering mark -->
-      <polygon points="50,4 93,27.5 93,72.5 50,96 7,72.5 7,27.5" fill="#171e2e" stroke="#2d3748" stroke-width="2.5"/>
-      <polygon points="50,12 86,31.5 86,68.5 50,88 14,68.5 14,31.5" fill="none" stroke="#2d3748" stroke-width="1"/>
-      <text x="50" y="54" font-family="'Inter',system-ui,sans-serif" font-weight="800" font-size="30" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" letter-spacing="-1.5">AP</text>
+  <div class="ap-mark" aria-label="AP Workspace">
+    <svg class="ap-hex-svg" width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <polygon points="50,4 93,27.5 93,72.5 50,96 7,72.5 7,27.5" fill="#161d2e" stroke="#2a3650" stroke-width="2.5"/>
+      <polygon points="50,13 85,32 85,68 50,87 15,68 15,32" fill="none" stroke="#1e2a3d" stroke-width="1.2"/>
+      <text x="50" y="54" font-family="'Inter',system-ui,sans-serif" font-weight="800" font-size="30" text-anchor="middle" dominant-baseline="central" fill="#f0f4f8" letter-spacing="-1.5">AP</text>
     </svg>
     <div class="ap-wordmark">
-      <span class="ap-wordmark-name">Anjan Patel</span>
-      <span class="ap-wordmark-sub">ENG · TOOLS</span>
+      <span class="ap-wordmark-name">AP Workspace</span>
+      <span class="ap-wordmark-sub">ENG · TOOLS · CA</span>
     </div>
   </div>
 
-  <div class="card reveal d2">
+  <!-- Card -->
+  <div class="card">
 
     <!-- VIEW: AUTH -->
     <section class="view active" id="view-auth">
       <div class="tabs" role="tablist" aria-label="Authentication mode">
-        <div class="tab-indicator" id="tabIndicator" aria-hidden="true"></div>
-        <button class="tab" id="tab-signin" role="tab" aria-selected="true">Sign In</button>
-        <button class="tab" id="tab-create" role="tab" aria-selected="false">Create Account</button>
+        <div class="tab-track" id="tabTrack" aria-hidden="true"></div>
+        <button class="tab" id="tab-si" role="tab" aria-selected="true" onclick="setMode('signin')">Sign In</button>
+        <button class="tab" id="tab-cr" role="tab" aria-selected="false" onclick="setMode('create')">Create Account</button>
       </div>
 
       <form id="auth-form" novalidate>
-        <div class="field reveal d3">
-          <div class="field-row"><label for="email">Email</label></div>
-          <input type="email" id="email" placeholder="name@company.com" autocomplete="email" aria-describedby="email-error">
-          <p class="err-msg" id="email-error" role="alert" aria-live="polite"></p>
+        <div class="field">
+          <div class="field-row"><label for="inp-email">Email</label></div>
+          <input type="email" id="inp-email" placeholder="name@company.com" autocomplete="email">
+          <p class="err-txt" id="err-email" role="alert" aria-live="polite"></p>
         </div>
-        <div class="field reveal d4">
+        <div class="field">
           <div class="field-row">
-            <label for="password">Password</label>
-            <button type="button" class="inline-btn" id="forgot-link">Forgot password?</button>
+            <label for="inp-pw">Password</label>
+            <button type="button" class="link-btn" id="btn-forgot">Forgot?</button>
           </div>
-          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" aria-describedby="password-error">
-          <p class="err-msg" id="password-error" role="alert" aria-live="polite"></p>
+          <input type="password" id="inp-pw" placeholder="••••••••" autocomplete="current-password">
+          <p class="err-txt" id="err-pw" role="alert" aria-live="polite"></p>
         </div>
-        <p class="form-note" id="auth-note" role="alert" aria-live="polite"></p>
-        <button type="submit" class="cta reveal d5" id="submit-btn">
-          <span class="cta-label" id="cta-label">Access Workspace</span>
+        <p class="note" id="auth-note" role="alert" aria-live="polite"></p>
+        <button type="submit" class="cta" id="auth-submit">
+          <span class="cta-lbl" id="auth-lbl">Access Workspace</span>
         </button>
       </form>
 
-      <div class="divider reveal d6" aria-hidden="true">OR</div>
+      <div class="or" aria-hidden="true">OR CONTINUE WITH</div>
 
-      <div class="oauth reveal d6">
-        <button type="button" class="oauth-btn" id="google-btn" aria-label="Continue with Google">
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
-            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>
-            <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>
-            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/>
-          </svg>
-          Continue with Google
-        </button>
-        <button type="button" class="oauth-btn" id="microsoft-btn" aria-label="Continue with Microsoft">
-          <svg width="16" height="16" viewBox="0 0 23 23" aria-hidden="true">
-            <path fill="#f35325" d="M1 1h10v10H1z"/>
-            <path fill="#81bc06" d="M12 1h10v10H12z"/>
-            <path fill="#05a6f0" d="M1 12h10v10H1z"/>
-            <path fill="#ffba08" d="M12 12h10v10H12z"/>
-          </svg>
-          Continue with Microsoft
-        </button>
-        <button type="button" class="oauth-btn" id="github-btn" aria-label="Continue with GitHub">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <div class="oauth">
+        <div class="oauth-row">
+          <!-- Google -->
+          <button type="button" class="ob" id="btn-google" aria-label="Continue with Google">
+            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/>
+            </svg>
+            Google
+          </button>
+          <!-- Microsoft -->
+          <button type="button" class="ob" id="btn-ms" aria-label="Continue with Microsoft">
+            <svg width="15" height="15" viewBox="0 0 21 21" aria-hidden="true">
+              <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+              <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+              <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+              <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+            </svg>
+            Microsoft
+          </button>
+        </div>
+        <!-- GitHub -->
+        <button type="button" class="ob ob-full" id="btn-gh" aria-label="Continue with GitHub">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#f0f4f8" aria-hidden="true">
             <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
           </svg>
           Continue with GitHub
@@ -331,39 +332,39 @@ body {
       </div>
     </section>
 
-    <!-- VIEW: FORGOT PASSWORD -->
+    <!-- VIEW: FORGOT -->
     <section class="view" id="view-forgot">
-      <div class="back-row">
-        <button type="button" class="inline-btn" id="forgot-back">← Back to Sign In</button>
+      <div class="back">
+        <button type="button" class="link-btn" id="btn-back-forgot">← Back</button>
       </div>
-      <p class="view-heading">Reset password</p>
-      <p class="view-sub">Enter the email on your account. A reset link will be sent — expires in 60 minutes.</p>
+      <p class="vhd">Reset password</p>
+      <p class="vsub">Enter your account email. Reset link expires in 60 minutes.</p>
       <form id="forgot-form" novalidate>
         <div class="field">
-          <div class="field-row"><label for="forgot-email">Email</label></div>
-          <input type="email" id="forgot-email" placeholder="name@company.com" autocomplete="email" aria-describedby="forgot-err">
-          <p class="err-msg" id="forgot-err" role="alert" aria-live="polite"></p>
+          <div class="field-row"><label for="inp-frg">Email</label></div>
+          <input type="email" id="inp-frg" placeholder="name@company.com" autocomplete="email">
+          <p class="err-txt" id="err-frg" role="alert" aria-live="polite"></p>
         </div>
-        <p class="form-note" id="forgot-note" role="alert" aria-live="polite"></p>
-        <button type="submit" class="cta" id="forgot-btn">
-          <span class="cta-label" id="forgot-label">Send Reset Link</span>
+        <p class="note" id="frg-note" role="alert" aria-live="polite"></p>
+        <button type="submit" class="cta" id="frg-submit">
+          <span class="cta-lbl" id="frg-lbl">Send Reset Link</span>
         </button>
       </form>
     </section>
 
-    <!-- VIEW: RESET PASSWORD (arrives via Supabase hash) -->
+    <!-- VIEW: RESET -->
     <section class="view" id="view-reset">
-      <p class="view-heading">Choose a new password</p>
-      <p class="view-sub">Minimum 8 characters. You'll be signed in immediately after.</p>
+      <p class="vhd">Choose new password</p>
+      <p class="vsub">Minimum 8 characters. You'll be signed in immediately after.</p>
       <form id="reset-form" novalidate>
         <div class="field">
-          <div class="field-row"><label for="reset-pass">New Password</label></div>
-          <input type="password" id="reset-pass" placeholder="••••••••" autocomplete="new-password" aria-describedby="reset-err">
-          <p class="err-msg" id="reset-err" role="alert" aria-live="polite"></p>
+          <div class="field-row"><label for="inp-rst">New Password</label></div>
+          <input type="password" id="inp-rst" placeholder="••••••••" autocomplete="new-password">
+          <p class="err-txt" id="err-rst" role="alert" aria-live="polite"></p>
         </div>
-        <p class="form-note" id="reset-note" role="alert" aria-live="polite"></p>
-        <button type="submit" class="cta" id="reset-btn">
-          <span class="cta-label" id="reset-label">Set New Password</span>
+        <p class="note" id="rst-note" role="alert" aria-live="polite"></p>
+        <button type="submit" class="cta" id="rst-submit">
+          <span class="cta-lbl" id="rst-lbl">Set New Password</span>
         </button>
       </form>
     </section>
@@ -371,160 +372,165 @@ body {
   </div>
 </main>
 
-<footer class="footer">
-  &copy; 2026 anjanpatel.ca<span class="sep">|</span><a href="/terms/">Terms</a><span class="sep">|</span><a id="priv-link" href="#">Privacy</a>
+<!-- Legal footer -->
+<footer class="legal" role="contentinfo">
+  <span>&copy; <span id="yr"></span> Anjan Patel. All rights reserved.</span>
+  <span class="sep">·</span>
+  <a href="/terms/">Terms of Use</a>
+  <span class="sep">·</span>
+  <a href="/privacy/">Privacy Policy</a>
+  <span class="sep">·</span>
+  <button class="mail-btn lbtn" id="contact-btn" type="button" aria-label="Send email to contact">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Contact
+  </button>
 </footer>
 
 <script>
+/* ── Runtime email assembly (never in source) ── */
 (function(){
-  var c=document.getElementById('priv-link');
   var e='info'+'@'+'anjanpatel'+'.'+'ca';
-  c.href='mailto:'+e;c.textContent='Contact';
+  var btn=document.getElementById('contact-btn');
+  btn.addEventListener('click',function(){window.location.href='mailto:'+e});
+  document.getElementById('yr').textContent=new Date().getFullYear();
 })();
 
-var SUPABASE_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-var SUPABASE_ANON='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+/* ── Supabase ── */
+var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
+var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+var sb=supabase.createClient(SB_URL,SB_KEY);
 
 var mode='signin';
 var busy=false;
-var EMAIL_RE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
-
+var ERE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
 var COPY={
-  signin:{idle:'Access Workspace',working:'Signing In…',done:'Access Granted'},
-  create:{idle:'Create Account',working:'Creating…',done:'Account Created'}
+  signin:{idle:'Access Workspace',work:'Signing In…',done:'Access Granted'},
+  create:{idle:'Create Account',work:'Creating…',done:'Account Created'}
 };
 
-/* helpers */
-function $(id){return document.getElementById(id)}
-function showView(name){
+function q(id){return document.getElementById(id)}
+
+function showView(n){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
-  $('view-'+name).classList.add('active');
-}
-function setNote(id,msg,type){
-  var el=$(id);el.textContent=msg;
-  el.className='form-note'+(msg?' visible':'');
-  if(type==='ok')el.classList.add('ok');
-  if(type==='info')el.classList.add('info');
-}
-function setErr(inputId,errId,msg){
-  var inp=$(inputId),err=$(errId);
-  if(msg){
-    err.textContent=msg;err.classList.add('visible');
-    inp.setAttribute('aria-invalid','true');
-    inp.classList.remove('shake');void inp.offsetWidth;inp.classList.add('shake');
-  } else {
-    err.textContent='';err.classList.remove('visible');
-    inp.removeAttribute('aria-invalid');
-  }
-}
-function swapLabel(labelId,text){
-  var el=$(labelId);el.classList.add('fading');
-  setTimeout(function(){el.textContent=text;el.classList.remove('fading')},150);
+  q('view-'+n).classList.add('active');
 }
 
-/* Tab switching */
-$('tab-signin').addEventListener('click',function(){setMode('signin')});
-$('tab-create').addEventListener('click',function(){setMode('create')});
+function setNote(id,msg,cls){
+  var el=q(id);el.textContent=msg;
+  el.className='note'+(msg?' on':'');
+  if(cls)el.classList.add(cls);
+}
+
+function setErr(inp,err,msg){
+  var i=q(inp),e=q(err);
+  if(msg){
+    e.textContent=msg;e.classList.add('on');
+    i.setAttribute('aria-invalid','true');
+    i.classList.remove('shake');void i.offsetWidth;i.classList.add('shake');
+  } else {
+    e.textContent='';e.classList.remove('on');i.removeAttribute('aria-invalid');
+  }
+}
+
+function swapLbl(id,txt){
+  var el=q(id);el.classList.add('fade');
+  setTimeout(function(){el.textContent=txt;el.classList.remove('fade')},140);
+}
+
+/* Tab mode */
 function setMode(next){
   if(busy||next===mode)return;
   mode=next;
-  $('tab-signin').setAttribute('aria-selected',String(next==='signin'));
-  $('tab-create').setAttribute('aria-selected',String(next==='create'));
-  $('tabIndicator').style.transform=next==='create'?'translateX(100%)':'translateX(0)';
-  swapLabel('cta-label',COPY[mode].idle);
-  $('password').setAttribute('autocomplete',next==='signin'?'current-password':'new-password');
-  setErr('email','email-error','');setErr('password','password-error','');setNote('auth-note','');
+  q('tab-si').setAttribute('aria-selected',String(next==='signin'));
+  q('tab-cr').setAttribute('aria-selected',String(next==='create'));
+  q('tabTrack').style.transform=next==='create'?'translateX(100%)':'translateX(0)';
+  swapLbl('auth-lbl',COPY[mode].idle);
+  q('inp-pw').setAttribute('autocomplete',next==='signin'?'current-password':'new-password');
+  setErr('inp-email','err-email','');setErr('inp-pw','err-pw','');setNote('auth-note','');
 }
 
-/* Clear errors on input */
-$('email').addEventListener('input',function(){setErr('email','email-error','');setNote('auth-note','')});
-$('password').addEventListener('input',function(){setErr('password','password-error','')});
+/* Input clear */
+q('inp-email').addEventListener('input',function(){setErr('inp-email','err-email','');setNote('auth-note','')});
+q('inp-pw').addEventListener('input',function(){setErr('inp-pw','err-pw','');setNote('auth-note','')});
 
 /* Auth submit */
-$('auth-form').addEventListener('submit',async function(e){
+q('auth-form').addEventListener('submit',async function(e){
   e.preventDefault();if(busy)return;
-  var em=$('email').value.trim();
-  var pw=$('password').value;
-  var ok=true;
-  if(!em){setErr('email','email-error','Email is required');ok=false}
-  else if(!EMAIL_RE.test(em)){setErr('email','email-error','Enter a valid email');ok=false}
-  if(!pw){setErr('password','password-error','Password is required');ok=false}
-  else if(pw.length<6){setErr('password','password-error','Minimum 6 characters');ok=false}
+  var em=q('inp-email').value.trim(),pw=q('inp-pw').value,ok=true;
+  if(!em){setErr('inp-email','err-email','Email required');ok=false}
+  else if(!ERE.test(em)){setErr('inp-email','err-email','Enter valid email');ok=false}
+  if(!pw){setErr('inp-pw','err-pw','Password required');ok=false}
+  else if(pw.length<6){setErr('inp-pw','err-pw','Min 6 characters');ok=false}
   if(!ok)return;
-  busy=true;$('submit-btn').disabled=true;setNote('auth-note','');
-  swapLabel('cta-label',COPY[mode].working);
+  busy=true;q('auth-submit').disabled=true;setNote('auth-note','');
+  swapLbl('auth-lbl',COPY[mode].work);
   var r=mode==='signin'
     ?await sb.auth.signInWithPassword({email:em,password:pw})
     :await sb.auth.signUp({email:em,password:pw});
   if(r.error){
-    swapLabel('cta-label',COPY[mode].idle);
+    swapLbl('auth-lbl',COPY[mode].idle);
     setNote('auth-note',r.error.message);
-    $('submit-btn').disabled=false;busy=false;return;
+    q('auth-submit').disabled=false;busy=false;return;
   }
   if(mode==='create'&&r.data.user&&!r.data.session){
-    swapLabel('cta-label',COPY[mode].idle);
-    setNote('auth-note','Check your email to confirm your account.','info');
-    $('submit-btn').disabled=false;busy=false;return;
+    swapLbl('auth-lbl',COPY[mode].idle);
+    setNote('auth-note','Check your email to confirm your account.','inf');
+    q('auth-submit').disabled=false;busy=false;return;
   }
-  swapLabel('cta-label',COPY[mode].done);
+  swapLbl('auth-lbl',COPY[mode].done);
   setTimeout(function(){window.location.href='/dashboard.html'},700);
 });
 
-/* Forgot password */
-$('forgot-link').addEventListener('click',function(){setNote('forgot-note','');showView('forgot')});
-$('forgot-back').addEventListener('click',function(){showView('auth')});
-$('forgot-form').addEventListener('submit',async function(e){
+/* Forgot */
+q('btn-forgot').addEventListener('click',function(){setNote('frg-note','');showView('forgot')});
+q('btn-back-forgot').addEventListener('click',function(){showView('auth')});
+q('forgot-form').addEventListener('submit',async function(e){
   e.preventDefault();
-  var em=$('forgot-email').value.trim();
-  setErr('forgot-email','forgot-err','');setNote('forgot-note','');
-  if(!em){setErr('forgot-email','forgot-err','Email is required');return}
-  if(!EMAIL_RE.test(em)){setErr('forgot-email','forgot-err','Enter a valid email');return}
-  $('forgot-btn').disabled=true;swapLabel('forgot-label','Sending…');
+  var em=q('inp-frg').value.trim();
+  setErr('inp-frg','err-frg','');setNote('frg-note','');
+  if(!em){setErr('inp-frg','err-frg','Email required');return}
+  if(!ERE.test(em)){setErr('inp-frg','err-frg','Enter valid email');return}
+  q('frg-submit').disabled=true;swapLbl('frg-lbl','Sending…');
   var r=await sb.auth.resetPasswordForEmail(em,{redirectTo:window.location.origin+'/?reset=1'});
-  swapLabel('forgot-label','Send Reset Link');$('forgot-btn').disabled=false;
-  if(r.error){setNote('forgot-note',r.error.message);return}
-  setNote('forgot-note','If an account exists, a reset link is on its way.','ok');
+  swapLbl('frg-lbl','Send Reset Link');q('frg-submit').disabled=false;
+  if(r.error){setNote('frg-note',r.error.message);return}
+  setNote('frg-note','If an account exists, reset link is on its way.','ok');
 });
 
-/* Reset password (Supabase sets #access_token in hash) */
-$('reset-form').addEventListener('submit',async function(e){
+/* Reset */
+q('reset-form').addEventListener('submit',async function(e){
   e.preventDefault();
-  var pw=$('reset-pass').value;
-  setErr('reset-pass','reset-err','');setNote('reset-note','');
-  if(!pw){setErr('reset-pass','reset-err','Password is required');return}
-  if(pw.length<8){setErr('reset-pass','reset-err','Minimum 8 characters');return}
-  $('reset-btn').disabled=true;swapLabel('reset-label','Setting…');
+  var pw=q('inp-rst').value;
+  setErr('inp-rst','err-rst','');setNote('rst-note','');
+  if(!pw){setErr('inp-rst','err-rst','Password required');return}
+  if(pw.length<8){setErr('inp-rst','err-rst','Min 8 characters');return}
+  q('rst-submit').disabled=true;swapLbl('rst-lbl','Setting…');
   var r=await sb.auth.updateUser({password:pw});
-  swapLabel('reset-label','Set New Password');$('reset-btn').disabled=false;
-  if(r.error){setNote('reset-note',r.error.message);return}
-  setNote('reset-note','Password updated — signing you in…','ok');
+  swapLbl('rst-lbl','Set New Password');q('rst-submit').disabled=false;
+  if(r.error){setNote('rst-note',r.error.message);return}
+  setNote('rst-note','Password updated — signing in…','ok');
   setTimeout(function(){window.location.href='/dashboard.html'},1200);
 });
 
 /* OAuth */
-function oauthLogin(provider){
-  sb.auth.signInWithOAuth({provider:provider,options:{redirectTo:window.location.origin+'/dashboard.html'}});
-}
-$('google-btn').addEventListener('click',function(){oauthLogin('google')});
-$('microsoft-btn').addEventListener('click',function(){oauthLogin('azure')});
-$('github-btn').addEventListener('click',function(){oauthLogin('github')});
+function oauth(p){sb.auth.signInWithOAuth({provider:p,options:{redirectTo:window.location.origin+'/dashboard.html'}})}
+q('btn-google').addEventListener('click',function(){oauth('google')});
+q('btn-ms').addEventListener('click',function(){oauth('azure')});
+q('btn-gh').addEventListener('click',function(){oauth('github')});
 
 /* Boot */
 (async function boot(){
-  /* Check if Supabase returned from password reset (hash contains access_token + type=recovery) */
   var hash=window.location.hash;
   if(hash.includes('type=recovery')){
-    var params=new URLSearchParams(hash.replace(/^#/,''));
-    var token=params.get('access_token');
-    if(token){
-      await sb.auth.setSession({access_token:token,refresh_token:params.get('refresh_token')||''});
+    var p=new URLSearchParams(hash.replace(/^#/,''));
+    var t=p.get('access_token');
+    if(t){
+      await sb.auth.setSession({access_token:t,refresh_token:p.get('refresh_token')||''});
       showView('reset');
       window.history.replaceState({},'',window.location.pathname);
       return;
     }
   }
-  /* Already signed in → dashboard */
   var r=await sb.auth.getSession();
   if(r.data&&r.data.session){window.location.href='/dashboard.html';return}
   showView('auth');
@@ -532,17 +538,16 @@ $('github-btn').addEventListener('click',function(){oauthLogin('github')});
 
 /* Spotlight parallax */
 (function(){
-  var rm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  if(rm)return;
-  var spot=document.getElementById('spotlight');
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var s=document.querySelector('.spotlight');
   var tx=0,ty=0,cx=0,cy=0;
   window.addEventListener('mousemove',function(e){
-    tx=(e.clientX/window.innerWidth-.5)*22;
-    ty=(e.clientY/window.innerHeight-.5)*14;
+    tx=(e.clientX/window.innerWidth-.5)*18;
+    ty=(e.clientY/window.innerHeight-.5)*12;
   });
   (function drift(){
-    cx+=(tx-cx)*.045;cy+=(ty-cy)*.045;
-    spot.style.transform='translate3d('+cx+'px,'+cy+'px,0)';
+    cx+=(tx-cx)*.04;cy+=(ty-cy)*.04;
+    s.style.transform='translate3d('+cx+'px,'+cy+'px,0)';
     requestAnimationFrame(drift);
   })();
 })();
