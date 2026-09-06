@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<script>(function(){try{var t=localStorage.getItem('pd-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}}());</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In — Anjan Patel Engineering</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B1D2D">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+/* ── Tokens ── */
+:root {
+  --navy:#0B1D2D; --orange:#F28C18;
+  --bg:#EFF3FA; --surface:#FFFFFF;
+  --text:#0B1D2D; --text-2:#2D3E52; --muted:#5E728A;
+  --line:#D3DCE9; --input-bg:#F5F8FD;
+  --err:#DC2626; --ok:#16A34A;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#04080F; --surface:#091522;
+  --text:#EDF2F8; --text-2:#B8CBDC; --muted:#7A96B0;
+  --line:#122030; --input-bg:#06101C;
+}}
+:root[data-theme="dark"]{
+  --bg:#04080F; --surface:#091522;
+  --text:#EDF2F8; --text-2:#B8CBDC; --muted:#7A96B0;
+  --line:#122030; --input-bg:#06101C;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
+
+/* Aurora bg */
+.aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+@keyframes a1{0%,100%{transform:translate(-6%,-10%) scale(1.12)}50%{transform:translate(7%,8%) scale(.9)}}
+@keyframes a2{0%,100%{transform:translate(7%,7%) scale(.86)}50%{transform:translate(-8%,-5%) scale(1.16)}}
+.ab{position:absolute;border-radius:50%;filter:blur(110px);will-change:transform}
+.ab1{width:80vmax;height:55vmax;top:-18%;left:-24%;background:radial-gradient(ellipse,rgba(242,140,24,.18) 0%,transparent 70%);animation:a1 16s ease-in-out infinite;opacity:.5}
+.ab2{width:60vmax;height:45vmax;bottom:-10%;right:-20%;background:radial-gradient(ellipse,rgba(11,29,45,.6) 0%,transparent 70%);animation:a2 20s ease-in-out infinite;opacity:.4}
+
+/* Layout */
+.page{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem}
+
+/* Brand */
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:2rem;text-decoration:none}
+.brand-mark{width:40px;height:40px;background:var(--navy);border-radius:10px;display:grid;place-items:center;flex-shrink:0;border:1px solid rgba(242,140,24,.3)}
+:root[data-theme="dark"] .brand-mark,@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand-mark{background:rgba(242,140,24,.12)}}
+.brand-copy{display:flex;flex-direction:column;line-height:1.1}
+.brand-name{font-size:14px;font-weight:700;letter-spacing:.08em;color:var(--text)}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:.05em}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:2rem 2rem 1.75rem;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(11,29,45,.08)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .card{box-shadow:0 4px 32px rgba(0,0,0,.3)}}
+:root[data-theme="dark"] .card{box-shadow:0 4px 32px rgba(0,0,0,.3)}
+
+/* Tabs */
+.tabs{display:flex;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;margin-bottom:1.5rem;background:var(--input-bg)}
+.tab{flex:1;padding:.5rem;font-size:13px;font-weight:600;border:none;border-radius:8px;cursor:pointer;background:transparent;color:var(--muted);transition:all .15s;font-family:inherit}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(11,29,45,.08)}
+
+/* Form */
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.field input{width:100%;height:42px;border:1px solid var(--line);border-radius:9px;background:var(--input-bg);color:var(--text);font:500 14px 'IBM Plex Sans',Arial,sans-serif;padding:0 12px;outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(242,140,24,.15)}
+.field input::placeholder{color:var(--muted);opacity:.6}
+
+/* Buttons */
+.btn-primary{width:100%;height:44px;background:var(--orange);color:#fff;border:none;border-radius:10px;font:700 14px 'IBM Plex Sans',Arial,sans-serif;cursor:pointer;letter-spacing:.04em;transition:opacity .15s;margin-top:.25rem}
+.btn-primary:hover{opacity:.9}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+
+.divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;color:var(--muted);font-size:11px;letter-spacing:.06em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.btn-google{width:100%;height:44px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font:600 13px 'IBM Plex Sans',Arial,sans-serif;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .15s,background .15s}
+.btn-google:hover{border-color:var(--orange);background:var(--input-bg)}
+.btn-google svg{flex-shrink:0}
+
+/* Error / success */
+.alert{border-radius:8px;padding:.65rem .85rem;font-size:12px;font-weight:500;margin-bottom:1rem;display:none}
+.alert.show{display:block}
+.alert.err{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25);color:var(--err)}
+.alert.ok{background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.25);color:var(--ok)}
+
+/* Forgot */
+.forgot{font-size:11px;color:var(--muted);text-align:right;margin-top:-.5rem;margin-bottom:.75rem}
+.forgot button{background:none;border:none;color:var(--orange);font-size:11px;cursor:pointer;padding:0;font-family:inherit}
+
+/* Theme toggle */
+.theme-btn{position:fixed;top:1rem;right:1rem;z-index:10;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;display:grid;place-items:center;font-size:14px}
+
+/* Footer */
+.foot{margin-top:1.5rem;font-size:11px;color:var(--muted);text-align:center}
+.foot a{color:var(--orange);text-decoration:none}
+
+/* Loader spinner */
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spinner{animation:none}}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true">
+  <div class="ab ab1"></div>
+  <div class="ab ab2"></div>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span id="themeIcon"></span></button>
+
+<div class="page">
+  <a class="brand" href="https://tools.anjanpatel.ca">
+    <div class="brand-mark">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <rect x="3" y="3" width="4" height="16" rx="1.2" fill="#F28C18"/>
+        <path d="M7 3 Q17 3 17 9 Q17 15 7 15Z" fill="#F28C18"/>
+        <path d="M9 6 Q14 6 14 9 Q14 12 9 12Z" fill="#0B1D2D"/>
+        <rect x="3" y="17" width="11" height="3" rx="1.2" fill="rgba(242,140,24,.55)"/>
+      </svg>
+    </div>
+    <div class="brand-copy">
+      <span class="brand-name">ANJAN PATEL</span>
+      <span class="brand-sub">Engineering Tools</span>
+    </div>
+  </a>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" id="tabSignIn" onclick="switchTab('in')">Sign In</button>
+      <button class="tab" id="tabSignUp" onclick="switchTab('up')">Create Account</button>
+    </div>
+
+    <div class="alert err" id="alertErr"></div>
+    <div class="alert ok"  id="alertOk"></div>
+
+    <div class="field">
+      <label for="inputEmail">Email</label>
+      <input type="email" id="inputEmail" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label for="inputPass">Password</label>
+      <input type="password" id="inputPass" placeholder="••••••••" autocomplete="current-password" id="inputPass">
+    </div>
+
+    <div class="forgot" id="forgotWrap">
+      <button onclick="forgotPassword()">Forgot password?</button>
+    </div>
+
+    <button class="btn-primary" id="btnSubmit" onclick="submit()">
+      <span id="btnLabel">Sign In</span>
+    </button>
+
+    <div class="divider">or</div>
+
+    <button class="btn-google" id="btnGoogle" onclick="signInGoogle()">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
+      </svg>
+      Continue with Google
+    </button>
+  </div>
+
+  <p class="foot">
+    By signing in you agree to our
+    <a href="https://tools.anjanpatel.ca/terms/" target="_blank" rel="noopener">Terms</a>.
+    &nbsp;·&nbsp;
+    <a href="https://tools.anjanpatel.ca" target="_blank" rel="noopener">Public Tools</a>
+  </p>
+</div>
+
+<script>
+/* ── Config — replace with your Supabase project values ── */
+var SUPABASE_URL  = 'https://uejlrooupfcrqimffgsn.supabase.co';
+var SUPABASE_ANON = 'sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+var mode = 'in'; // 'in' | 'up'
+
+/* ── Redirect if already logged in ── */
+sb.auth.getSession().then(function(r){
+  if(r.data && r.data.session) window.location.href = '/dashboard.html';
+});
+
+/* ── Theme ── */
+(function(){
+  var root=document.documentElement,btn=document.getElementById('themeBtn'),icon=document.getElementById('themeIcon');
+  function isDark(){var t=root.dataset.theme;return t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)}
+  function apply(t){if(t)root.dataset.theme=t;else delete root.dataset.theme;icon.textContent=isDark()?'☀':'☾'}
+  function stored(){try{return localStorage.getItem('pd-theme')||''}catch(e){return''}}
+  function store(t){try{localStorage.setItem('pd-theme',t)}catch(e){}}
+  apply(stored());
+  btn.addEventListener('click',function(){var n=isDark()?'light':'dark';store(n);apply(n)});
+})();
+
+/* ── Tab switch ── */
+function switchTab(t){
+  mode=t;
+  document.getElementById('tabSignIn').classList.toggle('active',t==='in');
+  document.getElementById('tabSignUp').classList.toggle('active',t==='up');
+  document.getElementById('btnLabel').textContent=t==='in'?'Sign In':'Create Account';
+  document.getElementById('forgotWrap').style.display=t==='in'?'':'none';
+  document.getElementById('inputPass').autocomplete=t==='in'?'current-password':'new-password';
+  clearAlerts();
+}
+
+/* ── Alerts ── */
+function clearAlerts(){
+  var e=document.getElementById('alertErr'),o=document.getElementById('alertOk');
+  e.classList.remove('show');o.classList.remove('show');
+}
+function showErr(msg){
+  var el=document.getElementById('alertErr');el.textContent=msg;el.classList.add('show');
+  document.getElementById('alertOk').classList.remove('show');
+}
+function showOk(msg){
+  var el=document.getElementById('alertOk');el.textContent=msg;el.classList.add('show');
+  document.getElementById('alertErr').classList.remove('show');
+}
+
+/* ── Loading state ── */
+function setLoading(on){
+  var btn=document.getElementById('btnSubmit'),lbl=document.getElementById('btnLabel'),
+      bg=document.getElementById('btnGoogle');
+  btn.disabled=on;bg.disabled=on;
+  if(on) lbl.innerHTML='<span class="spinner"></span>';
+  else    lbl.textContent=mode==='in'?'Sign In':'Create Account';
+}
+
+/* ── Submit ── */
+async function submit(){
+  clearAlerts();
+  var email=document.getElementById('inputEmail').value.trim();
+  var pass=document.getElementById('inputPass').value;
+  if(!email){showErr('Please enter your email.');return}
+  if(!pass||pass.length<6){showErr('Password must be at least 6 characters.');return}
+  setLoading(true);
+  try{
+    var res;
+    if(mode==='in'){
+      res=await sb.auth.signInWithPassword({email:email,password:pass});
+    } else {
+      res=await sb.auth.signUp({email:email,password:pass});
+    }
+    if(res.error){showErr(res.error.message);setLoading(false);return}
+    if(mode==='up'&&res.data.user&&!res.data.session){
+      showOk('Check your email to confirm your account, then sign in.');
+      setLoading(false);
+    } else {
+      window.location.href='/dashboard.html';
+    }
+  }catch(e){showErr('Something went wrong. Please try again.');setLoading(false)}
+}
+
+/* ── Google ── */
+async function signInGoogle(){
+  clearAlerts();
+  await sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.origin+'/dashboard.html'}
+  });
+}
+
+/* ── Forgot password ── */
+async function forgotPassword(){
+  var email=document.getElementById('inputEmail').value.trim();
+  if(!email){showErr('Enter your email first, then click Forgot password.');return}
+  clearAlerts();
+  var r=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'/dashboard.html'});
+  if(r.error)showErr(r.error.message);
+  else showOk('Password reset email sent. Check your inbox.');
+}
+
+/* ── Enter key ── */
+document.addEventListener('keydown',function(e){if(e.key==='Enter')submit()});
+</script>
+</body>
+</html>
