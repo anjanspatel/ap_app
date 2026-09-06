@@ -366,8 +366,6 @@ function showToast(msg,dur){
 }
 
 /* ── Auth guard ── */
-var ADMIN_EMAIL='anjan'+'@'+'anjanpatel'+'.'+'ca';
-
 async function init(){
   var r=await sb.auth.getSession();
   if(!r.data||!r.data.session){window.location.href='/';return}
@@ -376,7 +374,8 @@ async function init(){
   document.getElementById('userEmail').textContent=email;
   document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
   loadLookups();
-  if(email===ADMIN_EMAIL){
+  var meta=currentSession.user.user_metadata||{};
+  if(meta.is_admin===true){
     document.getElementById('adminPanel').style.display='';
     loadAdminLookups();
   }
