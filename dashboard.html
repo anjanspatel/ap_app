@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<script>(function(){try{var t=localStorage.getItem('ap-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}}());</script>
+<script>(function(){try{var t=localStorage.getItem('ap-theme')||'light';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}}());</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard — Anjan Patel Engineering</title>
 <meta name="robots" content="noindex">
@@ -334,7 +334,7 @@ document.getElementById('yr').textContent = new Date().getFullYear();
 /* ── Theme ── */
 (function(){
   var root=document.documentElement,btn=document.getElementById('themeBtn'),icon=document.getElementById('themeIcon');
-  function isDark(){var t=root.dataset.theme;return t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)}
+  function isDark(){return root.dataset.theme==='dark'}
   function apply(t){if(t)root.dataset.theme=t;else delete root.dataset.theme;icon.textContent=isDark()?'☀':'☾'}
   function stored(){try{return localStorage.getItem('ap-theme')||''}catch(e){return''}}
   function store(t){try{localStorage.setItem('ap-theme',t)}catch(e){}}

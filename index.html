@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<script>(function(){try{var t=localStorage.getItem('ap-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}}());</script>
+<script>(function(){try{var t=localStorage.getItem('ap-theme')||'light';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}}());</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sign In — Anjan Patel Engineering</title>
 <meta name="robots" content="noindex">
@@ -117,14 +117,9 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'IB
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span id="themeIcon"></span></button>
 
 <div class="page">
-  <a class="brand" href="https://tools.anjanpatel.ca">
+  <a class="brand" href="/" aria-label="Anjan Patel Engineering">
     <div class="brand-mark">
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-        <rect x="3" y="3" width="4" height="16" rx="1.2" fill="#F28C18"/>
-        <path d="M7 3 Q17 3 17 9 Q17 15 7 15Z" fill="#F28C18"/>
-        <path d="M9 6 Q14 6 14 9 Q14 12 9 12Z" fill="#0B1D2D"/>
-        <rect x="3" y="17" width="11" height="3" rx="1.2" fill="rgba(242,140,24,.55)"/>
-      </svg>
+      <img src="/favicon.svg" width="28" height="28" alt="" aria-hidden="true" style="border-radius:6px">
     </div>
     <div class="brand-copy">
       <span class="brand-name">ANJAN PATEL</span>
@@ -192,7 +187,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'IB
     By signing in you agree to our
     <a href="https://tools.anjanpatel.ca/terms/" target="_blank" rel="noopener">Terms</a>.
     &nbsp;·&nbsp;
-    <a href="https://tools.anjanpatel.ca" target="_blank" rel="noopener">Public Tools</a>
+
   </p>
 </div>
 
@@ -212,7 +207,7 @@ sb.auth.getSession().then(function(r){
 /* ── Theme ── */
 (function(){
   var root=document.documentElement,btn=document.getElementById('themeBtn'),icon=document.getElementById('themeIcon');
-  function isDark(){var t=root.dataset.theme;return t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches)}
+  function isDark(){return root.dataset.theme==='dark'}
   function apply(t){if(t)root.dataset.theme=t;else delete root.dataset.theme;icon.textContent=isDark()?'☀':'☾'}
   function stored(){try{return localStorage.getItem('ap-theme')||''}catch(e){return''}}
   function store(t){try{localStorage.setItem('ap-theme',t)}catch(e){}}
