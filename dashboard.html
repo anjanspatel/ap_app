@@ -2,359 +2,473 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<script>(function(){try{var t=localStorage.getItem('ap-theme')||'light';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}}());</script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard — Anjan Patel Engineering</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Workspace — anjanpatel.ca</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0B1D2D">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root{
-  --navy:#0B1D2D;--orange:#F28C18;
-  --bg:#F0F4FA;--surface:#FFFFFF;--surface-2:#F7F9FC;
-  --text:#0B1D2D;--muted:#5E728A;--line:#D8E1EC;
-  --sidebar-bg:#0B1D2D;--sidebar-text:#C8D8E8;--sidebar-active:#FFFFFF;
-  --sidebar-w:220px;--topbar-h:56px;
-  --ok:#16A34A;--warn:#D97706;--err:#DC2626;
-  --radius:10px;
+:root {
+  --canvas:   #0b0f19;
+  --surface:  #171e2e;
+  --elevated: #1b2435;
+  --border:   #2d3748;
+  --text:     #f8fafc;
+  --muted:    #94a3b8;
+  --dim:      #64748b;
+  --emerald:  #00d27a;
+  --indigo:   #6366f1;
+  --error:    #ef4444;
+  --warn:     #f59e0b;
+  --ease:     150ms ease-in-out;
+  --sb-w:     228px;
+  --tb-h:     48px;
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#07111C;--surface:#0D1B2A;--surface-2:#111F2E;
-  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
-}}
-:root[data-theme="dark"]{
-  --bg:#07111C;--surface:#0D1B2A;--surface-2:#111F2E;
-  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow-x:hidden}
+body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--indigo);color:var(--text)}
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
 .sidebar{
-  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100%;
-  background:var(--sidebar-bg);display:flex;flex-direction:column;z-index:200;
-  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  position:fixed;top:0;left:0;width:var(--sb-w);height:100%;
+  background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:300;
+  transition:transform var(--ease);
 }
-.sidebar-logo{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
-.sidebar-logo-text{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sidebar-active);line-height:1.2}
-.sidebar-logo-sub{font-size:9px;color:var(--sidebar-text);letter-spacing:.06em}
 
-.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
-.nav-section{padding:16px 20px 6px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(200,216,232,.35)}
-.nav-item{display:flex;align-items:center;gap:11px;padding:9px 20px;font-size:13px;font-weight:500;color:var(--sidebar-text);text-decoration:none;transition:background .15s,color .15s;border-left:2px solid transparent;cursor:pointer;background:none;border-right:none;border-top:none;border-bottom:none;width:100%;text-align:left;font-family:inherit}
-.nav-item:hover{background:rgba(255,255,255,.06);color:var(--sidebar-active)}
-.nav-item.active{background:rgba(242,140,24,.12);color:var(--sidebar-active);border-left-color:var(--orange)}
-.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+/* Brand */
+.sb-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 16px 14px;border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.sb-hex{flex-shrink:0}
+.sb-name{display:flex;flex-direction:column;gap:1px}
+.sb-name-main{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em;line-height:1}
+.sb-name-sub{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.1em}
+
+/* Nav */
+.sb-nav{flex:1;padding:8px 0;overflow-y:auto}
+.sb-section{padding:16px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);
+  text-decoration:none;cursor:pointer;border:none;background:none;
+  width:100%;text-align:left;font-family:'Inter',sans-serif;
+  border-left:2px solid transparent;
+  transition:color var(--ease),background var(--ease),border-color var(--ease);
+  position:relative;
+}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nav-item.active{background:rgba(99,102,241,.1);color:var(--text);border-left-color:var(--indigo)}
+.nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
 .nav-item.active svg,.nav-item:hover svg{opacity:1}
+.nav-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;padding:1px 6px;border-radius:3px;background:rgba(99,102,241,.15);color:var(--indigo)}
 
-.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
-.user-row{display:flex;align-items:center;gap:10px}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font:700 13px 'IBM Plex Sans',sans-serif;color:#fff;flex-shrink:0}
-.user-info{flex:1;min-width:0}
-.user-email{font-size:11px;color:var(--sidebar-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
-.user-role{font-size:9px;color:rgba(200,216,232,.5);letter-spacing:.04em}
-.signout-btn{background:none;border:none;color:rgba(200,216,232,.45);cursor:pointer;padding:2px;border-radius:4px;display:grid;place-items:center;transition:color .15s}
-.signout-btn:hover{color:var(--orange)}
+/* User strip */
+.sb-user{
+  padding:12px 14px;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;font:700 11px 'JetBrains Mono',monospace;color:var(--text);flex-shrink:0}
+.sb-user-info{flex:1;min-width:0}
+.sb-user-email{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.sb-user-role{font-size:9px;color:var(--dim);letter-spacing:.04em;margin-top:1px}
+.sb-signout{background:none;border:none;color:var(--dim);cursor:pointer;padding:3px;border-radius:4px;display:grid;place-items:center;transition:color var(--ease)}
+.sb-signout:hover{color:var(--error)}
 
-.main-wrap{margin-left:var(--sidebar-w);min-height:100%;display:flex;flex-direction:column;transition:margin .25s cubic-bezier(.4,0,.2,1)}
+/* ═══════════════════════════════════════
+   MAIN WRAP
+═══════════════════════════════════════ */
+.main-wrap{margin-left:var(--sb-w);min-height:100%;display:flex;flex-direction:column}
 
-.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100}
-.hamburger{display:none;background:none;border:none;color:var(--text);cursor:pointer;padding:6px;border-radius:6px;line-height:1}
-.hamburger:hover{background:var(--surface-2)}
-.topbar-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.01em}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.theme-btn{width:32px;height:32px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:border-color .15s}
-.theme-btn:hover{border-color:var(--orange);color:var(--orange)}
-.topbar-avatar{width:30px;height:30px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font:700 12px 'IBM Plex Sans',sans-serif;color:#fff}
+/* ═══════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════ */
+.topbar{
+  height:var(--tb-h);background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+  position:sticky;top:0;z-index:200;
+}
+.hamburger{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:4px}
+.hamburger:hover{color:var(--text);background:var(--elevated)}
+.tb-title{font-size:12px;font-weight:600;color:var(--text);letter-spacing:.02em}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 
-.content{flex:1;padding:28px 28px 48px}
-.page-header{margin-bottom:24px}
-.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:4px}
-.page-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em}
-.page-sub{font-size:13px;color:var(--muted);margin-top:3px}
+.tb-clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);padding:0 8px}
 
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
-.metric-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;gap:10px}
-.metric-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.metric-value{font:700 28px/1 'IBM Plex Mono',monospace;color:var(--text);letter-spacing:-.03em}
-.metric-value span{font-size:13px;color:var(--muted);font-weight:400;letter-spacing:0;font-family:'IBM Plex Sans',sans-serif}
-.metric-footer{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.metric-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex-shrink:0}
-.metric-dot.idle{background:var(--muted);opacity:.4}
+.tb-btn{width:30px;height:30px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease),color var(--ease)}
+.tb-btn:hover{border-color:var(--indigo);color:var(--text)}
+.tb-avatar{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;font:700 11px 'JetBrains Mono',monospace;color:var(--text)}
 
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+/* ═══════════════════════════════════════
+   CONTENT
+═══════════════════════════════════════ */
+.content{flex:1;padding:20px}
 
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.tool-cards{display:grid;gap:12px}
-.tool-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;text-decoration:none;color:inherit;display:flex;align-items:center;gap:14px;transition:border-color .15s,box-shadow .15s;cursor:pointer}
-.tool-card:hover{border-color:var(--orange);box-shadow:0 4px 16px rgba(242,140,24,.1)}
-.tool-icon{width:40px;height:40px;border-radius:9px;background:rgba(242,140,24,.1);display:grid;place-items:center;flex-shrink:0}
+/* section visibility */
+.section{display:none}.section.active{display:block}
+
+/* ── Page header ── */
+.page-hd{margin-bottom:18px}
+.page-eyebrow{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.page-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.page-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── Metric tiles ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px}
+.metric-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.metric-value{font:600 24px/1 'JetBrains Mono',monospace;color:var(--text);letter-spacing:-.03em}
+.metric-value.em{color:var(--emerald)}
+.metric-footer{margin-top:6px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--dim);display:flex;align-items:center;gap:5px}
+.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:var(--emerald)}
+.dot-idle{background:var(--border)}
+.dot-warn{background:var(--warn)}
+
+/* ── Bento grid ── */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.bento-wide{grid-column:1/-1}
+
+/* ── Panel ── */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.panel-hd{
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.panel-count{font:500 10px 'JetBrains Mono',monospace;color:var(--indigo)}
+.panel-action{font-size:10px;font-weight:500;color:var(--indigo);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color var(--ease)}
+.panel-action:hover{color:var(--text)}
+
+/* ── Tool cards ── */
+.tool-list{display:flex;flex-direction:column;gap:0}
+.tool-item{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  border-bottom:1px solid var(--border);text-decoration:none;color:inherit;
+  transition:background var(--ease);cursor:pointer;
+}
+.tool-item:last-child{border-bottom:none}
+.tool-item:hover{background:var(--elevated)}
+.tool-icon{width:32px;height:32px;border-radius:5px;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;flex-shrink:0}
+.tool-icon svg{stroke:var(--emerald)}
 .tool-info{flex:1;min-width:0}
-.tool-name{font-size:13px;font-weight:700;color:var(--text)}
-.tool-desc{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tool-arrow{color:var(--muted);transition:color .15s,transform .15s}
-.tool-card:hover .tool-arrow{color:var(--orange);transform:translateX(3px)}
-.tool-badge{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:20px;background:rgba(22,163,74,.12);color:#16a34a}
+.tool-name{font-size:12px;font-weight:600;color:var(--text)}
+.tool-desc{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--dim);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tool-status{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.06em;padding:2px 7px;border-radius:3px;border:1px solid;white-space:nowrap}
+.status-operational{color:var(--emerald);border-color:rgba(0,210,122,.25);background:rgba(0,210,122,.06)}
+.status-review{color:var(--indigo);border-color:rgba(99,102,241,.25);background:rgba(99,102,241,.06)}
+.status-pending{color:var(--muted);border-color:var(--border);background:transparent}
+.status-critical{color:var(--error);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06);animation:critPulse 2s ease-in-out infinite}
+@keyframes critPulse{0%,100%{opacity:1}50%{opacity:.6}}
+.tool-arrow{color:var(--dim);flex-shrink:0;transition:color var(--ease),transform var(--ease)}
+.tool-item:hover .tool-arrow{color:var(--indigo);transform:translateX(2px)}
 
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-.panel-header{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.panel-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.panel-count{font:600 11px 'IBM Plex Mono',monospace;color:var(--orange)}
-.lookup-table{width:100%;border-collapse:collapse}
-.lookup-table th{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 16px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-.lookup-table td{padding:10px 16px;font-size:12px;color:var(--text);border-bottom:1px solid var(--line)}
-.lookup-table tr:last-child td{border-bottom:none}
-.lookup-table tbody tr:hover{background:var(--surface-2)}
-.td-tool{display:flex;align-items:center;gap:6px;font-weight:600;font-size:11px}
-.tool-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.dot-flange{background:var(--orange)}
-.dot-tubing{background:#3B82F6}
-.td-params{font:500 11px 'IBM Plex Mono',monospace;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
-.td-label{font-size:11px;color:var(--text)}
-.td-label.empty{color:var(--muted);opacity:.5}
-.td-date{font:400 11px 'IBM Plex Mono',monospace;color:var(--muted)}
-.btn-delete{background:none;border:none;color:var(--muted);cursor:pointer;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;font-size:12px;transition:background .12s,color .12s}
-.btn-delete:hover{background:rgba(220,38,38,.1);color:var(--err)}
-.empty-state{padding:40px 20px;text-align:center}
-.empty-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
-.empty-sub{font-size:11px;color:var(--muted);opacity:.7}
+/* ── Data table ── */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);padding:8px 16px;text-align:left;
+  border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface);
+  position:sticky;top:0;z-index:1;
+}
+.data-table td{padding:9px 16px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:middle}
+.data-table tbody tr:hover td{background:var(--elevated);color:var(--text)}
+.data-table tbody tr:last-child td{border-bottom:none}
+.td-mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+.td-label{font-size:12px;color:var(--text);font-weight:500}
+.td-dim{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.table-wrap{overflow-x:auto;max-height:320px;overflow-y:auto}
+.btn-del{background:none;border:none;color:var(--border);cursor:pointer;width:22px;height:22px;border-radius:3px;display:grid;place-items:center;transition:background var(--ease),color var(--ease)}
+.btn-del:hover{background:rgba(239,68,68,.1);color:var(--error)}
 
-.admin-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(242,140,24,.12);color:var(--orange);margin-left:8px}
+/* ── Pressure chart ── */
+.chart-wrap{padding:16px;height:200px;position:relative}
+canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font:600 12px 'IBM Plex Sans',sans-serif;padding:.6rem 1.2rem;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
+/* ── Empty state ── */
+.empty{padding:32px 16px;text-align:center}
+.empty-label{font-size:12px;color:var(--dim);font-family:'JetBrains Mono',monospace}
+
+/* ── Admin badge ── */
+.admin-badge{font-size:9px;font-weight:700;letter-spacing:.08em;padding:1px 7px;border-radius:3px;border:1px solid rgba(0,210,122,.3);background:rgba(0,210,122,.07);color:var(--emerald);margin-left:8px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--elevated);border:1px solid var(--border);color:var(--text);font:500 12px 'JetBrains Mono',monospace;padding:8px 16px;border-radius:5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
 .toast.show{opacity:1}
 
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:190;backdrop-filter:blur(2px)}
+/* ── Mobile overlay ── */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290}
 
-@media(max-width:900px){
-  .metrics{grid-template-columns:repeat(2,1fr)}
-  .two-col{grid-template-columns:1fr}
-}
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:1100px){.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.bento{grid-template-columns:1fr}}
 @media(max-width:680px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
-  .sidebar-overlay{display:block}
-  .sidebar-overlay.open{display:block;opacity:1}
-  .sidebar-overlay:not(.open){opacity:0;pointer-events:none;transition:opacity .25s}
+  .sb-overlay{display:block}
+  .sb-overlay.open{display:block}
   .main-wrap{margin-left:0}
   .hamburger{display:grid}
-  .content{padding:18px 16px 40px}
-  .metrics{grid-template-columns:1fr 1fr;gap:10px}
-  .metric-value{font-size:22px}
-  .lookup-table th:nth-child(3),.lookup-table td:nth-child(3){display:none}
+  .tb-clock{display:none}
+  .content{padding:14px}
+  .metrics{grid-template-columns:1fr 1fr;gap:8px}
+  .metric-value{font-size:20px}
 }
-@media(max-width:380px){.metrics{grid-template-columns:1fr}}
+@media(max-width:400px){.metrics{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
+<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="100" height="100" rx="14" fill="rgba(255,255,255,.1)"/>
-      <text x="50" y="50" font-family="'IBM Plex Sans',system-ui,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text>
+  <div class="sb-brand">
+    <!-- Hexagonal AP engineering mark -->
+    <svg class="sb-hex" width="34" height="34" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <polygon points="50,4 93,27.5 93,72.5 50,96 7,72.5 7,27.5" fill="#1b2435" stroke="#2d3748" stroke-width="2"/>
+      <polygon points="50,13 85,32 85,68 50,87 15,68 15,32" fill="none" stroke="#2d3748" stroke-width="1" opacity=".5"/>
+      <text x="50" y="54" font-family="'Inter',system-ui,sans-serif" font-weight="800" font-size="30" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" letter-spacing="-1.5">AP</text>
     </svg>
-    <div>
-      <div class="sidebar-logo-text">Anjan Patel</div>
-      <div class="sidebar-logo-sub">Engineering Tools</div>
+    <div class="sb-name">
+      <span class="sb-name-main">Anjan Patel</span>
+      <span class="sb-name-sub">ENG TOOLS</span>
     </div>
   </div>
 
-  <nav class="sidebar-nav" role="navigation" aria-label="Main">
-    <div class="nav-section">Workspace</div>
+  <nav class="sb-nav" role="navigation" aria-label="Main navigation">
+    <div class="sb-section">Workspace</div>
     <button class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </button>
     <button class="nav-item" id="nav-tools" onclick="showSection('tools')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-      Engineering Tools
+      Calculators
     </button>
     <button class="nav-item" id="nav-logs" onclick="showSection('logs')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Calc Logs
     </button>
-    <div class="nav-section">Account</div>
+    <div class="sb-section">System</div>
     <a class="nav-item" href="/settings.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Settings
     </a>
   </nav>
 
-  <div class="sidebar-footer">
-    <div class="user-row">
-      <div class="user-avatar" id="userAvatar">?</div>
-      <div class="user-info">
-        <span class="user-email" id="userEmail">Loading…</span>
-        <span class="user-role" id="userRole">Member</span>
-      </div>
-      <button class="signout-btn" onclick="signOut()" title="Sign out" aria-label="Sign out">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      </button>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">?</div>
+    <div class="sb-user-info">
+      <span class="sb-user-email" id="sbEmail">—</span>
+      <span class="sb-user-role" id="sbRole">Member</span>
     </div>
+    <button class="sb-signout" onclick="signOut()" title="Sign out" aria-label="Sign out">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
   </div>
 </aside>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
 
+<!-- ═══ MAIN ═══ -->
 <div class="main-wrap">
+
+  <!-- Topbar -->
   <header class="topbar">
-    <button class="hamburger" id="hamburger" onclick="openSidebar()" aria-label="Open menu">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <span class="topbar-title" id="topbarTitle">Dashboard</span>
-    <div class="topbar-right">
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span id="themeIcon"></span></button>
-      <div class="topbar-avatar" id="topbarAvatar">?</div>
+    <span class="tb-title" id="tbTitle">Dashboard</span>
+    <div class="tb-right">
+      <span class="tb-clock" id="tbClock"></span>
+      <button class="tb-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <div class="tb-avatar" id="tbAvatar">?</div>
     </div>
   </header>
 
+  <!-- ═══ CONTENT ═══ -->
   <main class="content">
 
-    <!-- DASHBOARD -->
-    <section id="sec-dashboard">
-      <div class="page-header">
+    <!-- ── DASHBOARD ── -->
+    <section class="section active" id="sec-dashboard">
+      <div class="page-hd">
         <p class="page-eyebrow">Overview</p>
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-sub">Your engineering workspace at a glance.</p>
+        <h1 class="page-title">Workspace</h1>
+        <p class="page-sub" id="greetSub">Engineering tools — Alberta, CA</p>
       </div>
+
+      <!-- Metric tiles -->
       <div class="metrics">
-        <div class="metric-card">
+        <div class="metric">
           <div class="metric-label">Saved Lookups</div>
-          <div class="metric-value" id="mSaved">—</div>
-          <div class="metric-footer"><span class="metric-dot idle" id="mSavedDot"></span><span id="mSavedLabel">Loading…</span></div>
+          <div class="metric-value em" id="mSaved">—</div>
+          <div class="metric-footer"><span class="status-dot dot-idle" id="mSavedDot"></span><span id="mSavedLbl">Loading…</span></div>
         </div>
-        <div class="metric-card">
-          <div class="metric-label">Tools Available</div>
-          <div class="metric-value">2 <span>tools</span></div>
-          <div class="metric-footer"><span class="metric-dot"></span>Flange · Safety Block</div>
+        <div class="metric">
+          <div class="metric-label">Tools Online</div>
+          <div class="metric-value">2</div>
+          <div class="metric-footer"><span class="status-dot dot-ok"></span>All operational</div>
         </div>
-        <div class="metric-card">
-          <div class="metric-label">Last Active</div>
-          <div class="metric-value" id="mLast" style="font-size:18px;letter-spacing:-.01em">—</div>
-          <div class="metric-footer"><span class="metric-dot idle" id="mLastDot"></span><span id="mLastLabel">—</span></div>
+        <div class="metric">
+          <div class="metric-label">Last Calc</div>
+          <div class="metric-value" id="mLast" style="font-size:16px;letter-spacing:0">—</div>
+          <div class="metric-footer"><span class="status-dot dot-idle" id="mLastDot"></span><span id="mLastLbl">No activity</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Session</div>
+          <div class="metric-value" style="font-size:13px;letter-spacing:0;margin-top:2px;font-family:'JetBrains Mono',monospace;color:var(--emerald)" id="mSession">Active</div>
+          <div class="metric-footer"><span class="status-dot dot-ok"></span>Secured via Supabase</div>
         </div>
       </div>
-      <div class="two-col">
-        <div>
-          <div class="section-head"><span class="section-label">Engineering Tools</span></div>
-          <div class="tool-cards">
-            <a class="tool-card" href="/flange/">
+
+      <!-- Bento grid -->
+      <div class="bento">
+        <!-- Tools -->
+        <div class="panel">
+          <div class="panel-hd">
+            <span class="panel-title">Calculators</span>
+            <span class="panel-count">2 active</span>
+          </div>
+          <div class="tool-list">
+            <a class="tool-item" href="/flange/">
               <div class="tool-icon">
-                <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7" stroke="#F28C18"/>
-                  <circle cx="13" cy="13" r="5.2" stroke="#F28C18"/>
-                  <circle cx="13" cy="13" r="1.8" fill="#F28C18"/>
+                <svg width="16" height="16" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7" stroke="#00d27a"/>
+                  <circle cx="13" cy="13" r="5.2" stroke="#00d27a"/>
+                  <circle cx="13" cy="13" r="1.6" fill="#00d27a"/>
                 </svg>
               </div>
               <div class="tool-info">
                 <div class="tool-name">Flange Slide Rule</div>
                 <div class="tool-desc">API 6A / ISO 10423 · 3K–15K · 10 sizes</div>
               </div>
-              <span class="tool-badge">Live</span>
-              <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              <span class="tool-status status-operational">OPERATIONAL</span>
+              <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
-            <a class="tool-card" href="/tubing/">
+            <a class="tool-item" href="/tubing/">
               <div class="tool-icon">
-                <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="4" y="9" width="18" height="11" rx="1.5" stroke="#F28C18"/>
-                  <line x1="13" y1="2" x2="13" y2="7.5" stroke="#F28C18"/>
-                  <polyline points="10,5 13,8 16,5" stroke="#F28C18"/>
+                <svg width="16" height="16" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="9" width="18" height="11" rx="1.5" stroke="#00d27a"/>
+                  <line x1="13" y1="2" x2="13" y2="7.5" stroke="#00d27a"/>
+                  <polyline points="10,5 13,8 16,5" stroke="#00d27a"/>
                 </svg>
               </div>
               <div class="tool-info">
                 <div class="tool-name">Safety Block Calculator</div>
                 <div class="tool-desc">SWL · BHN · Von Mises · PDF export</div>
               </div>
-              <span class="tool-badge">Live</span>
-              <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              <span class="tool-status status-operational">OPERATIONAL</span>
+              <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
           </div>
         </div>
-        <div>
-          <div class="section-head">
-            <span class="section-label">Recent Lookups</span>
-            <button onclick="showSection('logs')" style="background:none;border:none;font-size:11px;color:var(--orange);cursor:pointer;font-family:inherit;font-weight:600">View all →</button>
+
+        <!-- Recent lookups -->
+        <div class="panel">
+          <div class="panel-hd">
+            <span class="panel-title">Recent Lookups</span>
+            <button class="panel-action" onclick="showSection('logs')">View all →</button>
           </div>
-          <div class="panel" id="recentPanel">
-            <div style="padding:32px;text-align:center;color:var(--muted);font-size:12px">Loading…</div>
+          <div id="recentWrap">
+            <div class="empty"><span class="empty-label">Loading…</span></div>
+          </div>
+        </div>
+
+        <!-- Pressure chart placeholder -->
+        <div class="panel bento-wide">
+          <div class="panel-hd">
+            <span class="panel-title">Pressure vs. Time — Reference Loop</span>
+            <span class="panel-count" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim)">API 6A · 10,000 PSI · Simulated</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="pressureChart"></canvas>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TOOLS -->
-    <section id="sec-tools" style="display:none">
-      <div class="page-header">
+    <!-- ── CALCULATORS ── -->
+    <section class="section" id="sec-tools">
+      <div class="page-hd">
         <p class="page-eyebrow">Workspace</p>
-        <h1 class="page-title">Engineering Tools</h1>
-        <p class="page-sub">Launch a tool — use the Save button inside to record lookups.</p>
+        <h1 class="page-title">Calculators</h1>
+        <p class="page-sub">Launch a calculator — use the Save button inside to log results.</p>
       </div>
-      <div class="tool-cards" style="max-width:520px">
-        <a class="tool-card" href="/flange/">
+      <div class="tool-list panel" style="max-width:520px">
+        <a class="tool-item" href="/flange/">
           <div class="tool-icon">
-            <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7" stroke="#F28C18"/>
-              <circle cx="13" cy="13" r="5.2" stroke="#F28C18"/>
-              <circle cx="13" cy="13" r="1.8" fill="#F28C18"/>
+            <svg width="16" height="16" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7" stroke="#00d27a"/>
+              <circle cx="13" cy="13" r="5.2" stroke="#00d27a"/>
+              <circle cx="13" cy="13" r="1.6" fill="#00d27a"/>
             </svg>
           </div>
           <div class="tool-info">
             <div class="tool-name">Flange Slide Rule</div>
-            <div class="tool-desc">API 6A / ISO 10423 · bore, OD, bolt pattern, ring gasket · 3K–15K across 10 nominal sizes</div>
+            <div class="tool-desc">API 6A / ISO 10423 · bore, OD, bolt pattern, ring gasket</div>
           </div>
-          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span class="tool-status status-operational">OPERATIONAL</span>
+          <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
-        <a class="tool-card" href="/tubing/">
+        <a class="tool-item" href="/tubing/">
           <div class="tool-icon">
-            <svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="4" y="9" width="18" height="11" rx="1.5" stroke="#F28C18"/>
-              <line x1="13" y1="2" x2="13" y2="7.5" stroke="#F28C18"/>
-              <polyline points="10,5 13,8 16,5" stroke="#F28C18"/>
+            <svg width="16" height="16" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="9" width="18" height="11" rx="1.5" stroke="#00d27a"/>
+              <line x1="13" y1="2" x2="13" y2="7.5" stroke="#00d27a"/>
+              <polyline points="10,5 13,8 16,5" stroke="#00d27a"/>
             </svg>
           </div>
           <div class="tool-info">
             <div class="tool-name">Safety Block Calculator</div>
             <div class="tool-desc">SWL from Brinell hardness, width, thickness · Von Mises shear · PDF export</div>
           </div>
-          <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <span class="tool-status status-operational">OPERATIONAL</span>
+          <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
       </div>
     </section>
 
-    <!-- CALC LOGS -->
-    <section id="sec-logs" style="display:none">
-      <div class="page-header">
+    <!-- ── CALC LOGS ── -->
+    <section class="section" id="sec-logs">
+      <div class="page-hd">
         <p class="page-eyebrow">History</p>
         <h1 class="page-title">Calc Logs</h1>
-        <p class="page-sub">All saved lookups from your sessions.</p>
+        <p class="page-sub">All saved lookups across sessions.</p>
       </div>
       <div class="panel">
-        <div class="panel-header">
+        <div class="panel-hd">
           <span class="panel-title">Saved Lookups</span>
-          <span class="panel-count" id="lookupCount">—</span>
+          <span class="panel-count" id="logCount">—</span>
         </div>
-        <div id="lookupContent">
-          <div style="padding:32px;text-align:center;color:var(--muted);font-size:12px">Loading…</div>
+        <div id="logsWrap">
+          <div class="empty"><span class="empty-label">Loading…</span></div>
         </div>
       </div>
     </section>
 
-    <!-- ADMIN -->
-    <div id="adminPanel" style="display:none;margin-top:28px">
+    <!-- Admin panel -->
+    <div id="adminPanel" style="display:none;margin-top:16px">
       <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">All Lookups <span class="admin-badge">Admin</span></span>
-          <span class="panel-count" id="adminLookupCount">—</span>
+        <div class="panel-hd">
+          <span class="panel-title">All Users — Lookups <span class="admin-badge">ADMIN</span></span>
+          <span class="panel-count" id="adminCount">—</span>
         </div>
-        <div style="overflow-x:auto">
-          <table class="lookup-table">
-            <thead><tr><th>User</th><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th></tr></thead>
-            <tbody id="adminRows"><tr><td colspan="5" style="padding:32px;text-align:center;color:var(--muted)">Loading…</td></tr></tbody>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>User ID</th><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th></tr></thead>
+            <tbody id="adminRows"><tr><td colspan="5" class="empty"><span class="empty-label">Loading…</span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -366,188 +480,256 @@ html,body{height:100%;font-family:'IBM Plex Sans',system-ui,sans-serif;backgroun
 <div class="toast" id="toast"></div>
 
 <script>
-var SUPABASE_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-var SUPABASE_ANON='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
-var currentSession=null;
+var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
+var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+var sb=supabase.createClient(SB_URL,SB_KEY);
+var session=null;
 
-(function(){
-  var root=document.documentElement,icon=document.getElementById('themeIcon');
-  function isDark(){return root.dataset.theme==='dark'}
-  function apply(t){root.dataset.theme=t;icon.textContent=isDark()?'☀':'☾'}
-  function stored(){try{return localStorage.getItem('ap-theme')||'light'}catch(e){return'light'}}
-  function store(t){try{localStorage.setItem('ap-theme',t)}catch(e){}}
-  apply(stored());
-  document.getElementById('themeBtn').addEventListener('click',function(){var n=isDark()?'light':'dark';store(n);apply(n)});
-})();
+function $(id){return document.getElementById(id)}
 
+/* ── Clock ── */
+function tickClock(){
+  var d=new Date();
+  $('tbClock').textContent=d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' MT';
+}
+tickClock();setInterval(tickClock,1000);
+
+/* ── Sidebar ── */
 function openSidebar(){
-  document.getElementById('sidebar').classList.add('open');
-  var ov=document.getElementById('sidebarOverlay');
-  ov.classList.add('open');ov.style.display='block';
+  $('sidebar').classList.add('open');
+  var ov=$('sbOverlay');ov.style.display='block';setTimeout(function(){ov.classList.add('open')},10);
 }
 function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  var ov=document.getElementById('sidebarOverlay');
-  ov.classList.remove('open');
-  setTimeout(function(){ov.style.display=''},260);
+  $('sidebar').classList.remove('open');
+  var ov=$('sbOverlay');ov.classList.remove('open');setTimeout(function(){ov.style.display=''},260);
 }
 
+/* ── Section nav ── */
 function showSection(name){
-  ['dashboard','tools','logs'].forEach(function(s){
-    document.getElementById('sec-'+s).style.display=s===name?'':'none';
-  });
-  var titles={dashboard:'Dashboard',tools:'Engineering Tools',logs:'Calc Logs'};
-  document.getElementById('topbarTitle').textContent=titles[name]||name;
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
   document.querySelectorAll('.nav-item[id^="nav-"]').forEach(function(el){el.classList.remove('active')});
-  var el=document.getElementById('nav-'+name);
-  if(el)el.classList.add('active');
-  if(name==='logs')loadLookups();
+  $('sec-'+name).classList.add('active');
+  var navEl=$('nav-'+name);if(navEl)navEl.classList.add('active');
+  var titles={dashboard:'Dashboard',tools:'Calculators',logs:'Calc Logs'};
+  $('tbTitle').textContent=titles[name]||name;
+  if(name==='logs')loadLogs();
   closeSidebar();
 }
 
-function showToast(msg){
-  var t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
+/* ── Toast ── */
+function toast(msg){
+  var t=$('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(function(){t.classList.remove('show')},2200);
 }
 
-async function init(){
-  var r=await sb.auth.getSession();
-  if(!r.data||!r.data.session){window.location.href='/';return}
-  currentSession=r.data.session;
-  var email=currentSession.user.email||'';
-  var initial=email.charAt(0).toUpperCase();
-  document.getElementById('userEmail').textContent=email;
-  document.getElementById('userAvatar').textContent=initial;
-  document.getElementById('topbarAvatar').textContent=initial;
-  var meta=currentSession.user.user_metadata||{};
-  if(meta.is_admin===true){
-    document.getElementById('userRole').textContent='Admin';
-    document.getElementById('adminPanel').style.display='';
-    loadAdminLookups();
-  }
-  loadDashboard();
-}
-
-async function signOut(){
-  await sb.auth.signOut();
-  window.location.href='/';
-}
-
-async function loadDashboard(){
-  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
-  var lookups=r.data||[];
-  var savedEl=document.getElementById('mSaved');
-  savedEl.innerHTML=lookups.length+'<span> total</span>';
-  var dot=document.getElementById('mSavedDot');
-  var lbl=document.getElementById('mSavedLabel');
-  if(lookups.length>0){dot.className='metric-dot';lbl.textContent='Last saved '+relTime(lookups[0].created_at)}
-  else{dot.className='metric-dot idle';lbl.textContent='No lookups yet'}
-  var lastEl=document.getElementById('mLast');
-  var lastLbl=document.getElementById('mLastLabel');
-  var lastDot=document.getElementById('mLastDot');
-  if(lookups.length>0){
-    var d=new Date(lookups[0].created_at);
-    lastEl.textContent=d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
-    lastDot.className='metric-dot';
-    lastLbl.textContent=relTime(lookups[0].created_at);
-  } else {
-    lastEl.textContent='—';lastDot.className='metric-dot idle';lastLbl.textContent='No activity yet';
-  }
-  renderRecent(lookups.slice(0,4));
-}
-
+/* ── Relative time ── */
 function relTime(iso){
-  var diff=Date.now()-new Date(iso).getTime();
-  var m=Math.floor(diff/60000);
-  if(m<1)return'just now';
-  if(m<60)return m+'m ago';
-  var h=Math.floor(m/60);
-  if(h<24)return h+'h ago';
+  var d=Date.now()-new Date(iso).getTime();
+  var m=Math.floor(d/60000);
+  if(m<1)return'just now';if(m<60)return m+'m ago';
+  var h=Math.floor(m/60);if(h<24)return h+'h ago';
   return Math.floor(h/24)+'d ago';
 }
 
-function renderRecent(lookups){
-  var panel=document.getElementById('recentPanel');
-  if(!lookups.length){
-    panel.innerHTML='<div class="empty-state"><div class="empty-title">No saved lookups yet</div><div class="empty-sub">Launch a tool and hit Save to log it here.</div></div>';
-    return;
+/* ── Escape ── */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+/* ── Format params ── */
+function fmtP(tool,p){
+  if(!p)return'—';
+  if(tool==='flange'){return[(p.size?'Size: '+p.size:''),(p.rating?p.rating:''),(p.bore?'Bore: '+p.bore:'')].filter(Boolean).join(' · ')||JSON.stringify(p)}
+  if(tool==='tubing'){return[(p.bhn?'BHN: '+p.bhn:''),(p.width?'W: '+p.width+'"':''),(p.thickness?'T: '+p.thickness+'"':'')].filter(Boolean).join(' · ')||JSON.stringify(p)}
+  return JSON.stringify(p);
+}
+
+/* ── Auth guard ── */
+async function init(){
+  var r=await sb.auth.getSession();
+  if(!r.data||!r.data.session){window.location.href='/';return}
+  session=r.data.session;
+  var email=session.user.email||'';
+  var init=email.charAt(0).toUpperCase();
+  $('sbEmail').textContent=email;
+  $('sbAvatar').textContent=init;
+  $('tbAvatar').textContent=init;
+  var meta=session.user.user_metadata||{};
+  if(meta.is_admin===true){
+    $('sbRole').textContent='Admin';
+    $('adminPanel').style.display='';
+    loadAdmin();
   }
-  var rows=lookups.map(function(l){
-    var dot=l.tool==='flange'?'dot-flange':'dot-tubing';
-    var name=l.tool==='flange'?'Flange':'Tubing';
-    return '<tr>'
-      +'<td><div class="td-tool"><span class="tool-dot '+dot+'"></span>'+name+'</div></td>'
-      +'<td><span class="td-params">'+esc(fmtParams(l.tool,l.params))+'</span></td>'
-      +'<td><span class="td-date">'+relTime(l.created_at)+'</span></td>'
-      +'</tr>';
-  }).join('');
-  panel.innerHTML='<div style="overflow-x:auto"><table class="lookup-table"><thead><tr><th>Tool</th><th>Params</th><th>When</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
-}
-
-async function loadLookups(){
-  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
-  var lookups=r.data||[];
-  document.getElementById('lookupCount').textContent=lookups.length+' saved';
-  var wrap=document.getElementById('lookupContent');
-  if(!lookups.length){
-    wrap.innerHTML='<div class="empty-state"><div class="empty-title">No saved lookups yet</div><div class="empty-sub">Launch a tool above and use the Save button.</div></div>';
-    return;
-  }
-  var rows=lookups.map(function(l){
-    var dot=l.tool==='flange'?'dot-flange':'dot-tubing';
-    var name=l.tool==='flange'?'Flange':'Tubing';
-    var label=l.label?'<span class="td-label">'+esc(l.label)+'</span>':'<span class="td-label empty">—</span>';
-    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
-    return '<tr>'
-      +'<td><div class="td-tool"><span class="tool-dot '+dot+'"></span>'+name+'</div></td>'
-      +'<td><span class="td-params" title="'+esc(fmtParams(l.tool,l.params))+'">'+esc(fmtParams(l.tool,l.params))+'</span></td>'
-      +'<td>'+label+'</td>'
-      +'<td><span class="td-date">'+date+'</span></td>'
-      +'<td><button class="btn-delete" onclick="deleteLookup(\''+l.id+'\')" title="Delete">✕</button></td>'
-      +'</tr>';
-  }).join('');
-  wrap.innerHTML='<div style="overflow-x:auto"><table class="lookup-table"><thead><tr><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
-}
-
-function fmtParams(tool,params){
-  if(!params)return'—';
-  if(tool==='flange'){var s=params.size||'';var rt=params.rating||'';return[s&&'Size: '+s,rt&&'Rating: '+rt].filter(Boolean).join(' · ')||JSON.stringify(params)}
-  if(tool==='tubing'){var bhn=params.bhn||'';var w=params.width||'';var t=params.thickness||'';return[bhn&&'BHN: '+bhn,w&&'W: '+w+'"',t&&'T: '+t+'"'].filter(Boolean).join(' · ')||JSON.stringify(params)}
-  return JSON.stringify(params);
-}
-
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-
-async function deleteLookup(id){
-  var r=await sb.from('saved_lookups').delete().eq('id',id).eq('user_id',currentSession.user.id);
-  if(r.error){showToast('Could not delete.');return}
-  showToast('Lookup deleted.');
+  var hr=new Date().getHours();
+  var greet=hr<12?'Good morning':'hr<18?Good afternoon':'Good evening';
+  if(hr<12)greet='Good morning';else if(hr<18)greet='Good afternoon';else greet='Good evening';
+  $('greetSub').textContent=greet+' · Alberta, CA';
   loadDashboard();
-  if(document.getElementById('sec-logs').style.display!=='none')loadLookups();
+  drawChart();
 }
 
-async function loadAdminLookups(){
+async function signOut(){
+  await sb.auth.signOut();window.location.href='/';
+}
+
+/* ── Dashboard ── */
+async function loadDashboard(){
+  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
+  var rows=r.data||[];
+  $('mSaved').textContent=rows.length;
+  if(rows.length>0){
+    $('mSavedDot').className='status-dot dot-ok';
+    $('mSavedLbl').textContent='Last: '+relTime(rows[0].created_at);
+    var d=new Date(rows[0].created_at);
+    $('mLast').textContent=d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+    $('mLastDot').className='status-dot dot-ok';
+    $('mLastLbl').textContent=relTime(rows[0].created_at);
+  } else {
+    $('mSavedDot').className='status-dot dot-idle';
+    $('mSavedLbl').textContent='No lookups yet';
+    $('mLast').textContent='—';
+    $('mLastLbl').textContent='No activity';
+  }
+  renderRecent(rows.slice(0,5));
+}
+
+function renderRecent(rows){
+  var wrap=$('recentWrap');
+  if(!rows.length){wrap.innerHTML='<div class="empty"><span class="empty-label">No saved lookups yet — launch a calculator and hit Save.</span></div>';return}
+  var html='<div class="table-wrap"><table class="data-table"><thead><tr><th>Tool</th><th>Parameters</th><th>When</th></tr></thead><tbody>';
+  rows.forEach(function(l){
+    var tool=l.tool==='flange'?'Flange':'Tubing';
+    html+='<tr><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-mono">'+relTime(l.created_at)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  wrap.innerHTML=html;
+}
+
+/* ── Logs ── */
+async function loadLogs(){
+  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
+  var rows=r.data||[];
+  $('logCount').textContent=rows.length+' records';
+  var wrap=$('logsWrap');
+  if(!rows.length){wrap.innerHTML='<div class="empty"><span class="empty-label">No saved lookups yet.</span></div>';return}
+  var html='<div class="table-wrap"><table class="data-table"><thead><tr><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th></tr></thead><tbody>';
+  rows.forEach(function(l){
+    var tool=l.tool==='flange'?'Flange':'Tubing';
+    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
+    var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
+    html+='<tr><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="delLookup(\''+l.id+'\')" title="Delete">✕</button></td></tr>';
+  });
+  html+='</tbody></table></div>';
+  wrap.innerHTML=html;
+}
+
+async function delLookup(id){
+  var r=await sb.from('saved_lookups').delete().eq('id',id).eq('user_id',session.user.id);
+  if(r.error){toast('Error deleting.');return}
+  toast('Lookup deleted.');
+  loadDashboard();
+  if($('sec-logs').classList.contains('active'))loadLogs();
+}
+
+/* ── Admin ── */
+async function loadAdmin(){
   var r=await sb.from('saved_lookups').select('id,user_id,tool,label,params,created_at').order('created_at',{ascending:false}).limit(200);
   var rows=r.data||[];
-  document.getElementById('adminLookupCount').textContent=rows.length+' total';
-  var tbody=document.getElementById('adminRows');
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="5" style="padding:32px;text-align:center;color:var(--muted)">No lookups yet.</td></tr>';return}
+  $('adminCount').textContent=rows.length+' total';
+  var tbody=$('adminRows');
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="5" class="empty"><span class="empty-label">No data.</span></td></tr>';return}
   tbody.innerHTML=rows.map(function(l){
-    var dot=l.tool==='flange'?'dot-flange':'dot-tubing';
-    var name=l.tool==='flange'?'Flange':'Tubing';
-    var label=l.label?'<span class="td-label">'+esc(l.label)+'</span>':'<span class="td-label empty">—</span>';
-    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
     var uid=l.user_id?l.user_id.substring(0,8)+'…':'';
-    return '<tr>'
-      +'<td><span class="td-params" title="'+esc(l.user_id||'')+'">'+uid+'</span></td>'
-      +'<td><div class="td-tool"><span class="tool-dot '+dot+'"></span>'+name+'</div></td>'
-      +'<td><span class="td-params">'+esc(fmtParams(l.tool,l.params))+'</span></td>'
-      +'<td>'+label+'</td>'
-      +'<td><span class="td-date">'+date+'</span></td>'
-      +'</tr>';
+    var tool=l.tool==='flange'?'Flange':'Tubing';
+    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
+    var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
+    return'<tr><td class="td-mono" title="'+esc(l.user_id||'')+'">'+uid+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td></tr>';
   }).join('');
+}
+
+/* ── Pressure chart (canvas) ── */
+function drawChart(){
+  var canvas=$('pressureChart');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+  var wrap=canvas.parentElement;
+  canvas.width=wrap.offsetWidth*dpr;
+  canvas.height=wrap.offsetHeight*dpr;
+  ctx.scale(dpr,dpr);
+  var W=wrap.offsetWidth,H=wrap.offsetHeight;
+  var pad={t:20,r:20,b:36,l:54};
+  var cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+
+  /* Simulated pressure data: 24 time points */
+  var pts=[];
+  for(var i=0;i<24;i++){
+    var base=9800+(Math.sin(i*.4)*600)+(Math.random()*200);
+    pts.push(Math.round(base));
+  }
+  var maxP=10500,minP=9000;
+
+  /* Background */
+  ctx.fillStyle='#171e2e';ctx.fillRect(0,0,W,H);
+
+  /* Grid lines */
+  ctx.strokeStyle='#2d3748';ctx.lineWidth=.5;
+  var ySteps=4;
+  for(var j=0;j<=ySteps;j++){
+    var y=pad.t+ch-(j/ySteps)*ch;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    /* Y labels */
+    var val=Math.round(minP+(j/ySteps)*(maxP-minP));
+    ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='right';
+    ctx.fillText(val.toLocaleString(),pad.l-6,y+3);
+  }
+  /* X grid */
+  var xSteps=6;
+  for(var k=0;k<=xSteps;k++){
+    var x=pad.l+(k/xSteps)*cw;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.moveTo(x,pad.t+ch);ctx.stroke();
+    ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
+    ctx.fillText((k*4)+'h',x,pad.t+ch+16);
+  }
+
+  /* Axis labels */
+  ctx.save();ctx.translate(12,pad.t+ch/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
+  ctx.fillText('PSI',0,0);ctx.restore();
+  ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
+  ctx.fillText('TIME (HOURS)',pad.l+cw/2,H-4);
+
+  /* Area fill */
+  ctx.beginPath();
+  pts.forEach(function(p,i){
+    var x=pad.l+(i/(pts.length-1))*cw;
+    var y=pad.t+ch-((p-minP)/(maxP-minP))*ch;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  var lastX=pad.l+cw,firstX=pad.l;
+  ctx.lineTo(lastX,pad.t+ch);ctx.lineTo(firstX,pad.t+ch);ctx.closePath();
+  var grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);
+  grad.addColorStop(0,'rgba(0,210,122,.18)');grad.addColorStop(1,'rgba(0,210,122,.01)');
+  ctx.fillStyle=grad;ctx.fill();
+
+  /* Line */
+  ctx.beginPath();
+  pts.forEach(function(p,i){
+    var x=pad.l+(i/(pts.length-1))*cw;
+    var y=pad.t+ch-((p-minP)/(maxP-minP))*ch;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='#00d27a';ctx.lineWidth=1.5;ctx.stroke();
+
+  /* 10K PSI threshold line */
+  var thY=pad.t+ch-((10000-minP)/(maxP-minP))*ch;
+  ctx.beginPath();ctx.setLineDash([4,4]);ctx.moveTo(pad.l,thY);ctx.lineTo(pad.l+cw,thY);
+  ctx.strokeStyle='rgba(239,68,68,.4)';ctx.lineWidth=1;ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(239,68,68,.7)';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='right';
+  ctx.fillText('10,000 PSI LIMIT',pad.l+cw-4,thY-4);
+
+  /* Endpoint dot */
+  var ep=pts[pts.length-1];
+  var epx=pad.l+cw,epy=pad.t+ch-((ep-minP)/(maxP-minP))*ch;
+  ctx.beginPath();ctx.arc(epx,epy,3.5,0,Math.PI*2);ctx.fillStyle='#00d27a';ctx.fill();
 }
 
 init();

@@ -2,273 +2,550 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<script>(function(){try{var t=localStorage.getItem('ap-theme')||'light';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}}());</script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sign In — Anjan Patel Engineering</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — anjanpatel.ca</title>
+<meta name="description" content="Access the engineering workspace at app.anjanpatel.ca">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0B1D2D">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root{
-  --navy:#0B1D2D;--orange:#F28C18;
-  --bg:#F0F4FA;--surface:#FFFFFF;
-  --text:#0B1D2D;--muted:#5E728A;--line:#D8E1EC;
-  --err:#DC2626;--radius:10px;
+:root {
+  --canvas:   #0b0f19;
+  --surface:  #171e2e;
+  --elevated: #1b2435;
+  --spotlight:#1e2638;
+  --border:   #2d3748;
+  --text:     #f8fafc;
+  --muted:    #94a3b8;
+  --dim:      #64748b;
+  --emerald:  #00d27a;
+  --emerald-t:#040811;
+  --indigo:   #6366f1;
+  --error:    #ef4444;
+  --warn:     #f59e0b;
+  --ease:     150ms ease-in-out;
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#07111C;--surface:#0D1B2A;
-  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
-}}
-:root[data-theme="dark"]{
-  --bg:#07111C;--surface:#0D1B2A;
-  --text:#E8F0F8;--muted:#6B8BA8;--line:#1C2E40;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 
-/* ── Split layout ── */
-.split{display:flex;min-height:100vh}
-
-/* Left panel */
-.panel-left{
-  width:420px;min-width:340px;flex-shrink:0;
-  background:var(--navy);
-  display:flex;flex-direction:column;justify-content:space-between;
-  padding:48px 44px;position:relative;overflow:hidden;
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html,body { height:100%; }
+body {
+  background:var(--canvas);
+  color:var(--text);
+  font-family:'Inter',-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
 }
-.panel-left::before{
+::selection { background:var(--indigo); color:var(--text); }
+
+/* ── Spotlight ── */
+.spotlight {
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 62% 55% at 50% 46%,var(--spotlight) 0%,#161d2e 34%,#10151f 58%,var(--canvas) 82%);
+  opacity:0;transform:scale(0.94);
+  animation:spotBloom 1600ms cubic-bezier(.22,1,.36,1) 120ms forwards;
+  will-change:transform,opacity;
+}
+.spotlight::after {
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 80% 60% at 80% 30%,rgba(242,140,24,.12) 0%,transparent 70%);
-  pointer-events:none;
+  background:radial-gradient(ellipse 34% 30% at 50% 44%,rgba(99,102,241,.06) 0%,transparent 70%);
 }
-/* Engineering grid decoration */
-.panel-left::after{
-  content:'';position:absolute;inset:0;
-  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
-  background-size:32px 32px;
-  pointer-events:none;
-}
-.pl-top{position:relative;z-index:1}
-.pl-mark{display:flex;align-items:center;gap:12px;margin-bottom:60px}
-.pl-mark-text{display:flex;flex-direction:column}
-.pl-mark-name{font-size:13px;font-weight:700;letter-spacing:.04em;color:#FFFFFF}
-.pl-mark-sub{font-size:10px;color:rgba(200,216,232,.55);letter-spacing:.06em;margin-top:1px}
-.pl-tagline{font-size:26px;font-weight:700;line-height:1.2;color:#FFFFFF;letter-spacing:-.02em;text-wrap:balance}
-.pl-tagline span{color:var(--orange)}
-.pl-sub{margin-top:14px;font-size:13px;line-height:1.6;color:rgba(200,216,232,.6)}
-.pl-features{margin-top:36px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
-.pl-feat{display:flex;align-items:flex-start;gap:10px}
-.pl-feat-icon{width:28px;height:28px;border-radius:7px;background:rgba(242,140,24,.15);border:1px solid rgba(242,140,24,.25);display:grid;place-items:center;flex-shrink:0;margin-top:1px}
-.pl-feat-icon svg{stroke:var(--orange)}
-.pl-feat-copy{display:flex;flex-direction:column;gap:2px}
-.pl-feat-title{font-size:12px;font-weight:600;color:#FFFFFF}
-.pl-feat-desc{font-size:11px;color:rgba(200,216,232,.5)}
-.pl-bottom{position:relative;z-index:1;font-size:10px;color:rgba(200,216,232,.3);letter-spacing:.04em}
+@keyframes spotBloom { to { opacity:1;transform:scale(1); } }
 
-/* Right panel */
-.panel-right{
-  flex:1;background:var(--bg);
+/* ── Stage ── */
+.stage {
+  position:relative;z-index:1;flex:1;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:40px 32px;
+  padding:48px 20px 96px;
 }
-.pr-inner{width:100%;max-width:360px}
-.pr-heading{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:4px}
-.pr-sub{font-size:13px;color:var(--muted);margin-bottom:28px}
 
-/* Form */
-.field{margin-bottom:14px}
-label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
-input[type="email"],input[type="password"]{
-  width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
-  font:400 14px 'IBM Plex Sans',sans-serif;color:var(--text);background:var(--surface);
-  outline:none;transition:border-color .15s,box-shadow .15s;
+/* ── Reveal animation ── */
+.reveal {
+  opacity:0;transform:translateY(18px);clip-path:inset(0 0 100% 0);
+  animation:maskReveal 900ms cubic-bezier(.22,1,.36,1) forwards;
+  will-change:transform,opacity,clip-path;
 }
-input[type="email"]:focus,input[type="password"]:focus{
-  border-color:var(--orange);box-shadow:0 0 0 3px rgba(242,140,24,.12);
+@keyframes maskReveal {
+  60% { clip-path:inset(0 0 0% 0); }
+  100% { opacity:1;transform:translateY(0);clip-path:inset(0 0 0% 0); }
 }
-.btn-primary{
-  width:100%;padding:11px;border-radius:8px;border:none;
-  background:var(--navy);color:#fff;font:700 14px 'IBM Plex Sans',sans-serif;
-  cursor:pointer;transition:background .15s,transform .1s;margin-top:4px;
+.d1{animation-delay:220ms}.d2{animation-delay:340ms}.d3{animation-delay:460ms}
+.d4{animation-delay:560ms}.d5{animation-delay:660ms}.d6{animation-delay:760ms}
+
+/* ── AP mark ── */
+.ap-mark {
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:36px;user-select:none;
 }
-.btn-primary:hover{background:#142840}
-.btn-primary:active{transform:scale(.98)}
-.btn-primary:disabled{opacity:.55;cursor:not-allowed}
-
-/* Toggle login/signup */
-.form-toggle{text-align:center;margin-top:12px;font-size:12px;color:var(--muted)}
-.form-toggle a{color:var(--orange);text-decoration:none;font-weight:600;cursor:pointer}
-.form-toggle a:hover{text-decoration:underline}
-
-/* Divider */
-.divider{display:flex;align-items:center;gap:10px;margin:20px 0;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
-
-/* OAuth */
-.oauth-group{display:flex;flex-direction:column;gap:8px}
-.btn-oauth{
-  width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--line);
-  background:var(--surface);color:var(--text);font:600 13px 'IBM Plex Sans',sans-serif;
-  cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color .15s,box-shadow .15s;
+.ap-hex {
+  opacity:0;transform:scale(0.6) rotate(-15deg);
+  animation:hexIn 1000ms cubic-bezier(.22,1,.36,1) 200ms forwards;
+  will-change:transform,opacity;
 }
-.btn-oauth:hover{border-color:var(--orange);box-shadow:0 2px 10px rgba(242,140,24,.08)}
-.btn-oauth svg{flex-shrink:0}
-.btn-oauth span{flex:1;text-align:center}
+@keyframes hexIn { to { opacity:1;transform:scale(1) rotate(0deg); } }
+.ap-wordmark {
+  display:flex;flex-direction:column;
+  opacity:0;animation:fadeIn 600ms ease 700ms forwards;
+}
+@keyframes fadeIn { to { opacity:1; } }
+.ap-wordmark-name { font-size:14px;font-weight:700;letter-spacing:.04em;color:var(--text);line-height:1.2; }
+.ap-wordmark-sub  { font-size:10px;color:var(--dim);letter-spacing:.08em;font-family:'JetBrains Mono',monospace; }
 
-/* Error */
-.errmsg{font-size:12px;color:var(--err);margin-top:8px;display:none}
-.errmsg.show{display:block}
+/* ── Card ── */
+.card {
+  width:100%;max-width:420px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:32px 32px 28px;
+}
 
-/* Mobile: stack panels */
-@media(max-width:680px){
-  .split{flex-direction:column}
-  .panel-left{
-    width:100%;min-width:unset;
-    padding:32px 24px 28px;
-    flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;
-  }
-  .pl-top{display:flex;align-items:center;gap:14px;margin-bottom:0}
-  .pl-mark{margin-bottom:0}
-  .pl-tagline,.pl-sub,.pl-features,.pl-bottom{display:none}
-  .panel-left::after{background-size:20px 20px}
-  .panel-right{padding:32px 20px 40px;justify-content:flex-start}
+/* ── Views ── */
+.view { display:none; }
+.view.active { display:block; animation:viewIn 260ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes viewIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Tabs ── */
+.tabs {
+  position:relative;display:grid;grid-template-columns:1fr 1fr;
+  background:rgba(11,15,25,.65);border:1px solid var(--border);
+  border-radius:7px;padding:3px;margin-bottom:24px;
+}
+.tab-indicator {
+  position:absolute;top:3px;left:3px;
+  width:calc(50% - 3px);height:calc(100% - 6px);
+  background:var(--elevated);border:1px solid var(--border);
+  border-radius:5px;
+  transition:transform 220ms cubic-bezier(.22,1,.36,1);
+  will-change:transform;
+}
+.tab {
+  position:relative;z-index:1;appearance:none;background:none;border:none;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  color:var(--muted);padding:8px 0;cursor:pointer;border-radius:5px;
+  transition:color var(--ease);
+}
+.tab:hover { color:var(--text); }
+.tab[aria-selected="true"] { color:var(--text); }
+.tab:focus-visible { outline:2px solid var(--indigo);outline-offset:2px; }
+
+/* ── Fields ── */
+.field { margin-bottom:16px; }
+.field-row { display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px; }
+.field label { font-size:12px;font-weight:500;color:var(--text);letter-spacing:.02em; }
+.inline-btn {
+  font-size:11px;color:var(--dim);text-decoration:none;
+  background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;
+  transition:color var(--ease);
+}
+.inline-btn:hover { color:var(--text); }
+.inline-btn:focus-visible { outline:2px solid var(--indigo);outline-offset:2px;border-radius:2px; }
+
+.field input {
+  width:100%;height:40px;
+  background:rgba(11,15,25,.65);
+  border:1px solid var(--border);border-radius:6px;
+  padding:0 12px;
+  font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);
+  caret-color:var(--indigo);
+  transition:border-color var(--ease),box-shadow var(--ease);
+}
+.field input::placeholder { color:#3d4e63;font-family:'Inter',sans-serif;font-size:13px; }
+.field input:hover { border-color:#3a4658; }
+.field input:focus { outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.15); }
+.field input[aria-invalid="true"] { border-color:var(--error); }
+.field input[aria-invalid="true"]:focus { box-shadow:0 0 0 3px rgba(239,68,68,.12); }
+
+.err-msg {
+  min-height:16px;margin-top:4px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--error);
+  opacity:0;transform:translateY(-2px);
+  transition:opacity var(--ease),transform var(--ease);
+}
+.err-msg.visible { opacity:1;transform:translateY(0); }
+
+.form-note {
+  min-height:16px;margin:4px 0 8px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;
+  color:var(--error);opacity:0;transform:translateY(-2px);
+  transition:opacity var(--ease),transform var(--ease);
+}
+.form-note.visible { opacity:1;transform:translateY(0); }
+.form-note.ok { color:var(--emerald); }
+.form-note.info { color:var(--muted); }
+
+.shake { animation:shake 320ms cubic-bezier(.36,.07,.19,.97); }
+@keyframes shake { 20%,60%{transform:translateX(-4px)} 40%,80%{transform:translateX(4px)} }
+
+/* ── CTA button ── */
+.cta {
+  width:100%;height:42px;margin-top:4px;
+  appearance:none;border:none;border-radius:6px;
+  background:var(--emerald);color:var(--emerald-t);
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;letter-spacing:.01em;
+  cursor:pointer;
+  transition:background-color var(--ease),transform var(--ease),opacity var(--ease);
+}
+.cta:hover:not(:disabled) { background:#17e58c;transform:translateY(-1px); }
+.cta:active:not(:disabled) { transform:translateY(0); }
+.cta:disabled { cursor:default;opacity:.7; }
+.cta:focus-visible { outline:2px solid var(--indigo);outline-offset:3px; }
+.cta-label { display:inline-block;transition:opacity var(--ease); }
+.cta-label.fading { opacity:0; }
+
+/* ── Divider ── */
+.divider {
+  display:flex;align-items:center;gap:12px;margin:20px 0;
+  color:var(--dim);font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.14em;
+}
+.divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--border); }
+
+/* ── OAuth buttons ── */
+.oauth { display:flex;flex-direction:column;gap:10px; }
+.oauth-btn {
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;height:40px;appearance:none;
+  background:rgba(11,15,25,.45);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;
+  transition:border-color var(--ease),background-color var(--ease),transform var(--ease);
+}
+.oauth-btn:hover:not(:disabled) {
+  border-color:#46536a;background:rgba(30,38,56,.55);transform:translateY(-1px);
+}
+.oauth-btn:disabled { opacity:.5;cursor:default; }
+.oauth-btn:focus-visible { outline:2px solid var(--indigo);outline-offset:3px; }
+.oauth-btn svg { flex-shrink:0; }
+
+/* ── Back / sub-heading ── */
+.back-row { margin-bottom:20px; }
+.view-heading { font-size:16px;font-weight:600;margin-bottom:4px; }
+.view-sub { font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:20px; }
+
+/* ── Footer ── */
+.footer {
+  position:relative;z-index:1;padding:16px 20px 20px;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);
+  opacity:0;animation:fadeIn 900ms ease 900ms forwards;
+}
+.footer a { color:var(--dim);text-decoration:none;transition:color var(--ease); }
+.footer a:hover { color:var(--muted); }
+.footer .sep { margin:0 8px;opacity:.4; }
+
+@media (max-width:480px) {
+  .card { padding:24px 20px 22px;border-radius:8px; }
+  .stage { padding:32px 16px 80px; }
+  .ap-mark { margin-bottom:28px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .reveal,.spotlight,.footer,.ap-hex,.ap-wordmark { animation-duration:1ms;animation-delay:0ms; }
+  * { transition-duration:1ms !important; }
 }
 </style>
 </head>
 <body>
 
-<div class="split">
-  <!-- Left brand panel -->
-  <div class="panel-left">
-    <div class="pl-top">
-      <div class="pl-mark">
-        <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect width="100" height="100" rx="14" fill="#0B1D2D"/>
-          <text x="50" y="50" font-family="'IBM Plex Sans',system-ui,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text>
-        </svg>
-        <div class="pl-mark-text">
-          <span class="pl-mark-name">Anjan Patel</span>
-          <span class="pl-mark-sub">Engineering Tools</span>
-        </div>
-      </div>
-      <div>
-        <p class="pl-tagline">Engineering tools<br><span>built for the field.</span></p>
-        <p class="pl-sub">Reference data, calculations, and saved lookups — locked to your account.</p>
-      </div>
+<div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+<main class="stage">
+
+  <!-- AP Mark -->
+  <div class="ap-mark reveal d1" aria-label="Anjan Patel Engineering">
+    <svg class="ap-hex" width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Hexagon engineering mark -->
+      <polygon points="50,4 93,27.5 93,72.5 50,96 7,72.5 7,27.5" fill="#171e2e" stroke="#2d3748" stroke-width="2.5"/>
+      <polygon points="50,12 86,31.5 86,68.5 50,88 14,68.5 14,31.5" fill="none" stroke="#2d3748" stroke-width="1"/>
+      <text x="50" y="54" font-family="'Inter',system-ui,sans-serif" font-weight="800" font-size="30" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" letter-spacing="-1.5">AP</text>
+    </svg>
+    <div class="ap-wordmark">
+      <span class="ap-wordmark-name">Anjan Patel</span>
+      <span class="ap-wordmark-sub">ENG · TOOLS</span>
     </div>
-    <div class="pl-features">
-      <div class="pl-feat">
-        <div class="pl-feat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13,1.5 22.66,7 22.66,19 13,24.5 3.34,19 3.34,7"/><circle cx="13" cy="13" r="3"/></svg></div>
-        <div class="pl-feat-copy"><span class="pl-feat-title">Flange Slide Rule</span><span class="pl-feat-desc">API 6A · ISO 10423 · 3K–15K · 10 nominal sizes</span></div>
-      </div>
-      <div class="pl-feat">
-        <div class="pl-feat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="1"/><path d="M9 11V6a3 3 0 0 1 6 0v5"/></svg></div>
-        <div class="pl-feat-copy"><span class="pl-feat-title">Safety Block Calculator</span><span class="pl-feat-desc">SWL · BHN · Von Mises · PDF export</span></div>
-      </div>
-      <div class="pl-feat">
-        <div class="pl-feat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div class="pl-feat-copy"><span class="pl-feat-title">Calc Logs</span><span class="pl-feat-desc">Save &amp; revisit any lookup across sessions</span></div>
-      </div>
-    </div>
-    <div class="pl-bottom">app.anjanpatel.ca</div>
   </div>
 
-  <!-- Right form panel -->
-  <div class="panel-right">
-    <div class="pr-inner">
-      <h1 class="pr-heading" id="formHeading">Sign in</h1>
-      <p class="pr-sub" id="formSub">Access your engineering workspace.</p>
+  <div class="card reveal d2">
 
-      <!-- Email/password form -->
-      <form id="authForm" onsubmit="handleAuth(event)">
-        <div class="field">
-          <label for="emailInput">Email</label>
-          <input type="email" id="emailInput" placeholder="you@example.com" required autocomplete="email">
+    <!-- VIEW: AUTH -->
+    <section class="view active" id="view-auth">
+      <div class="tabs" role="tablist" aria-label="Authentication mode">
+        <div class="tab-indicator" id="tabIndicator" aria-hidden="true"></div>
+        <button class="tab" id="tab-signin" role="tab" aria-selected="true">Sign In</button>
+        <button class="tab" id="tab-create" role="tab" aria-selected="false">Create Account</button>
+      </div>
+
+      <form id="auth-form" novalidate>
+        <div class="field reveal d3">
+          <div class="field-row"><label for="email">Email</label></div>
+          <input type="email" id="email" placeholder="name@company.com" autocomplete="email" aria-describedby="email-error">
+          <p class="err-msg" id="email-error" role="alert" aria-live="polite"></p>
         </div>
-        <div class="field">
-          <label for="passInput">Password</label>
-          <input type="password" id="passInput" placeholder="••••••••" required autocomplete="current-password" minlength="6">
+        <div class="field reveal d4">
+          <div class="field-row">
+            <label for="password">Password</label>
+            <button type="button" class="inline-btn" id="forgot-link">Forgot password?</button>
+          </div>
+          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" aria-describedby="password-error">
+          <p class="err-msg" id="password-error" role="alert" aria-live="polite"></p>
         </div>
-        <div class="errmsg" id="errMsg"></div>
-        <button class="btn-primary" type="submit" id="submitBtn">Sign in</button>
+        <p class="form-note" id="auth-note" role="alert" aria-live="polite"></p>
+        <button type="submit" class="cta reveal d5" id="submit-btn">
+          <span class="cta-label" id="cta-label">Access Workspace</span>
+        </button>
       </form>
-      <div class="form-toggle">
-        <span id="toggleText">Don't have an account?</span>
-        <a onclick="toggleMode()" id="toggleLink"> Sign up</a>
-      </div>
 
-      <div class="divider">or</div>
+      <div class="divider reveal d6" aria-hidden="true">OR</div>
 
-      <!-- OAuth -->
-      <div class="oauth-group">
-        <button class="btn-oauth" onclick="oauthLogin('google')">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          <span>Continue with Google</span>
+      <div class="oauth reveal d6">
+        <button type="button" class="oauth-btn" id="google-btn" aria-label="Continue with Google">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/>
+          </svg>
+          Continue with Google
         </button>
-        <button class="btn-oauth" onclick="oauthLogin('azure')">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M11.5 2L3 8.5l2.5 12 6-5.5L17 22l4-13.5L11.5 2z" fill="#00A4EF"/><path d="M11.5 2L21 8.5 17 22l-5.5-7 6-5.5-6-8z" fill="#00A4EF" opacity=".7"/></svg>
-          <span>Continue with Microsoft</span>
+        <button type="button" class="oauth-btn" id="microsoft-btn" aria-label="Continue with Microsoft">
+          <svg width="16" height="16" viewBox="0 0 23 23" aria-hidden="true">
+            <path fill="#f35325" d="M1 1h10v10H1z"/>
+            <path fill="#81bc06" d="M12 1h10v10H12z"/>
+            <path fill="#05a6f0" d="M1 12h10v10H1z"/>
+            <path fill="#ffba08" d="M12 12h10v10H12z"/>
+          </svg>
+          Continue with Microsoft
         </button>
-        <button class="btn-oauth" onclick="oauthLogin('github')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-          <span>Continue with GitHub</span>
+        <button type="button" class="oauth-btn" id="github-btn" aria-label="Continue with GitHub">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+          </svg>
+          Continue with GitHub
         </button>
       </div>
-    </div>
+    </section>
+
+    <!-- VIEW: FORGOT PASSWORD -->
+    <section class="view" id="view-forgot">
+      <div class="back-row">
+        <button type="button" class="inline-btn" id="forgot-back">← Back to Sign In</button>
+      </div>
+      <p class="view-heading">Reset password</p>
+      <p class="view-sub">Enter the email on your account. A reset link will be sent — expires in 60 minutes.</p>
+      <form id="forgot-form" novalidate>
+        <div class="field">
+          <div class="field-row"><label for="forgot-email">Email</label></div>
+          <input type="email" id="forgot-email" placeholder="name@company.com" autocomplete="email" aria-describedby="forgot-err">
+          <p class="err-msg" id="forgot-err" role="alert" aria-live="polite"></p>
+        </div>
+        <p class="form-note" id="forgot-note" role="alert" aria-live="polite"></p>
+        <button type="submit" class="cta" id="forgot-btn">
+          <span class="cta-label" id="forgot-label">Send Reset Link</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- VIEW: RESET PASSWORD (arrives via Supabase hash) -->
+    <section class="view" id="view-reset">
+      <p class="view-heading">Choose a new password</p>
+      <p class="view-sub">Minimum 8 characters. You'll be signed in immediately after.</p>
+      <form id="reset-form" novalidate>
+        <div class="field">
+          <div class="field-row"><label for="reset-pass">New Password</label></div>
+          <input type="password" id="reset-pass" placeholder="••••••••" autocomplete="new-password" aria-describedby="reset-err">
+          <p class="err-msg" id="reset-err" role="alert" aria-live="polite"></p>
+        </div>
+        <p class="form-note" id="reset-note" role="alert" aria-live="polite"></p>
+        <button type="submit" class="cta" id="reset-btn">
+          <span class="cta-label" id="reset-label">Set New Password</span>
+        </button>
+      </form>
+    </section>
+
   </div>
-</div>
+</main>
+
+<footer class="footer">
+  &copy; 2026 anjanpatel.ca<span class="sep">|</span><a href="/terms/">Terms</a><span class="sep">|</span><a id="priv-link" href="#">Privacy</a>
+</footer>
 
 <script>
+(function(){
+  var c=document.getElementById('priv-link');
+  var e='info'+'@'+'anjanpatel'+'.'+'ca';
+  c.href='mailto:'+e;c.textContent='Contact';
+})();
+
 var SUPABASE_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SUPABASE_ANON='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
 var sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
-var isSignUp=false;
 
-(async function(){
+var mode='signin';
+var busy=false;
+var EMAIL_RE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+
+var COPY={
+  signin:{idle:'Access Workspace',working:'Signing In…',done:'Access Granted'},
+  create:{idle:'Create Account',working:'Creating…',done:'Account Created'}
+};
+
+/* helpers */
+function $(id){return document.getElementById(id)}
+function showView(name){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  $('view-'+name).classList.add('active');
+}
+function setNote(id,msg,type){
+  var el=$(id);el.textContent=msg;
+  el.className='form-note'+(msg?' visible':'');
+  if(type==='ok')el.classList.add('ok');
+  if(type==='info')el.classList.add('info');
+}
+function setErr(inputId,errId,msg){
+  var inp=$(inputId),err=$(errId);
+  if(msg){
+    err.textContent=msg;err.classList.add('visible');
+    inp.setAttribute('aria-invalid','true');
+    inp.classList.remove('shake');void inp.offsetWidth;inp.classList.add('shake');
+  } else {
+    err.textContent='';err.classList.remove('visible');
+    inp.removeAttribute('aria-invalid');
+  }
+}
+function swapLabel(labelId,text){
+  var el=$(labelId);el.classList.add('fading');
+  setTimeout(function(){el.textContent=text;el.classList.remove('fading')},150);
+}
+
+/* Tab switching */
+$('tab-signin').addEventListener('click',function(){setMode('signin')});
+$('tab-create').addEventListener('click',function(){setMode('create')});
+function setMode(next){
+  if(busy||next===mode)return;
+  mode=next;
+  $('tab-signin').setAttribute('aria-selected',String(next==='signin'));
+  $('tab-create').setAttribute('aria-selected',String(next==='create'));
+  $('tabIndicator').style.transform=next==='create'?'translateX(100%)':'translateX(0)';
+  swapLabel('cta-label',COPY[mode].idle);
+  $('password').setAttribute('autocomplete',next==='signin'?'current-password':'new-password');
+  setErr('email','email-error','');setErr('password','password-error','');setNote('auth-note','');
+}
+
+/* Clear errors on input */
+$('email').addEventListener('input',function(){setErr('email','email-error','');setNote('auth-note','')});
+$('password').addEventListener('input',function(){setErr('password','password-error','')});
+
+/* Auth submit */
+$('auth-form').addEventListener('submit',async function(e){
+  e.preventDefault();if(busy)return;
+  var em=$('email').value.trim();
+  var pw=$('password').value;
+  var ok=true;
+  if(!em){setErr('email','email-error','Email is required');ok=false}
+  else if(!EMAIL_RE.test(em)){setErr('email','email-error','Enter a valid email');ok=false}
+  if(!pw){setErr('password','password-error','Password is required');ok=false}
+  else if(pw.length<6){setErr('password','password-error','Minimum 6 characters');ok=false}
+  if(!ok)return;
+  busy=true;$('submit-btn').disabled=true;setNote('auth-note','');
+  swapLabel('cta-label',COPY[mode].working);
+  var r=mode==='signin'
+    ?await sb.auth.signInWithPassword({email:em,password:pw})
+    :await sb.auth.signUp({email:em,password:pw});
+  if(r.error){
+    swapLabel('cta-label',COPY[mode].idle);
+    setNote('auth-note',r.error.message);
+    $('submit-btn').disabled=false;busy=false;return;
+  }
+  if(mode==='create'&&r.data.user&&!r.data.session){
+    swapLabel('cta-label',COPY[mode].idle);
+    setNote('auth-note','Check your email to confirm your account.','info');
+    $('submit-btn').disabled=false;busy=false;return;
+  }
+  swapLabel('cta-label',COPY[mode].done);
+  setTimeout(function(){window.location.href='/dashboard.html'},700);
+});
+
+/* Forgot password */
+$('forgot-link').addEventListener('click',function(){setNote('forgot-note','');showView('forgot')});
+$('forgot-back').addEventListener('click',function(){showView('auth')});
+$('forgot-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  var em=$('forgot-email').value.trim();
+  setErr('forgot-email','forgot-err','');setNote('forgot-note','');
+  if(!em){setErr('forgot-email','forgot-err','Email is required');return}
+  if(!EMAIL_RE.test(em)){setErr('forgot-email','forgot-err','Enter a valid email');return}
+  $('forgot-btn').disabled=true;swapLabel('forgot-label','Sending…');
+  var r=await sb.auth.resetPasswordForEmail(em,{redirectTo:window.location.origin+'/?reset=1'});
+  swapLabel('forgot-label','Send Reset Link');$('forgot-btn').disabled=false;
+  if(r.error){setNote('forgot-note',r.error.message);return}
+  setNote('forgot-note','If an account exists, a reset link is on its way.','ok');
+});
+
+/* Reset password (Supabase sets #access_token in hash) */
+$('reset-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  var pw=$('reset-pass').value;
+  setErr('reset-pass','reset-err','');setNote('reset-note','');
+  if(!pw){setErr('reset-pass','reset-err','Password is required');return}
+  if(pw.length<8){setErr('reset-pass','reset-err','Minimum 8 characters');return}
+  $('reset-btn').disabled=true;swapLabel('reset-label','Setting…');
+  var r=await sb.auth.updateUser({password:pw});
+  swapLabel('reset-label','Set New Password');$('reset-btn').disabled=false;
+  if(r.error){setNote('reset-note',r.error.message);return}
+  setNote('reset-note','Password updated — signing you in…','ok');
+  setTimeout(function(){window.location.href='/dashboard.html'},1200);
+});
+
+/* OAuth */
+function oauthLogin(provider){
+  sb.auth.signInWithOAuth({provider:provider,options:{redirectTo:window.location.origin+'/dashboard.html'}});
+}
+$('google-btn').addEventListener('click',function(){oauthLogin('google')});
+$('microsoft-btn').addEventListener('click',function(){oauthLogin('azure')});
+$('github-btn').addEventListener('click',function(){oauthLogin('github')});
+
+/* Boot */
+(async function boot(){
+  /* Check if Supabase returned from password reset (hash contains access_token + type=recovery) */
+  var hash=window.location.hash;
+  if(hash.includes('type=recovery')){
+    var params=new URLSearchParams(hash.replace(/^#/,''));
+    var token=params.get('access_token');
+    if(token){
+      await sb.auth.setSession({access_token:token,refresh_token:params.get('refresh_token')||''});
+      showView('reset');
+      window.history.replaceState({},'',window.location.pathname);
+      return;
+    }
+  }
+  /* Already signed in → dashboard */
   var r=await sb.auth.getSession();
-  if(r.data&&r.data.session)window.location.href='/dashboard.html';
+  if(r.data&&r.data.session){window.location.href='/dashboard.html';return}
+  showView('auth');
 })();
 
-function toggleMode(){
-  isSignUp=!isSignUp;
-  document.getElementById('formHeading').textContent=isSignUp?'Create account':'Sign in';
-  document.getElementById('formSub').textContent=isSignUp?'Start using your engineering tools.':'Access your engineering workspace.';
-  document.getElementById('submitBtn').textContent=isSignUp?'Create account':'Sign in';
-  document.getElementById('toggleText').textContent=isSignUp?'Already have an account?':'Don\'t have an account?';
-  document.getElementById('toggleLink').textContent=isSignUp?' Sign in':' Sign up';
-  document.getElementById('passInput').autocomplete=isSignUp?'new-password':'current-password';
-  showErr('');
-}
-
-async function handleAuth(e){
-  e.preventDefault();
-  var email=document.getElementById('emailInput').value.trim();
-  var pass=document.getElementById('passInput').value;
-  var btn=document.getElementById('submitBtn');
-  btn.disabled=true;btn.textContent=isSignUp?'Creating…':'Signing in…';
-  showErr('');
-  var r=isSignUp
-    ?await sb.auth.signUp({email:email,password:pass})
-    :await sb.auth.signInWithPassword({email:email,password:pass});
-  if(r.error){showErr(r.error.message);btn.disabled=false;btn.textContent=isSignUp?'Create account':'Sign in';return}
-  if(isSignUp&&r.data.user&&!r.data.session){showErr('Check your email to confirm your account.');btn.disabled=false;btn.textContent='Create account';return}
-  window.location.href='/dashboard.html';
-}
-
-async function oauthLogin(provider){
-  var r=await sb.auth.signInWithOAuth({provider:provider,options:{redirectTo:window.location.origin+'/dashboard.html'}});
-  if(r.error)showErr(r.error.message);
-}
-
-function showErr(msg){
-  var el=document.getElementById('errMsg');
-  el.textContent=msg;
-  el.className=msg?'errmsg show':'errmsg';
-}
+/* Spotlight parallax */
+(function(){
+  var rm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(rm)return;
+  var spot=document.getElementById('spotlight');
+  var tx=0,ty=0,cx=0,cy=0;
+  window.addEventListener('mousemove',function(e){
+    tx=(e.clientX/window.innerWidth-.5)*22;
+    ty=(e.clientY/window.innerHeight-.5)*14;
+  });
+  (function drift(){
+    cx+=(tx-cx)*.045;cy+=(ty-cy)*.045;
+    spot.style.transform='translate3d('+cx+'px,'+cy+'px,0)';
+    requestAnimationFrame(drift);
+  })();
+})();
 </script>
 </body>
 </html>
