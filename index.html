@@ -72,7 +72,6 @@ body{
   opacity:0;animation:riseIn 800ms var(--ease) 180ms forwards;
 }
 @keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.ap-hex-svg{display:block;filter:drop-shadow(0 0 8px rgba(99,102,241,.25))}
 .ap-wordmark{display:flex;flex-direction:column;gap:1px}
 .ap-wordmark-name{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--text);line-height:1.2}
 .ap-wordmark-sub{font-size:9px;font-family:var(--font-mono);color:var(--dim);letter-spacing:.14em}
@@ -255,10 +254,9 @@ body{
 
   <!-- AP Mark -->
   <div class="ap-mark" aria-label="AP Workspace">
-    <svg class="ap-hex-svg" width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <polygon points="50,4 93,27.5 93,72.5 50,96 7,72.5 7,27.5" fill="#161d2e" stroke="#2a3650" stroke-width="2.5"/>
-      <polygon points="50,13 85,32 85,68 50,87 15,68 15,32" fill="none" stroke="#1e2a3d" stroke-width="1.2"/>
-      <text x="50" y="54" font-family="'Inter',system-ui,sans-serif" font-weight="800" font-size="30" text-anchor="middle" dominant-baseline="central" fill="#f0f4f8" letter-spacing="-1.5">AP</text>
+    <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0;border-radius:8px">
+      <rect width="36" height="36" rx="8" fill="#161d2e" stroke="#2a3650" stroke-width="1"/>
+      <text x="18" y="18" font-family="'Inter',system-ui,sans-serif" font-weight="800" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#f0f4f8" letter-spacing="-0.5">AP</text>
     </svg>
     <div class="ap-wordmark">
       <span class="ap-wordmark-name">AP Workspace</span>
