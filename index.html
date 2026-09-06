@@ -26,7 +26,10 @@
   --emerald: #00d27a;
   --indigo:  #6366f1;
   --error:   #ef4444;
+  /* transition shorthand token (includes duration) */
   --ease:    140ms cubic-bezier(.22,1,.36,1);
+  /* animation timing-function only — no duration, safe in animation shorthand */
+  --anim-ease: cubic-bezier(.22,1,.36,1);
   --font-ui: 'Inter',-apple-system,system-ui,sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,monospace;
 }
@@ -54,7 +57,7 @@ body{
 .spotlight{
   position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 55% 60% at 50% 46%,#1a2540 0%,#111826 40%,var(--canvas) 75%);
-  opacity:0;animation:bloom 1400ms var(--ease) 80ms forwards;
+  opacity:0;animation:bloom 1400ms var(--anim-ease) 80ms forwards;
 }
 @keyframes bloom{to{opacity:1}}
 
@@ -69,7 +72,7 @@ body{
 .ap-mark{
   display:flex;align-items:center;gap:10px;
   margin-bottom:18px;user-select:none;
-  opacity:0;animation:riseIn 800ms var(--ease) 180ms forwards;
+  animation:riseIn 800ms var(--anim-ease) 180ms both;
 }
 @keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .ap-wordmark{display:flex;flex-direction:column;gap:1px}
@@ -84,12 +87,12 @@ body{
   border-radius:10px;
   padding:26px 28px 22px;
   box-shadow:0 4px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.03) inset;
-  opacity:0;animation:riseIn 800ms var(--ease) 320ms forwards;
+  animation:riseIn 800ms var(--anim-ease) 320ms both;
 }
 
 /* ── Views ── */
 .view{display:none}
-.view.active{display:block;animation:viewIn 220ms var(--ease) both}
+.view.active{display:block;animation:viewIn 220ms var(--anim-ease) both}
 @keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── Tabs ── */
@@ -209,7 +212,7 @@ body{
   display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;
   padding:10px 20px 12px;
   font:400 10px var(--font-mono);color:var(--dim);letter-spacing:.04em;
-  opacity:0;animation:riseIn 600ms var(--ease) 700ms forwards;
+  animation:riseIn 600ms var(--anim-ease) 700ms both;
 }
 .legal a,.legal button.lbtn{
   color:var(--dim);text-decoration:none;background:none;border:none;cursor:pointer;
