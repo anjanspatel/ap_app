@@ -64,8 +64,10 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .sb-brand{
   display:flex;align-items:center;gap:10px;
   padding:16px 16px 14px;border-bottom:1px solid var(--border);
-  flex-shrink:0;
+  flex-shrink:0;text-decoration:none;cursor:pointer;
+  transition:opacity var(--ease);
 }
+.sb-brand:hover{opacity:.8}
 .sb-hex{flex-shrink:0}
 .sb-name{display:flex;flex-direction:column;gap:1px}
 .sb-name-main{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em;line-height:1}
@@ -91,7 +93,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   padding:12px 14px;border-top:1px solid var(--border);
   display:flex;align-items:center;gap:10px;flex-shrink:0;
 }
-.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;font:700 11px 'JetBrains Mono',monospace;color:var(--text);flex-shrink:0}
+.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;font:700 11px 'JetBrains Mono',monospace;color:var(--text);flex-shrink:0;text-decoration:none;transition:border-color var(--ease)}
+.sb-avatar:hover{border-color:var(--indigo)}
 .sb-user-info{flex:1;min-width:0}
 .sb-user-email{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .sb-user-role{font-size:9px;color:var(--dim);letter-spacing:.04em;margin-top:1px}
@@ -115,7 +118,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .tb-clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);padding:0 8px}
 .tb-btn{width:34px;height:34px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease),color var(--ease),background var(--ease)}
 .tb-btn:hover{border-color:var(--indigo);color:var(--text)}
-.tb-avatar{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;font:700 11px 'JetBrains Mono',monospace;color:var(--text)}
+.tb-avatar{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;font:700 11px 'JetBrains Mono',monospace;color:var(--text);text-decoration:none;cursor:pointer;transition:border-color var(--ease)}
+.tb-avatar:hover{border-color:var(--indigo)}
 
 /* ═══ CONTENT ═══ */
 .content{flex:1;padding:20px}
@@ -189,8 +193,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .btn-del{background:none;border:none;color:var(--border);cursor:pointer;width:22px;height:22px;border-radius:3px;display:grid;place-items:center;transition:background var(--ease),color var(--ease)}
 .btn-del:hover{background:rgba(239,68,68,.1);color:var(--error)}
 
-.chart-wrap{padding:16px;height:200px;position:relative}
-canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 
 .empty{padding:32px 16px;text-align:center}
 .empty-label{font-size:12px;color:var(--dim);font-family:'JetBrains Mono',monospace}
@@ -246,7 +248,7 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
-  <div class="sb-brand">
+  <a class="sb-brand" href="/" aria-label="AP Workspace home">
     <div style="flex-shrink:0;width:32px;height:32px;border-radius:7px;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center">
       <span style="font-family:'Inter',system-ui,sans-serif;font-weight:900;font-size:13px;color:var(--text);letter-spacing:-0.04em;line-height:1;user-select:none">AP</span>
     </div>
@@ -254,7 +256,7 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
       <span class="sb-name-main">AP Workspace</span>
       <span class="sb-name-sub">ENG · TOOLS · CA</span>
     </div>
-  </div>
+  </a>
 
   <nav class="sb-nav" role="navigation" aria-label="Main navigation">
     <div class="sb-section">Workspace</div>
@@ -278,7 +280,7 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
   </nav>
 
   <div class="sb-user">
-    <div class="sb-avatar" id="sbAvatar">?</div>
+    <a class="sb-avatar" id="sbAvatar" href="/settings.html" title="Settings" aria-label="Go to settings">?</a>
     <div class="sb-user-info">
       <span class="sb-user-email" id="sbEmail">—</span>
       <span class="sb-user-role" id="sbRole">Member</span>
@@ -304,7 +306,7 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
       <button class="tb-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
-      <div class="tb-avatar" id="tbAvatar">?</div>
+      <a class="tb-avatar" id="tbAvatar" href="/settings.html" title="Settings" aria-label="Go to settings">?</a>
     </div>
   </header>
 
@@ -391,15 +393,6 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
           </div>
         </div>
 
-        <div class="panel bento-wide">
-          <div class="panel-hd">
-            <span class="panel-title">Pressure vs. Time — Reference Loop</span>
-            <span class="panel-count" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim)">API 6A · 10,000 PSI · Simulated</span>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="pressureChart"></canvas>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -602,7 +595,6 @@ async function init(){
   if(hr<12)greet='Good morning';else if(hr<18)greet='Good afternoon';else greet='Good evening';
   $('greetSub').textContent=greet+' · Alberta, CA';
   loadDashboard();
-  drawChart();
 }
 
 async function signOut(){
@@ -682,87 +674,6 @@ async function loadAdmin(){
     var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
     return'<tr><td class="td-mono" title="'+esc(l.user_id||'')+'">'+esc(uid)+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td></tr>';
   }).join('');
-}
-
-/* ── Pressure chart (canvas, theme-aware) ── */
-function drawChart(){
-  var canvas=$('pressureChart');
-  if(!canvas)return;
-  var isDark=(document.documentElement.dataset.theme||'dark')==='dark';
-  var bgColor=isDark?'#171e2e':'#ffffff';
-  var gridColor=isDark?'#2d3748':'#e2e8f0';
-  var labelColor=isDark?'#64748b':'#94a3b8';
-  var ctx=canvas.getContext('2d');
-  var dpr=window.devicePixelRatio||1;
-  var wrap=canvas.parentElement;
-  canvas.width=wrap.offsetWidth*dpr;
-  canvas.height=wrap.offsetHeight*dpr;
-  ctx.scale(dpr,dpr);
-  var W=wrap.offsetWidth,H=wrap.offsetHeight;
-  var pad={t:20,r:20,b:36,l:54};
-  var cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
-
-  var pts=[];
-  for(var i=0;i<24;i++){
-    var base=9800+(Math.sin(i*.4)*600)+(Math.random()*200);
-    pts.push(Math.round(base));
-  }
-  var maxP=10500,minP=9000;
-
-  ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
-
-  ctx.strokeStyle=gridColor;ctx.lineWidth=.5;
-  var ySteps=4;
-  for(var j=0;j<=ySteps;j++){
-    var y=pad.t+ch-(j/ySteps)*ch;
-    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
-    var val=Math.round(minP+(j/ySteps)*(maxP-minP));
-    ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='right';
-    ctx.fillText(val.toLocaleString(),pad.l-6,y+3);
-  }
-  var xSteps=6;
-  for(var k=0;k<=xSteps;k++){
-    var x=pad.l+(k/xSteps)*cw;
-    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+ch);ctx.stroke();
-    ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
-    ctx.fillText((k*4)+'h',x,pad.t+ch+16);
-  }
-
-  ctx.save();ctx.translate(12,pad.t+ch/2);ctx.rotate(-Math.PI/2);
-  ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
-  ctx.fillText('PSI',0,0);ctx.restore();
-  ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
-  ctx.fillText('TIME (HOURS)',pad.l+cw/2,H-4);
-
-  ctx.beginPath();
-  pts.forEach(function(p,i){
-    var x=pad.l+(i/(pts.length-1))*cw;
-    var y=pad.t+ch-((p-minP)/(maxP-minP))*ch;
-    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-  });
-  var lastX=pad.l+cw,firstX=pad.l;
-  ctx.lineTo(lastX,pad.t+ch);ctx.lineTo(firstX,pad.t+ch);ctx.closePath();
-  var grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);
-  grad.addColorStop(0,'rgba(0,210,122,.18)');grad.addColorStop(1,'rgba(0,210,122,.01)');
-  ctx.fillStyle=grad;ctx.fill();
-
-  ctx.beginPath();
-  pts.forEach(function(p,i){
-    var x=pad.l+(i/(pts.length-1))*cw;
-    var y=pad.t+ch-((p-minP)/(maxP-minP))*ch;
-    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-  });
-  ctx.strokeStyle='#00d27a';ctx.lineWidth=1.5;ctx.stroke();
-
-  var thY=pad.t+ch-((10000-minP)/(maxP-minP))*ch;
-  ctx.beginPath();ctx.setLineDash([4,4]);ctx.moveTo(pad.l,thY);ctx.lineTo(pad.l+cw,thY);
-  ctx.strokeStyle='rgba(239,68,68,.4)';ctx.lineWidth=1;ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='rgba(239,68,68,.7)';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='right';
-  ctx.fillText('10,000 PSI LIMIT',pad.l+cw-4,thY-4);
-
-  var ep=pts[pts.length-1];
-  var epx=pad.l+cw,epy=pad.t+ch-((ep-minP)/(maxP-minP))*ch;
-  ctx.beginPath();ctx.arc(epx,epy,3.5,0,Math.PI*2);ctx.fillStyle='#00d27a';ctx.fill();
 }
 
 init();

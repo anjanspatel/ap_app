@@ -48,7 +48,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 ::selection{background:var(--indigo);color:#fff}
 
 .sidebar{position:fixed;top:0;left:0;width:var(--sb-w);height:100%;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform var(--ease),background .2s,border-color .2s}
-.sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0;text-decoration:none;cursor:pointer;transition:opacity var(--ease)}
+.sb-brand:hover{opacity:.8}
 .sb-name{display:flex;flex-direction:column;gap:1px}
 .sb-name-main{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em;line-height:1}
 .sb-name-sub{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.1em}
@@ -150,7 +151,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 <body>
 
 <aside class="sidebar" id="sidebar">
-  <div class="sb-brand">
+  <a class="sb-brand" href="/" aria-label="AP Workspace home">
     <div style="flex-shrink:0;width:32px;height:32px;border-radius:7px;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center">
       <span style="font-family:'Inter',system-ui,sans-serif;font-weight:900;font-size:13px;color:var(--text);letter-spacing:-0.04em;line-height:1;user-select:none">AP</span>
     </div>
@@ -158,7 +159,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       <span class="sb-name-main">AP Workspace</span>
       <span class="sb-name-sub">ENG · TOOLS · CA</span>
     </div>
-  </div>
+  </a>
   <nav class="sb-nav">
     <div class="sb-section">Workspace</div>
     <a class="nav-item" href="/dashboard.html">
