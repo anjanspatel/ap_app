@@ -2,48 +2,65 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b0f19">
 <title>AP Workspace — Dashboard</title>
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root {
-  --canvas:   #0b0f19;
-  --surface:  #171e2e;
-  --elevated: #1b2435;
-  --border:   #2d3748;
-  --text:     #f8fafc;
-  --muted:    #94a3b8;
-  --dim:      #64748b;
-  --emerald:  #00d27a;
-  --indigo:   #6366f1;
-  --error:    #ef4444;
-  --warn:     #f59e0b;
-  --ease:     150ms ease-in-out;
-  --sb-w:     228px;
-  --tb-h:     48px;
+:root,[data-theme="dark"]{
+  --canvas:#0b0f19;
+  --surface:#171e2e;
+  --elevated:#1b2435;
+  --border:#2d3748;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --dim:#64748b;
+  --emerald:#00d27a;
+  --indigo:#6366f1;
+  --error:#ef4444;
+  --warn:#f59e0b;
+  --chart-bg:#171e2e;
+  --chart-grid:#2d3748;
+  --ease:150ms ease-in-out;
+  --sb-w:228px;
+  --tb-h:48px;
+}
+[data-theme="light"]{
+  --canvas:#f0f4f8;
+  --surface:#ffffff;
+  --elevated:#f7fafc;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --muted:#475569;
+  --dim:#94a3b8;
+  --emerald:#00a85a;
+  --indigo:#4f46e5;
+  --error:#dc2626;
+  --warn:#d97706;
+  --chart-bg:#ffffff;
+  --chart-grid:#e2e8f0;
 }
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow-x:hidden}
-body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-::selection{background:var(--indigo);color:var(--text)}
+body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+::selection{background:var(--indigo);color:#fff}
 
-/* ═══════════════════════════════════════
-   SIDEBAR
-═══════════════════════════════════════ */
+/* ═══ SIDEBAR ═══ */
 .sidebar{
   position:fixed;top:0;left:0;width:var(--sb-w);height:100%;
   background:var(--surface);border-right:1px solid var(--border);
   display:flex;flex-direction:column;z-index:300;
-  transition:transform var(--ease);
+  transition:transform var(--ease),background .2s,border-color .2s;
 }
-
-/* Brand */
 .sb-brand{
   display:flex;align-items:center;gap:10px;
   padding:16px 16px 14px;border-bottom:1px solid var(--border);
@@ -54,7 +71,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .sb-name-main{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em;line-height:1}
 .sb-name-sub{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.1em}
 
-/* Nav */
 .sb-nav{flex:1;padding:8px 0;overflow-y:auto}
 .sb-section{padding:16px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .nav-item{
@@ -64,15 +80,13 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   width:100%;text-align:left;font-family:'Inter',sans-serif;
   border-left:2px solid transparent;
   transition:color var(--ease),background var(--ease),border-color var(--ease);
-  position:relative;
 }
-.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nav-item:hover{background:rgba(99,102,241,.06);color:var(--text)}
 .nav-item.active{background:rgba(99,102,241,.1);color:var(--text);border-left-color:var(--indigo)}
 .nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
 .nav-item.active svg,.nav-item:hover svg{opacity:1}
 .nav-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;padding:1px 6px;border-radius:3px;background:rgba(99,102,241,.15);color:var(--indigo)}
 
-/* User strip */
 .sb-user{
   padding:12px 14px;border-top:1px solid var(--border);
   display:flex;align-items:center;gap:10px;flex-shrink:0;
@@ -84,47 +98,36 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .sb-signout{background:none;border:none;color:var(--dim);cursor:pointer;padding:3px;border-radius:4px;display:grid;place-items:center;transition:color var(--ease)}
 .sb-signout:hover{color:var(--error)}
 
-/* ═══════════════════════════════════════
-   MAIN WRAP
-═══════════════════════════════════════ */
+/* ═══ MAIN WRAP ═══ */
 .main-wrap{margin-left:var(--sb-w);min-height:100%;display:flex;flex-direction:column}
 
-/* ═══════════════════════════════════════
-   TOPBAR
-═══════════════════════════════════════ */
+/* ═══ TOPBAR ═══ */
 .topbar{
   height:var(--tb-h);background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 20px;gap:12px;
   position:sticky;top:0;z-index:200;
+  transition:background .2s,border-color .2s;
 }
-.hamburger{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:4px}
+.hamburger{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:4px;min-height:44px;min-width:44px;align-items:center;justify-content:center}
 .hamburger:hover{color:var(--text);background:var(--elevated)}
 .tb-title{font-size:12px;font-weight:600;color:var(--text);letter-spacing:.02em}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-
 .tb-clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);padding:0 8px}
-
-.tb-btn{width:30px;height:30px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease),color var(--ease)}
+.tb-btn{width:34px;height:34px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease),color var(--ease),background var(--ease)}
 .tb-btn:hover{border-color:var(--indigo);color:var(--text)}
 .tb-avatar{width:28px;height:28px;border-radius:50%;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center;font:700 11px 'JetBrains Mono',monospace;color:var(--text)}
 
-/* ═══════════════════════════════════════
-   CONTENT
-═══════════════════════════════════════ */
+/* ═══ CONTENT ═══ */
 .content{flex:1;padding:20px}
-
-/* section visibility */
 .section{display:none}.section.active{display:block}
 
-/* ── Page header ── */
 .page-hd{margin-bottom:18px}
 .page-eyebrow{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
 .page-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}
 .page-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
-/* ── Metric tiles ── */
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-.metric{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;transition:background .2s,border-color .2s}
 .metric-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .metric-value{font:600 24px/1 'JetBrains Mono',monospace;color:var(--text);letter-spacing:-.03em}
 .metric-value.em{color:var(--emerald)}
@@ -134,12 +137,10 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .dot-idle{background:var(--border)}
 .dot-warn{background:var(--warn)}
 
-/* ── Bento grid ── */
 .bento{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .bento-wide{grid-column:1/-1}
 
-/* ── Panel ── */
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:background .2s,border-color .2s}
 .panel-hd{
   padding:10px 16px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
@@ -149,7 +150,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .panel-action{font-size:10px;font-weight:500;color:var(--indigo);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color var(--ease)}
 .panel-action:hover{color:var(--text)}
 
-/* ── Tool cards ── */
 .tool-list{display:flex;flex-direction:column;gap:0}
 .tool-item{
   display:flex;align-items:center;gap:12px;padding:12px 16px;
@@ -172,7 +172,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .tool-arrow{color:var(--dim);flex-shrink:0;transition:color var(--ease),transform var(--ease)}
 .tool-item:hover .tool-arrow{color:var(--indigo);transform:translateX(2px)}
 
-/* ── Data table ── */
 .data-table{width:100%;border-collapse:collapse;font-size:12px}
 .data-table th{
   font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
@@ -190,42 +189,57 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .btn-del{background:none;border:none;color:var(--border);cursor:pointer;width:22px;height:22px;border-radius:3px;display:grid;place-items:center;transition:background var(--ease),color var(--ease)}
 .btn-del:hover{background:rgba(239,68,68,.1);color:var(--error)}
 
-/* ── Pressure chart ── */
 .chart-wrap{padding:16px;height:200px;position:relative}
 canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 
-/* ── Empty state ── */
 .empty{padding:32px 16px;text-align:center}
 .empty-label{font-size:12px;color:var(--dim);font-family:'JetBrains Mono',monospace}
 
-/* ── Admin badge ── */
 .admin-badge{font-size:9px;font-weight:700;letter-spacing:.08em;padding:1px 7px;border-radius:3px;border:1px solid rgba(0,210,122,.3);background:rgba(0,210,122,.07);color:var(--emerald);margin-left:8px}
 
-/* ── Toast ── */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--elevated);border:1px solid var(--border);color:var(--text);font:500 12px 'JetBrains Mono',monospace;padding:8px 16px;border-radius:5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
 .toast.show{opacity:1}
 
-/* ── Mobile overlay ── */
-.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:290;opacity:0;transition:opacity 240ms ease}
+.sb-overlay.visible{display:block}
+.sb-overlay.open{opacity:1}
 
-/* ═══════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════ */
+.footer-bar{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:4px 12px;
+  padding:8px 20px 10px;
+  font:400 10px 'JetBrains Mono',monospace;color:var(--dim);
+  letter-spacing:.04em;
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  transition:background .2s,border-color .2s;
+}
+.footer-bar a{color:var(--dim);text-decoration:none;transition:color var(--ease)}
+.footer-bar a:hover{color:var(--muted)}
+.footer-bar .fsep{opacity:.35}
+.footer-bar .fmail{
+  display:inline-flex;align-items:center;gap:4px;
+  color:var(--dim);background:none;border:none;cursor:pointer;
+  font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0;
+  transition:color var(--ease);
+}
+.footer-bar .fmail:hover{color:var(--muted)}
+
 @media(max-width:1100px){.metrics{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:900px){.bento{grid-template-columns:1fr}}
 @media(max-width:680px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
-  .sb-overlay{display:block}
-  .sb-overlay.open{display:block}
   .main-wrap{margin-left:0}
-  .hamburger{display:grid}
+  .hamburger{display:flex}
   .tb-clock{display:none}
   .content{padding:14px}
   .metrics{grid-template-columns:1fr 1fr;gap:8px}
   .metric-value{font-size:20px}
 }
 @media(max-width:400px){.metrics{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition-duration:1ms!important;animation-duration:1ms!important}}
 </style>
 </head>
 <body>
@@ -233,10 +247,9 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
   <div class="sb-brand">
-    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0;border-radius:7px">
-      <rect width="32" height="32" rx="7" fill="#1b2435" stroke="#2d3748" stroke-width="1"/>
-      <text x="16" y="16" font-family="'Inter',system-ui,sans-serif" font-weight="800" font-size="13" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" letter-spacing="-0.5">AP</text>
-    </svg>
+    <div style="flex-shrink:0;width:32px;height:32px;border-radius:7px;background:var(--elevated);border:1px solid var(--border);display:grid;place-items:center">
+      <span style="font-family:'Inter',system-ui,sans-serif;font-weight:900;font-size:13px;color:var(--text);letter-spacing:-0.04em;line-height:1;user-select:none">AP</span>
+    </div>
     <div class="sb-name">
       <span class="sb-name-main">AP Workspace</span>
       <span class="sb-name-sub">ENG · TOOLS · CA</span>
@@ -281,7 +294,6 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 <!-- ═══ MAIN ═══ -->
 <div class="main-wrap">
 
-  <!-- Topbar -->
   <header class="topbar">
     <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -296,7 +308,6 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
     </div>
   </header>
 
-  <!-- ═══ CONTENT ═══ -->
   <main class="content">
 
     <!-- ── DASHBOARD ── -->
@@ -307,7 +318,6 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
         <p class="page-sub" id="greetSub">Engineering tools — Alberta, CA</p>
       </div>
 
-      <!-- Metric tiles -->
       <div class="metrics">
         <div class="metric">
           <div class="metric-label">Saved Lookups</div>
@@ -331,9 +341,7 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
         </div>
       </div>
 
-      <!-- Bento grid -->
       <div class="bento">
-        <!-- Tools -->
         <div class="panel">
           <div class="panel-hd">
             <span class="panel-title">Calculators</span>
@@ -373,7 +381,6 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
           </div>
         </div>
 
-        <!-- Recent lookups -->
         <div class="panel">
           <div class="panel-hd">
             <span class="panel-title">Recent Lookups</span>
@@ -384,7 +391,6 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
           </div>
         </div>
 
-        <!-- Pressure chart placeholder -->
         <div class="panel bento-wide">
           <div class="panel-hd">
             <span class="panel-title">Pressure vs. Time — Reference Loop</span>
@@ -456,7 +462,6 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
       </div>
     </section>
 
-    <!-- Admin panel -->
     <div id="adminPanel" style="display:none;margin-top:16px">
       <div class="panel">
         <div class="panel-hd">
@@ -477,15 +482,14 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
 
 <div class="toast" id="toast"></div>
 
-<!-- Legal footer -->
-<footer style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;padding:8px 20px 10px;font:400 10px 'JetBrains Mono',monospace;color:#516078;letter-spacing:.04em;border-top:1px solid #1e2a3d;background:var(--surface)">
+<footer class="footer-bar">
   <span>&copy; <span id="legalYr"></span> Anjan Patel. All rights reserved.</span>
-  <span style="opacity:.35">·</span>
-  <a href="/terms/" style="color:#516078;text-decoration:none" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#516078'">Terms</a>
-  <span style="opacity:.35">·</span>
-  <a href="/privacy/" style="color:#516078;text-decoration:none" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#516078'">Privacy</a>
-  <span style="opacity:.35">·</span>
-  <button id="footer-mail" type="button" style="display:inline-flex;align-items:center;gap:4px;color:#516078;background:none;border:none;cursor:pointer;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#516078'">
+  <span class="fsep">·</span>
+  <a href="/terms/">Terms</a>
+  <span class="fsep">·</span>
+  <a href="/privacy/">Privacy</a>
+  <span class="fsep">·</span>
+  <button class="fmail" id="footer-mail" type="button" aria-label="Contact">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     Contact
   </button>
@@ -497,12 +501,26 @@ canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
   var e='info'+'@'+'anjanpatel'+'.'+'ca';
   document.getElementById('footer-mail').addEventListener('click',function(){window.location.href='mailto:'+e});
 })();
+
 var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
 var sb=supabase.createClient(SB_URL,SB_KEY);
 var session=null;
 
 function $(id){return document.getElementById(id)}
+
+/* ── Theme toggle ── */
+(function(){
+  var btn=$('themeToggle');
+  if(!btn)return;
+  btn.addEventListener('click',function(){
+    var curr=document.documentElement.dataset.theme||'dark';
+    var next=curr==='dark'?'light':'dark';
+    document.documentElement.dataset.theme=next;
+    try{localStorage.setItem('ap-theme',next)}catch(e){}
+    drawChart();
+  });
+})();
 
 /* ── Clock ── */
 function tickClock(){
@@ -514,11 +532,15 @@ tickClock();setInterval(tickClock,1000);
 /* ── Sidebar ── */
 function openSidebar(){
   $('sidebar').classList.add('open');
-  var ov=$('sbOverlay');ov.style.display='block';setTimeout(function(){ov.classList.add('open')},10);
+  var ov=$('sbOverlay');
+  ov.classList.add('visible');
+  requestAnimationFrame(function(){ov.classList.add('open')});
 }
 function closeSidebar(){
   $('sidebar').classList.remove('open');
-  var ov=$('sbOverlay');ov.classList.remove('open');setTimeout(function(){ov.style.display=''},260);
+  var ov=$('sbOverlay');
+  ov.classList.remove('open');
+  setTimeout(function(){ov.classList.remove('visible')},260);
 }
 
 /* ── Section nav ── */
@@ -554,9 +576,9 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 /* ── Format params ── */
 function fmtP(tool,p){
   if(!p)return'—';
-  if(tool==='flange'){return[(p.size?'Size: '+p.size:''),(p.rating?p.rating:''),(p.bore?'Bore: '+p.bore:'')].filter(Boolean).join(' · ')||JSON.stringify(p)}
-  if(tool==='tubing'){return[(p.bhn?'BHN: '+p.bhn:''),(p.width?'W: '+p.width+'"':''),(p.thickness?'T: '+p.thickness+'"':'')].filter(Boolean).join(' · ')||JSON.stringify(p)}
-  return JSON.stringify(p);
+  if(tool==='flange'){return[(p.size?'Size: '+p.size:''),(p.rating?p.rating:''),(p.bore?'Bore: '+p.bore:'')].filter(Boolean).join(' · ')||esc(JSON.stringify(p))}
+  if(tool==='tubing'){return[(p.bhn?'BHN: '+p.bhn:''),(p.width?'W: '+p.width+'"':''),(p.thickness?'T: '+p.thickness+'"':'')].filter(Boolean).join(' · ')||esc(JSON.stringify(p))}
+  return esc(JSON.stringify(p));
 }
 
 /* ── Auth guard ── */
@@ -576,7 +598,7 @@ async function init(){
     loadAdmin();
   }
   var hr=new Date().getHours();
-  var greet=hr<12?'Good morning':'hr<18?Good afternoon':'Good evening';
+  var greet;
   if(hr<12)greet='Good morning';else if(hr<18)greet='Good afternoon';else greet='Good evening';
   $('greetSub').textContent=greet+' · Alberta, CA';
   loadDashboard();
@@ -632,7 +654,7 @@ async function loadLogs(){
     var tool=l.tool==='flange'?'Flange':'Tubing';
     var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
     var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
-    html+='<tr><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="delLookup(\''+l.id+'\')" title="Delete">✕</button></td></tr>';
+    html+='<tr><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="delLookup(\''+esc(l.id)+'\')" title="Delete">✕</button></td></tr>';
   });
   html+='</tbody></table></div>';
   wrap.innerHTML=html;
@@ -658,14 +680,18 @@ async function loadAdmin(){
     var tool=l.tool==='flange'?'Flange':'Tubing';
     var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
     var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
-    return'<tr><td class="td-mono" title="'+esc(l.user_id||'')+'">'+uid+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td></tr>';
+    return'<tr><td class="td-mono" title="'+esc(l.user_id||'')+'">'+esc(uid)+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td></tr>';
   }).join('');
 }
 
-/* ── Pressure chart (canvas) ── */
+/* ── Pressure chart (canvas, theme-aware) ── */
 function drawChart(){
   var canvas=$('pressureChart');
   if(!canvas)return;
+  var isDark=(document.documentElement.dataset.theme||'dark')==='dark';
+  var bgColor=isDark?'#171e2e':'#ffffff';
+  var gridColor=isDark?'#2d3748':'#e2e8f0';
+  var labelColor=isDark?'#64748b':'#94a3b8';
   var ctx=canvas.getContext('2d');
   var dpr=window.devicePixelRatio||1;
   var wrap=canvas.parentElement;
@@ -676,7 +702,6 @@ function drawChart(){
   var pad={t:20,r:20,b:36,l:54};
   var cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
 
-  /* Simulated pressure data: 24 time points */
   var pts=[];
   for(var i=0;i<24;i++){
     var base=9800+(Math.sin(i*.4)*600)+(Math.random()*200);
@@ -684,37 +709,31 @@ function drawChart(){
   }
   var maxP=10500,minP=9000;
 
-  /* Background */
-  ctx.fillStyle='#171e2e';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=bgColor;ctx.fillRect(0,0,W,H);
 
-  /* Grid lines */
-  ctx.strokeStyle='#2d3748';ctx.lineWidth=.5;
+  ctx.strokeStyle=gridColor;ctx.lineWidth=.5;
   var ySteps=4;
   for(var j=0;j<=ySteps;j++){
     var y=pad.t+ch-(j/ySteps)*ch;
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
-    /* Y labels */
     var val=Math.round(minP+(j/ySteps)*(maxP-minP));
-    ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='right';
+    ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='right';
     ctx.fillText(val.toLocaleString(),pad.l-6,y+3);
   }
-  /* X grid */
   var xSteps=6;
   for(var k=0;k<=xSteps;k++){
     var x=pad.l+(k/xSteps)*cw;
-    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.moveTo(x,pad.t+ch);ctx.stroke();
-    ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+ch);ctx.stroke();
+    ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
     ctx.fillText((k*4)+'h',x,pad.t+ch+16);
   }
 
-  /* Axis labels */
   ctx.save();ctx.translate(12,pad.t+ch/2);ctx.rotate(-Math.PI/2);
-  ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
+  ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
   ctx.fillText('PSI',0,0);ctx.restore();
-  ctx.fillStyle='#64748b';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
+  ctx.fillStyle=labelColor;ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='center';
   ctx.fillText('TIME (HOURS)',pad.l+cw/2,H-4);
 
-  /* Area fill */
   ctx.beginPath();
   pts.forEach(function(p,i){
     var x=pad.l+(i/(pts.length-1))*cw;
@@ -727,7 +746,6 @@ function drawChart(){
   grad.addColorStop(0,'rgba(0,210,122,.18)');grad.addColorStop(1,'rgba(0,210,122,.01)');
   ctx.fillStyle=grad;ctx.fill();
 
-  /* Line */
   ctx.beginPath();
   pts.forEach(function(p,i){
     var x=pad.l+(i/(pts.length-1))*cw;
@@ -736,14 +754,12 @@ function drawChart(){
   });
   ctx.strokeStyle='#00d27a';ctx.lineWidth=1.5;ctx.stroke();
 
-  /* 10K PSI threshold line */
   var thY=pad.t+ch-((10000-minP)/(maxP-minP))*ch;
   ctx.beginPath();ctx.setLineDash([4,4]);ctx.moveTo(pad.l,thY);ctx.lineTo(pad.l+cw,thY);
   ctx.strokeStyle='rgba(239,68,68,.4)';ctx.lineWidth=1;ctx.stroke();ctx.setLineDash([]);
   ctx.fillStyle='rgba(239,68,68,.7)';ctx.font='500 9px JetBrains Mono, monospace';ctx.textAlign='right';
   ctx.fillText('10,000 PSI LIMIT',pad.l+cw-4,thY-4);
 
-  /* Endpoint dot */
   var ep=pts[pts.length-1];
   var epx=pad.l+cw,epy=pad.t+ch-((ep-minP)/(maxP-minP))*ch;
   ctx.beginPath();ctx.arc(epx,epy,3.5,0,Math.PI*2);ctx.fillStyle='#00d27a';ctx.fill();

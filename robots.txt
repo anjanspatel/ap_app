@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /dashboard.html
+Disallow: /settings.html
+Disallow: /flange/
+Disallow: /tubing/
+Allow: /
