@@ -193,6 +193,21 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .btn-del{background:none;border:none;color:var(--border);cursor:pointer;width:22px;height:22px;border-radius:3px;display:grid;place-items:center;transition:background var(--ease),color var(--ease)}
 .btn-del:hover{background:rgba(239,68,68,.1);color:var(--error)}
 
+.det-bg{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.det-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:min(460px,100%);max-height:82vh;overflow-y:auto;position:relative}
+.det-hd{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;background:var(--surface);z-index:1}
+.det-title{font-size:12px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace}
+.det-close{background:none;border:none;color:var(--muted);cursor:pointer;width:28px;height:28px;border-radius:4px;display:grid;place-items:center;flex-shrink:0;font-size:14px;transition:background var(--ease),color var(--ease)}
+.det-close:hover{background:var(--elevated);color:var(--text)}
+.det-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+.det-row{display:flex;gap:10px;align-items:flex-start}
+.det-k{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);min-width:82px;padding-top:1px;flex-shrink:0}
+.det-v{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);word-break:break-word;line-height:1.5}
+.det-v.muted{color:var(--muted)}
+.det-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
+.det-open{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--indigo);color:#fff;border:none;border-radius:5px;font:600 12px 'Inter',sans-serif;cursor:pointer;text-decoration:none;transition:opacity var(--ease)}
+.det-open:hover{opacity:.85}
+
 
 .empty{padding:32px 16px;text-align:center}
 .empty-label{font-size:12px;color:var(--dim);font-family:'JetBrains Mono',monospace}
@@ -473,6 +488,20 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   </main>
 </div>
 
+<!-- Detail modal -->
+<div id="detBg" class="det-bg" style="display:none" onclick="if(event.target===this)closeDetail()">
+  <div class="det-box" id="detBox">
+    <div class="det-hd">
+      <span class="det-title" id="detTitle">Lookup Detail</span>
+      <button class="det-close" onclick="closeDetail()" aria-label="Close">✕</button>
+    </div>
+    <div class="det-body" id="detBody"></div>
+    <div class="det-foot">
+      <a class="det-open" id="detLink" href="#">Open in Tool →</a>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <footer class="footer-bar">
@@ -499,6 +528,7 @@ var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
 var sb=supabase.createClient(SB_URL,SB_KEY);
 var session=null;
+var allRows=[];
 
 function $(id){return document.getElementById(id)}
 
@@ -611,6 +641,7 @@ async function loadDashboard(){
     return;
   }
   var rows=r.data||[];
+  allRows=rows;
   $('mSaved').textContent=rows.length;
   if(rows.length>0){
     $('mSavedDot').className='status-dot dot-ok';
@@ -631,31 +662,51 @@ async function loadDashboard(){
 function renderRecent(rows){
   var wrap=$('recentWrap');
   if(!rows.length){wrap.innerHTML='<div class="empty"><span class="empty-label">No saved lookups yet — launch a calculator and hit Save.</span></div>';return}
-  var html='<div class="table-wrap"><table class="data-table"><thead><tr><th>Tool</th><th>Parameters</th><th>When</th></tr></thead><tbody>';
+  var total=allRows.length;
+  var html='<div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Tool</th><th>Parameters</th><th>When</th></tr></thead><tbody>';
   rows.forEach(function(l){
+    var idx=allRows.findIndex(function(r){return r.id===l.id});
+    var jobNum=idx<0?'?':(total-idx);
     var tool=l.tool==='flange'?'Flange':'Tubing';
-    html+='<tr><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-mono">'+relTime(l.created_at)+'</td></tr>';
+    html+='<tr style="cursor:pointer" data-id="'+l.id+'"><td class="td-mono" style="color:var(--indigo)">#'+jobNum+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-mono">'+relTime(l.created_at)+'</td></tr>';
   });
   html+='</tbody></table></div>';
   wrap.innerHTML=html;
+  wrap.querySelector('tbody').addEventListener('click',function(e){
+    var tr=e.target.closest('tr[data-id]');
+    if(tr)openDetail(tr.dataset.id);
+  });
 }
 
 /* ── Logs ── */
 async function loadLogs(){
   var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
+  if(r.error){
+    console.error('saved_lookups logs error:',r.error.message);
+    $('logsWrap').innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error.message||r.error.code)+'</span></div>';
+    return;
+  }
   var rows=r.data||[];
-  $('logCount').textContent=rows.length+' records';
+  allRows=rows;
+  var total=rows.length;
+  $('logCount').textContent=total+' records';
   var wrap=$('logsWrap');
-  if(!rows.length){wrap.innerHTML='<div class="empty"><span class="empty-label">No saved lookups yet.</span></div>';return}
-  var html='<div class="table-wrap"><table class="data-table"><thead><tr><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th></tr></thead><tbody>';
-  rows.forEach(function(l){
+  if(!total){wrap.innerHTML='<div class="empty"><span class="empty-label">No saved lookups yet.</span></div>';return}
+  var html='<div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th></tr></thead><tbody>';
+  rows.forEach(function(l,i){
+    var jobNum=total-i;
     var tool=l.tool==='flange'?'Flange':'Tubing';
     var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
     var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
-    html+='<tr><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="delLookup(\''+esc(l.id)+'\')" title="Delete">✕</button></td></tr>';
+    html+='<tr style="cursor:pointer" data-id="'+l.id+'"><td class="td-mono" style="color:var(--indigo)">#'+jobNum+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="event.stopPropagation();delLookup(\''+l.id+'\')" title="Delete">✕</button></td></tr>';
   });
   html+='</tbody></table></div>';
   wrap.innerHTML=html;
+  wrap.querySelector('tbody').addEventListener('click',function(e){
+    if(e.target.closest('.btn-del'))return;
+    var tr=e.target.closest('tr[data-id]');
+    if(tr)openDetail(tr.dataset.id);
+  });
 }
 
 async function delLookup(id){
@@ -681,6 +732,45 @@ async function loadAdmin(){
     return'<tr><td class="td-mono" title="'+esc(l.user_id||'')+'">'+esc(uid)+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td></tr>';
   }).join('');
 }
+
+/* ── Detail panel ── */
+function openDetail(id){
+  var l=allRows.find(function(r){return r.id===id});
+  if(!l)return;
+  var total=allRows.length;
+  var idx=allRows.findIndex(function(r){return r.id===id});
+  var jobNum=total-idx;
+  var toolName=l.tool==='flange'?'Flange Slide Rule':'Safety Block Calculator';
+  var toolPath=l.tool==='flange'?'/flange/':'/tubing/';
+  var date=new Date(l.created_at).toLocaleString('en-CA',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false});
+  var rows=[
+    ['Job','#'+jobNum],
+    ['Tool',toolName],
+    ['Saved',date],
+    ['Label',l.label||null],
+    ['Params',fmtP(l.tool,l.params)],
+    ['Summary',l.result_summary||null]
+  ];
+  var html='';
+  rows.forEach(function(r){
+    if(r[1]===null)return;
+    html+='<div class="det-row"><span class="det-k">'+r[0]+'</span><span class="det-v">'+esc(r[1])+'</span></div>';
+  });
+  if(l.params){
+    html+='<div class="det-row"><span class="det-k">Raw</span><span class="det-v muted" style="font-size:10px;word-break:break-all">'+esc(JSON.stringify(l.params))+'</span></div>';
+  }
+  $('detTitle').textContent='Job #'+jobNum+' · '+esc(l.tool==='flange'?'Flange':'Tubing');
+  $('detBody').innerHTML=html;
+  $('detLink').href=toolPath;
+  $('detLink').textContent='Open '+toolName+' →';
+  $('detBg').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeDetail(){
+  $('detBg').style.display='none';
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDetail()});
 
 init();
 </script>
