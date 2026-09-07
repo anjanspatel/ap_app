@@ -19,7 +19,7 @@
 <meta name="twitter:description" content="Field calculator for tubing block and safety block safe working load.">
 <meta name="twitter:image" content="https://app.anjanpatel.ca/tubing/og.png">
 <link rel="canonical" href="https://app.anjanpatel.ca/tubing/">
-<meta name="theme-color" content="#0B1D2D">
+<meta name="theme-color" content="#0b0f19">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -30,41 +30,41 @@
 /* ── design tokens ── */
 :root{
   --brand-navy:#0B1D2D;
-  --brand-orange:#F28C18;
-  --bg:#eef0f4;
+  --brand-orange:#6366f1;
+  --bg:#f0f4f8;
   --surface:#ffffff;
-  --surface-2:#f3f5f8;
-  --border:#dde2e8;
-  --text:#0B1D2D;
-  --muted:#5c6e80;
+  --surface-2:#f7fafc;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --muted:#475569;
   --header-bg:rgba(255,255,255,0.9);
   --shadow:0 2px 14px rgba(11,29,45,.09);
   --shadow-sm:0 1px 4px rgba(11,29,45,.06);
-  --step-line:#dde2e8;
+  --step-line:#e2e8f0;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#070f18;
-  --surface:#0c1a27;
-  --surface-2:#091523;
-  --border:#152538;
-  --text:#ddeaf6;
-  --muted:#5a7a96;
-  --header-bg:rgba(12,26,39,0.9);
+  --bg:#0b0f19;
+  --surface:#171e2e;
+  --surface-2:#1b2435;
+  --border:#2d3748;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --header-bg:rgba(11,15,25,0.9);
   --shadow:0 2px 14px rgba(0,0,0,.4);
   --shadow-sm:0 1px 4px rgba(0,0,0,.25);
-  --step-line:#152538;
+  --step-line:#2d3748;
 }}
 :root[data-theme="dark"]{
-  --bg:#070f18;
-  --surface:#0c1a27;
-  --surface-2:#091523;
-  --border:#152538;
-  --text:#ddeaf6;
-  --muted:#5a7a96;
-  --header-bg:rgba(12,26,39,0.9);
+  --bg:#0b0f19;
+  --surface:#171e2e;
+  --surface-2:#1b2435;
+  --border:#2d3748;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --header-bg:rgba(11,15,25,0.9);
   --shadow:0 2px 14px rgba(0,0,0,.4);
   --shadow-sm:0 1px 4px rgba(0,0,0,.25);
-  --step-line:#152538;
+  --step-line:#2d3748;
 }
 
 /* ── reset ── */
@@ -191,7 +191,7 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 input[type=number]:focus{
   border-color:var(--brand-orange);
-  box-shadow:0 0 0 3px rgba(242,140,24,.12);
+  box-shadow:0 0 0 3px rgba(99,102,241,.12);
 }
 .sf-display{
   display:flex;align-items:center;justify-content:space-between;
@@ -206,12 +206,12 @@ input[type=number]:focus{
 .swl-hero{
   border-radius:14px;padding:28px 22px 24px;
   margin-bottom:20px;
-  background:linear-gradient(140deg,var(--brand-navy) 0%,#0e2740 100%);
+  background:linear-gradient(140deg,var(--brand-navy) 0%,#171e2e 100%);
   text-align:center;position:relative;overflow:hidden;
 }
 .swl-hero::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 60% 60% at 75% 30%,rgba(242,140,24,.18) 0%,transparent 70%);
+  background:radial-gradient(ellipse 60% 60% at 75% 30%,rgba(99,102,241,.18) 0%,transparent 70%);
   pointer-events:none;
 }
 .swl-lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px}
@@ -593,9 +593,9 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload()});
 }
 </script>
-<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0B1D2D;color:#EDF2F8;border:1px solid rgba(242,140,24,.45);border-radius:10px;padding:11px 16px;font-size:12.5px;font-family:'IBM Plex Sans',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
+<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0b0f19;color:#f8fafc;border:1px solid rgba(99,102,241,.45);border-radius:10px;padding:11px 16px;font-size:12.5px;font-family:'IBM Plex Sans',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
   <span>Update available</span>
-  <button onclick="window.location.reload()" style="background:#F28C18;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Refresh</button>
+  <button onclick="window.location.reload()" style="background:#6366f1;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Refresh</button>
 </div>
 
 <style>
@@ -606,11 +606,11 @@ if('serviceWorker' in navigator){
 #saveModalBox p{font-size:12px;color:var(--muted,#667085);margin:0 0 16px}
 #saveModalBox label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#667085);display:block;margin-bottom:5px}
 #saveModalBox input{width:100%;height:40px;border:1px solid var(--line,#d6dde7);border-radius:8px;background:var(--input-bg,var(--surface-2,#f8fafc));color:var(--text,#152033);font:600 14px inherit;padding:0 11px;outline:none;margin-bottom:14px}
-#saveModalBox input:focus{border-color:#F28C18;box-shadow:0 0 0 3px rgba(242,140,24,.15)}
+#saveModalBox input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
 #saveModalBox .modal-row{display:flex;gap:8px}
 #saveModalBox .modal-row button{flex:1;height:40px;border-radius:9px;font:700 13px inherit;cursor:pointer;border:none;transition:opacity .15s}
 #saveModalBox .modal-row .btn-cancel{background:var(--surface-2,#f8fafc);border:1px solid var(--line,#d6dde7);color:var(--text,#152033)}
-#saveModalBox .modal-row .btn-save{background:#F28C18;color:#fff}
+#saveModalBox .modal-row .btn-save{background:#6366f1;color:#fff}
 #saveModalBox .modal-row button:hover{opacity:.88}
 #saveModalBox .modal-row button:disabled{opacity:.5;cursor:not-allowed}
 #saveToast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;font:700 13px inherit;padding:.6rem 1.2rem;border-radius:9px;box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
