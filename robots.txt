@@ -4,3 +4,5 @@ Disallow: /settings.html
 Disallow: /flange/
 Disallow: /tubing/
 Allow: /
+
+Sitemap: https://app.anjanpatel.ca/sitemap.xml

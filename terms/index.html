@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b0f19">
+<title>Terms of Use — AP Workspace</title>
+<meta name="description" content="Terms of use for AP Workspace — conditions for using the engineering calculator tools.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="dark"]{
+  --canvas:#0b0f19;
+  --surface:#171e2e;
+  --border:#2d3748;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --dim:#64748b;
+  --indigo:#6366f1;
+  --ease:150ms ease-in-out;
+}
+[data-theme="light"]{
+  --canvas:#f0f4f8;
+  --surface:#ffffff;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --muted:#475569;
+  --dim:#94a3b8;
+  --indigo:#4f46e5;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s;line-height:1.7}
+
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:48px;
+  transition:background .2s,border-color .2s;
+}
+.tb-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-size:12px;font-weight:700;letter-spacing:.02em}
+.tb-logo{width:28px;height:28px;border-radius:6px;background:var(--canvas);border:1px solid var(--border);display:grid;place-items:center;font:900 11px 'Inter',sans-serif;letter-spacing:-.04em}
+.tb-back{font-size:11px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color var(--ease)}
+.tb-back:hover{color:var(--text)}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-btn{width:32px;height:32px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease),color var(--ease)}
+.tb-btn:hover{border-color:var(--indigo);color:var(--text)}
+
+.wrap{max-width:680px;margin:0 auto;padding:48px 24px 80px}
+
+.eyebrow{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+h1{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:6px}
+.updated{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);margin-bottom:40px}
+
+h2{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;margin:32px 0 10px;padding-top:4px;border-top:1px solid var(--border)}
+p{font-size:14px;color:var(--muted);margin-bottom:12px}
+ul{font-size:14px;color:var(--muted);padding-left:20px;margin-bottom:12px}
+li{margin-bottom:5px}
+a{color:var(--indigo);text-decoration:none}
+a:hover{text-decoration:underline}
+.notice{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
+
+.footer-bar{
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;
+  padding:12px 24px;font:400 10px 'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;
+  border-top:1px solid var(--border);background:var(--surface);transition:background .2s,border-color .2s;
+}
+.footer-bar a{color:var(--dim);text-decoration:none;transition:color var(--ease)}
+.footer-bar a:hover{color:var(--muted)}
+.fsep{opacity:.35}
+.fmail{display:inline-flex;align-items:center;gap:4px;color:var(--dim);background:none;border:none;cursor:pointer;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0;transition:color var(--ease)}
+.fmail:hover{color:var(--muted)}
+@media(max-width:480px){.wrap{padding:32px 16px 60px}.tb-brand span:last-child{display:none}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="tb-brand" href="/">
+    <div class="tb-logo">AP</div>
+    <span>AP Workspace</span>
+  </a>
+  <div class="tb-right">
+    <button class="tb-btn" id="themeBtn" aria-label="Toggle theme">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <a class="tb-back" href="/">← Back</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="eyebrow">Legal</p>
+  <h1>Terms of Use</h1>
+  <p class="updated">Last updated: September 2026 &nbsp;·&nbsp; Governing law: Alberta, Canada</p>
+
+  <div class="notice">
+    These tools are for professional reference only. They do not substitute for certified engineering review, stamped drawings, or authoritative standards documents. Verify all results before use in the field.
+  </div>
+
+  <h2>Acceptance</h2>
+  <p>By accessing AP Workspace at <strong>app.anjanpatel.ca</strong> you agree to these terms. If you do not agree, do not use the service.</p>
+
+  <h2>The service</h2>
+  <p>AP Workspace provides engineering reference calculators for oil and gas field operations, currently including:</p>
+  <ul>
+    <li><strong>Flange Slide Rule</strong> — API 6A / ISO 10423 flange dimensional reference.</li>
+    <li><strong>Safety Block Calculator</strong> — safe working load and Von Mises stress estimates from Brinell hardness, width, and thickness inputs.</li>
+  </ul>
+  <p>The service is provided to registered users only. You must create an account and sign in to access the calculators and dashboard.</p>
+
+  <h2>Professional responsibility</h2>
+  <p>Results produced by these calculators are dimensional references and estimates derived from published standards. They are not certified engineering calculations and must not be used as the sole basis for any safety-critical decision, equipment selection, or installation without independent verification by a qualified engineer.</p>
+  <p>You bear full responsibility for how you apply any output from this service. Anjan Patel accepts no liability for decisions made based on results produced by these tools.</p>
+
+  <h2>Permitted use</h2>
+  <ul>
+    <li>Use is for your own professional reference purposes.</li>
+    <li>You may not resell, redistribute, or sublicense access to the service.</li>
+    <li>You may not attempt to reverse-engineer, scrape, or otherwise extract data or source code for commercial use.</li>
+    <li>You may not use the service for any purpose that is unlawful under Canadian or Alberta law.</li>
+  </ul>
+
+  <h2>Accounts</h2>
+  <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately if you suspect unauthorized access to your account. We reserve the right to suspend or terminate accounts that violate these terms.</p>
+
+  <h2>Intellectual property</h2>
+  <p>All content, code, and design of AP Workspace is owned by Anjan Patel. The underlying engineering standards (API 6A, ISO 10423) are the property of their respective standards bodies and are referenced here for informational purposes only.</p>
+
+  <h2>Availability</h2>
+  <p>The service is provided on a best-effort basis. We do not guarantee uptime, accuracy, or availability. We may modify or discontinue any part of the service at any time without notice.</p>
+
+  <h2>Limitation of liability</h2>
+  <p>To the maximum extent permitted by Alberta law, Anjan Patel shall not be liable for any direct, indirect, incidental, special, or consequential damages arising from your use of — or inability to use — this service, even if advised of the possibility of such damages.</p>
+
+  <h2>Governing law</h2>
+  <p>These terms are governed by the laws of the Province of Alberta and the federal laws of Canada applicable therein. Any disputes shall be subject to the exclusive jurisdiction of the courts of Alberta.</p>
+
+  <h2>Changes</h2>
+  <p>We may update these terms from time to time. Material changes will be reflected in the "Last updated" date above. Continued use after changes constitutes acceptance.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about these terms: <button class="fmail" id="terms-mail" type="button">contact us</button>.</p>
+</main>
+
+<footer class="footer-bar">
+  <span>&copy; <span id="legalYr"></span> Anjan Patel. All rights reserved.</span>
+  <span class="fsep">·</span>
+  <a href="/terms/">Terms</a>
+  <span class="fsep">·</span>
+  <a href="/privacy/">Privacy</a>
+  <span class="fsep">·</span>
+  <button class="fmail" id="footer-mail" type="button" aria-label="Contact">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Contact
+  </button>
+</footer>
+
+<script>
+(function(){
+  document.getElementById('legalYr').textContent=new Date().getFullYear();
+  var e='info'+'@'+'anjanpatel'+'.'+'ca';
+  var fn=function(){window.location.href='mailto:'+e};
+  document.getElementById('footer-mail').addEventListener('click',fn);
+  document.getElementById('terms-mail').addEventListener('click',fn);
+})();
+(function(){
+  var btn=document.getElementById('themeBtn');
+  if(!btn)return;
+  btn.addEventListener('click',function(){
+    var curr=document.documentElement.dataset.theme||'dark';
+    var next=curr==='dark'?'light':'dark';
+    document.documentElement.dataset.theme=next;
+    try{localStorage.setItem('ap-theme',next)}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
