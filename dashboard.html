@@ -604,6 +604,12 @@ async function signOut(){
 /* ── Dashboard ── */
 async function loadDashboard(){
   var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
+  if(r.error){
+    console.error('saved_lookups fetch error:',r.error.message,r.error.code,r.error.hint);
+    var wrap=$('recentWrap');
+    if(wrap)wrap.innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error.message||r.error.code)+'</span></div>';
+    return;
+  }
   var rows=r.data||[];
   $('mSaved').textContent=rows.length;
   if(rows.length>0){
