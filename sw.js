@@ -2,7 +2,7 @@
    Caches design system assets + tool shells for offline use.
    Stale-while-revalidate for static assets, network-first for navigation.
 */
-var CACHE = 'ap-v3';
+var CACHE = 'ap-v4';
 var STATIC = [
   '/',
   '/tokens.css',
@@ -14,6 +14,9 @@ var STATIC = [
   '/tubing/',
   '/dashboard.html',
   '/settings.html',
+  '/terms/',
+  '/privacy/',
+  '/disclaimer/',
   '/404.html',
   '/favicon.svg',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap'

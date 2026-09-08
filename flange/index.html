@@ -234,11 +234,15 @@ select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-nu
     <div class="footer-legal">
       <span>© <span id="copyrightYear"></span> Anjan Patel. All rights reserved.</span>
       <span class="footer-dot">·</span>
+      <a class="footer-link" href="/terms/">Terms</a>
+      <span class="footer-dot">·</span>
+      <a class="footer-link" href="/disclaimer/">Disclaimer</a>
+      <span class="footer-dot">·</span>
+      <a class="footer-link" href="/privacy/">Privacy</a>
+      <span class="footer-dot">·</span>
+      <a class="footer-link" href="/disclaimer/#standards">Standards</a>
+      <span class="footer-dot">·</span>
       <a class="footer-link" href="https://www.linkedin.com/in/anjanspatel/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <span class="footer-dot">·</span>
-      <a class="footer-link" href="/terms/">Terms &amp; Disclaimer</a>
-      <span class="footer-dot">·</span>
-      <button class="footer-link" onclick="openModal('privacyModal')">Privacy Policy</button>
     </div>
     <span class="pdf-only"> · Generated <span id="pdfGeneratedDate"></span></span>
   </footer>
@@ -247,52 +251,6 @@ select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-nu
 
 </main>
 <div class="print-watermark">REFERENCE ONLY<br><span style="font-size:0.4em;font-weight:700;letter-spacing:.15em">ANJAN PATEL · API 6A FLANGE SLIDE RULE · VERIFY BEFORE USE</span></div>
-<!-- Terms of Use Modal -->
-<div class="modal-overlay" id="termsModal" onclick="if(event.target===this)closeModal(this.id)">
-  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
-    <button class="modal-close" onclick="closeModal('termsModal')" aria-label="Close">×</button>
-    <h2 id="termsTitle">Terms of Use</h2>
-    <h3>Acceptance</h3>
-    <p>By accessing or using this tool you agree to these Terms. If you do not agree, do not use the tool.</p>
-    <h3>Purpose &amp; Scope</h3>
-    <p>This tool is a quick-reference aid for API 6A / ISO 10423 flange dimensional data. It is intended for preliminary reference only and is not a substitute for the controlled, current edition of API Specification 6A, manufacturer documentation, or project-specific engineering specifications.</p>
-    <h3>No Warranty</h3>
-    <p>This tool and all data within it are provided <strong>"as is"</strong> without warranty of any kind, express or implied, including but not limited to accuracy, completeness, fitness for a particular purpose, or non-infringement. Anjan Patel makes no representations regarding the correctness of dimensions, ratings, or material data contained herein.</p>
-    <h3>Engineering Disclaimer</h3>
-    <p>Dimensions, pressure ratings, ring gasket designations, bolt data, and all other values must be independently verified against the applicable controlled API Specification 6A edition, relevant codes, regulatory requirements, and manufacturer documentation before use in engineering, design, fabrication, inspection, procurement, or recertification activities.</p>
-    <p>Data for 10,000 psi and 15,000 psi ratings are working estimates and have not been independently verified against a controlled edition of API Spec 6A. Do not use for engineering, fabrication, inspection, or recertification purposes without independent verification.</p>
-    <h3>Limitation of Liability</h3>
-    <p>To the maximum extent permitted by applicable law, Anjan Patel shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising out of or in connection with your use of this tool or reliance on any data it provides.</p>
-    <h3>Intellectual Property</h3>
-    <p>All content, code, design, and layout of this tool are the exclusive property of Anjan Patel and are protected by copyright law. You may use the tool for personal, non-commercial reference. You may not reproduce, distribute, modify, or create derivative works without prior written permission.</p>
-    <h3>Changes</h3>
-    <p>These Terms may be updated at any time. Continued use of the tool after changes constitutes acceptance of the revised Terms.</p>
-    <p class="modal-eff">Effective date: August 2026 · © <span id="termsYear"></span> Anjan Patel. All rights reserved.</p>
-  </div>
-</div>
-
-<!-- Privacy Policy Modal -->
-<div class="modal-overlay" id="privacyModal" onclick="if(event.target===this)closeModal(this.id)">
-  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
-    <button class="modal-close" onclick="closeModal('privacyModal')" aria-label="Close">×</button>
-    <h2 id="privacyTitle">Privacy Policy</h2>
-    <h3>No Data Collection</h3>
-    <p>This tool does not collect, transmit, store, or share any personal information. No data you enter or view is sent to any server.</p>
-    <h3>Local Storage Only</h3>
-    <p>The tool uses your browser's <code>localStorage</code> solely to remember your display preferences (colour theme and unit system). This data never leaves your device and can be cleared at any time by clearing your browser's site data.</p>
-    <h3>No Cookies</h3>
-    <p>This tool sets no cookies of any kind.</p>
-    <h3>No Analytics or Tracking</h3>
-    <p>No analytics, telemetry, tracking pixels, or third-party scripts are embedded in this tool. Your use of the tool is entirely private.</p>
-    <h3>Standalone Operation</h3>
-    <p>The tool is designed to run entirely within your browser. Once loaded, it functions without an internet connection (standalone mode). No outbound network requests are made during normal use.</p>
-    <h3>Third-Party Links</h3>
-    <p>The footer contains links to LinkedIn and a contact email address. Following these links takes you to third-party services governed by their own privacy policies. Anjan Patel is not responsible for the privacy practices of those services.</p>
-    <h3>Contact</h3>
-    <p>For any privacy-related questions, contact <a class="footer-link" id="privacyContact" href="#">support&#64;app&#46;anjanpatel&#46;ca</a>.</p>
-    <p class="modal-eff">Effective date: August 2026 · © <span id="privacyYear"></span> Anjan Patel. All rights reserved.</p>
-  </div>
-</div>
 
 <script>
 /* Responsive canvas + full-site theme + actions */

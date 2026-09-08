@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0B111A">
 <title>Privacy Policy — AP Workspace</title>
 <meta name="description" content="Privacy policy for AP Workspace — how your data is collected, used, and protected.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="preload" href="/tokens.css" as="style">
+<link rel="preload" href="/premium.css" as="style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -36,14 +39,14 @@
   --indigo-fg:var(--precision-cyan);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{min-height:100%}
+html,body{min-height:100%;overflow-x:hidden}
 body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s;line-height:1.7}
 
 .topbar{
   position:sticky;top:0;z-index:100;
   background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;height:48px;
+  padding:env(safe-area-inset-top) 24px 0;height:calc(48px + env(safe-area-inset-top));
   transition:background .2s,border-color .2s;
 }
 .tb-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-size:12px;font-weight:700;letter-spacing:.02em}
@@ -70,13 +73,13 @@ a:hover{text-decoration:underline}
 
 .footer-bar{
   display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;
-  padding:12px 24px;font:400 10px 'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;
+  padding:12px 24px calc(12px + env(safe-area-inset-bottom));font:400 10px 'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.04em;
   border-top:1px solid var(--border);background:var(--surface);transition:background .2s,border-color .2s;
 }
 .footer-bar a{color:var(--dim);text-decoration:none;transition:color var(--ease)}
 .footer-bar a:hover{color:var(--muted)}
 .fsep{opacity:.35}
-.fmail{display:inline-flex;align-items:center;gap:4px;color:var(--dim);background:none;border:none;cursor:pointer;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0;transition:color var(--ease)}
+.fmail{display:inline-flex;align-items:center;gap:4px;color:var(--dim);background:none;border:none;cursor:pointer;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0;transition:color var(--ease);min-height:44px}
 .fmail:hover{color:var(--muted)}
 @media(max-width:480px){.wrap{padding:32px 16px 60px}.tb-brand span:last-child{display:none}}
 </style>
@@ -105,6 +108,9 @@ a:hover{text-decoration:underline}
 
   <h2>Who we are</h2>
   <p>AP Workspace is operated by Anjan Patel, an individual based in Alberta, Canada. This policy describes how we handle personal information collected through <span class="pill">app.anjanpatel.ca</span>.</p>
+
+  <h2>Calculator inputs stay local until you save</h2>
+  <p>The Flange, Torque, and Safety Block calculators run entirely in your browser. Values you type in — bore size, bolt grade, BHN, preload, and so on — are not transmitted anywhere just by entering them; they exist only in that page's memory. If you use the "Save to Dashboard" action, that specific lookup (its inputs, computed result, and an optional label) is sent to your authenticated account on our database provider, as described below. Nothing is saved or transmitted unless you take that action, and closing the tab without saving discards it completely.</p>
 
   <h2>What we collect</h2>
   <p>We collect only what is necessary to provide the service:</p>
@@ -158,7 +164,11 @@ a:hover{text-decoration:underline}
   <span class="fsep">·</span>
   <a href="/terms/">Terms</a>
   <span class="fsep">·</span>
+  <a href="/disclaimer/">Disclaimer</a>
+  <span class="fsep">·</span>
   <a href="/privacy/">Privacy</a>
+  <span class="fsep">·</span>
+  <a href="/disclaimer/#standards">Standards</a>
   <span class="fsep">·</span>
   <button class="fmail" id="footer-mail" type="button" aria-label="Contact">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>

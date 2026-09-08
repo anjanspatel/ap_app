@@ -131,6 +131,59 @@
     });
   })();
 
+  /* ── 4b. Engineering Disclaimer Notice ───────
+     Persistent, once-per-session notice on the calculator
+     tool pages only. Dismissing sets sessionStorage so it
+     doesn't reappear on the same visit; a fresh tab/session
+     shows it again. Stacks above the cookie banner if both
+     are present rather than overlapping it.
+  ──────────────────────────────────────────────── */
+  (function initEngineeringDisclaimer() {
+    var isToolPage = /^\/(flange|torque|tubing)\/?/.test(location.pathname);
+    if (!isToolPage) return;
+    try { if (sessionStorage.getItem('ap-eng-ack')) return; } catch(e){}
+
+    var cookieBanner = document.getElementById('cookie-banner');
+    var offset = cookieBanner ? cookieBanner.offsetHeight : 0;
+
+    var notice = document.createElement('div');
+    notice.id = 'eng-disclaimer';
+    notice.setAttribute('role', 'region');
+    notice.setAttribute('aria-label', 'Engineering disclaimer');
+    notice.style.cssText = [
+      'position:fixed','left:0','right:0','bottom:' + offset + 'px',
+      'background:var(--bg-elevated,#1C2938)',
+      'border-top:1px solid rgba(245,158,11,.35)',
+      'padding:12px 20px',
+      'display:flex','align-items:center','flex-wrap:wrap','gap:8px 16px',
+      'z-index:750','font-family:var(--font-ui,Inter,sans-serif)',
+      'font-size:11px','line-height:1.5','color:var(--text-secondary,#94A3B8)',
+      'transition:transform 300ms ease'
+    ].join(';');
+
+    notice.innerHTML = [
+      '<span style="flex:1;min-width:240px">',
+        '<strong style="color:var(--status-warning,#F59E0B)">Reference only.</strong> ',
+        'Outputs are preliminary and must be independently verified by a licensed P.E. / P.Eng. before field execution. ',
+        '<a href="/disclaimer/" style="color:var(--precision-cyan,#19D3E6);text-decoration:underline">Full disclaimer</a>',
+      '</span>',
+      '<button id="eng-ack" style="',
+        'background:var(--precision-cyan,#19D3E6);color:#0B111A;',
+        'border:none;border-radius:4px;padding:6px 14px;',
+        'font:600 11px var(--font-ui,Inter,sans-serif);',
+        'cursor:pointer;white-space:nowrap;min-height:36px',
+      '">Acknowledge &amp; Proceed</button>'
+    ].join('');
+
+    document.body.appendChild(notice);
+
+    document.getElementById('eng-ack').addEventListener('click', function() {
+      notice.style.transform = 'translateY(100%)';
+      setTimeout(function() { notice.remove(); }, 310);
+      try { sessionStorage.setItem('ap-eng-ack', '1'); } catch(e){}
+    });
+  })();
+
   /* ── 5. Floating Contact Button ──────────────
      FAB bottom-right. Email assembled at runtime.
   ──────────────────────────────────────────────── */
@@ -139,8 +192,10 @@
   fab.setAttribute('aria-label', 'Contact support');
   fab.setAttribute('title', 'Contact support');
   fab.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+  var engNotice = document.getElementById('eng-disclaimer');
+  var fabBottom = 20 + (engNotice ? engNotice.offsetHeight + 12 : 0);
   fab.style.cssText = [
-    'position:fixed','bottom:20px','right:20px','z-index:800',
+    'position:fixed','bottom:' + fabBottom + 'px','right:20px','z-index:800',
     'width:40px','height:40px','border-radius:50%',
     'background:var(--precision-cyan,#19D3E6)',
     'border:none','color:#0B111A',

@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0B111A">
-<title>Terms of Use — AP Workspace</title>
-<meta name="description" content="Terms of use for AP Workspace — conditions for using the engineering calculator tools.">
+<title>Engineering Disclaimer — AP Workspace</title>
+<meta name="description" content="Engineering disclaimer, standards attribution, and liability terms for AP Workspace's field calculators.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
@@ -51,7 +51,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 }
 .tb-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-size:12px;font-weight:700;letter-spacing:.02em}
 .tb-logo{width:28px;height:28px;border-radius:6px;background:var(--canvas);border:1px solid var(--border);display:grid;place-items:center;font:900 11px 'Inter',sans-serif;letter-spacing:-.04em}
-.tb-back{font-size:11px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color var(--ease)}
+.tb-back{font-size:11px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color var(--ease);min-height:44px}
 .tb-back:hover{color:var(--text)}
 .tb-right{display:flex;align-items:center;gap:10px}
 .tb-btn{width:32px;height:32px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease),color var(--ease)}
@@ -63,13 +63,16 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 h1{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:6px}
 .updated{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);margin-bottom:40px}
 
-h2{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;margin:32px 0 10px;padding-top:4px;border-top:1px solid var(--border)}
+h2{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;margin:32px 0 10px;padding-top:4px;border-top:1px solid var(--border);scroll-margin-top:64px}
 p{font-size:14px;color:var(--muted);margin-bottom:12px}
 ul{font-size:14px;color:var(--muted);padding-left:20px;margin-bottom:12px}
 li{margin-bottom:5px}
 a{color:var(--indigo-fg);text-decoration:none}
 a:hover{text-decoration:underline}
 .notice{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:4px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted)}
+.notice strong{color:var(--text)}
+.tool-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tool-tag{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:3px 9px;border-radius:3px;background:rgba(25,211,230,.1);color:var(--indigo-fg);border:1px solid rgba(25,211,230,.25)}
 
 .footer-bar{
   display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;
@@ -103,58 +106,62 @@ a:hover{text-decoration:underline}
 
 <main class="wrap">
   <p class="eyebrow">Legal</p>
-  <h1>Terms of Use</h1>
-  <p class="updated">Last updated: September 2026 &nbsp;·&nbsp; Governing law: Alberta, Canada</p>
+  <h1>Engineering Disclaimer</h1>
+  <p class="updated">Last updated: September 2026 &nbsp;·&nbsp; Applies to all calculation tools</p>
 
-  <div class="notice">
-    These tools are for professional reference only. They do not substitute for certified engineering review, stamped drawings, or authoritative standards documents. Verify all results before use in the field.
+  <div class="tool-list">
+    <span class="tool-tag">Flange Slide Rule</span>
+    <span class="tool-tag">Bolt Torque Calculator</span>
+    <span class="tool-tag">Safety Block Calculator</span>
   </div>
 
-  <h2>Acceptance</h2>
-  <p>By accessing AP Workspace at <strong>app.anjanpatel.ca</strong> you agree to these terms. If you do not agree, do not use the service.</p>
+  <div class="notice">
+    <strong>Reference and preliminary analysis only.</strong> Every value produced by AP Workspace must be independently verified by a licensed Professional Engineer (P.E. / P.Eng.) before it is relied on for field execution.
+  </div>
 
-  <h2>The service</h2>
-  <p>AP Workspace provides engineering reference calculators for oil and gas field operations, currently including:</p>
+  <h2>What these tools are</h2>
+  <p>AP Workspace's calculators — Flange Slide Rule, Bolt Torque Calculator, and Safety Block Calculator — are reference aids that apply published formulas and standard tables to the numbers you enter. They are built for speed in the field, not for certification.</p>
+
+  <h2>What they are not</h2>
+  <p>AP Workspace outputs are generated for reference and preliminary analysis only. They do not constitute certified engineering advice, a stamped engineering sign-off, or a substitute for review by a qualified engineer. This applies to every output the tools produce, including but not limited to:</p>
   <ul>
-    <li><strong>Flange Slide Rule</strong> — API 6A / ISO 10423 flange dimensional reference.</li>
-    <li><strong>Bolt Torque Calculator</strong> — API 6A bolt torque, nut factor, and crossbolt sequence guidance.</li>
-    <li><strong>Safety Block Calculator</strong> — safe working load and Von Mises stress estimates from Brinell hardness, width, and thickness inputs.</li>
+    <li>Flange dimensions, bolt circles, bore sizes, and ring gasket designations</li>
+    <li>Bolt torque values, nut factors, and crossbolt sequence guidance</li>
+    <li>Safe working load (SWL) and Von Mises stress estimates</li>
+    <li>Any pressure rating, pressure limit, or material property referenced by the tools</li>
   </ul>
-  <p>The service is provided to registered users only. You must create an account and sign in to access the calculators and dashboard.</p>
+  <p>All torque values, pressure limits, and flange specifications must be independently verified by a licensed Professional Engineer (P.E. / P.Eng.) prior to field execution. Do not use any output as the sole basis for a safety-critical decision, equipment selection, installation, or recertification.</p>
 
-  <h2>Professional responsibility</h2>
-  <p>Results produced by these calculators are dimensional references and estimates derived from published standards. They are not certified engineering calculations and must not be used as the sole basis for any safety-critical decision, equipment selection, or installation without independent verification by a qualified engineer.</p>
-  <p>All torque values, pressure limits, and flange specifications produced by this service must be independently verified by a licensed Professional Engineer (P.E. / P.Eng.) prior to field execution. You bear full responsibility for how you apply any output from this service. Anjan Patel accepts no liability for equipment failure, operational downtime, or safety incidents arising from decisions made based on results produced by these tools.</p>
-  <p>See the full <a href="/disclaimer/">Engineering Disclaimer</a> for tool-by-tool detail and standards attribution.</p>
+  <h2>Hold harmless</h2>
+  <p>The creators and operators of AP Workspace accept zero liability for equipment failure, operational downtime, personal injury, or safety incidents arising from the use of, or reliance on, these tools. You assume full responsibility for independently verifying every value before acting on it. This section supplements, and does not replace, the Limitation of Liability clause in the <a href="/terms/">Terms of Use</a>.</p>
 
-  <h2>Permitted use</h2>
+  <h2>Acknowledgment on tool pages</h2>
+  <p>The first time you open a calculator in a browser session, AP Workspace shows a short version of this disclaimer with an "Acknowledge & Proceed" action. Acknowledging it confirms you understand the tool is a reference aid, not a certified engineering calculation, for that session. You can re-read the full disclaimer here at any time.</p>
+
+  <h2 id="standards">Standards &amp; trademark attribution</h2>
+  <p>AP Workspace's calculators reference dimensional data and formulas published in the following industry standards:</p>
   <ul>
-    <li>Use is for your own professional reference purposes.</li>
-    <li>You may not resell, redistribute, or sublicense access to the service.</li>
-    <li>You may not attempt to reverse-engineer, scrape, or otherwise extract data or source code for commercial use.</li>
-    <li>You may not use the service for any purpose that is unlawful under Canadian or Alberta law.</li>
+    <li><strong>API 6A</strong> / ISO 10423 — wellhead and christmas tree equipment specification, published by the American Petroleum Institute.</li>
+    <li><strong>ASME B16.5</strong> — pipe flanges and flanged fittings, published by the American Society of Mechanical Engineers.</li>
+    <li><strong>ASME PCC-1</strong> — guidelines for pressure boundary bolted flange joint assembly, published by the American Society of Mechanical Engineers.</li>
   </ul>
+  <p>ASME B16.5, ASME PCC-1, and API 6A are registered trademarks of the American Society of Mechanical Engineers and the American Petroleum Institute respectively. AP Workspace is an independent software tool and is not affiliated with, endorsed by, or sponsored by ASME or API. References to these standards are for informational and dimensional-lookup purposes only — always consult the current, controlled edition of the applicable standard for engineering, fabrication, inspection, or recertification work.</p>
 
-  <h2>Accounts</h2>
-  <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately if you suspect unauthorized access to your account. We reserve the right to suspend or terminate accounts that violate these terms.</p>
+  <h2>Copyright &amp; proprietary design</h2>
+  <p>&copy; <span id="dyr"></span> Anjan Patel (AP Workspace). All rights reserved. The AP Workspace design system — including its CSS token structure ("Engineering Graphite"), the AP lettermark and logo, page layouts, and calculator interaction design — is the proprietary work of Anjan Patel and may not be copied, redistributed, or reused without written permission.</p>
+  <p>This protection does not extend to the underlying engineering standards, formulas, or published dimensional tables referenced by the tools, which remain the property of their respective standards bodies (ASME, API) and are cited above, not claimed as original work.</p>
 
-  <h2>Intellectual property</h2>
-  <p>All content, code, and design of AP Workspace is owned by Anjan Patel. The underlying engineering standards (API 6A, ISO 10423) are the property of their respective standards bodies and are referenced here for informational purposes only.</p>
+  <h2>Local data &amp; privacy</h2>
+  <p>Values you type into a calculator stay in your browser while you're working — they are not transmitted anywhere just by entering them. If you choose to use the "Save to Dashboard" action, that specific lookup (its inputs, result, and an optional label) is sent to your authenticated account on our database provider so it appears in your saved history. Nothing is saved or transmitted unless you take that action. See the full <a href="/privacy/">Privacy Policy</a> for details on account data and third-party services.</p>
 
-  <h2>Availability</h2>
-  <p>The service is provided on a best-effort basis. We do not guarantee uptime, accuracy, or availability. We may modify or discontinue any part of the service at any time without notice.</p>
-
-  <h2>Limitation of liability</h2>
-  <p>To the maximum extent permitted by Alberta law, Anjan Patel shall not be liable for any direct, indirect, incidental, special, or consequential damages arising from your use of — or inability to use — this service, even if advised of the possibility of such damages.</p>
-
-  <h2>Governing law</h2>
-  <p>These terms are governed by the laws of the Province of Alberta and the federal laws of Canada applicable therein. Any disputes shall be subject to the exclusive jurisdiction of the courts of Alberta.</p>
-
-  <h2>Changes</h2>
-  <p>We may update these terms from time to time. Material changes will be reflected in the "Last updated" date above. Continued use after changes constitutes acceptance.</p>
+  <h2>Related documents</h2>
+  <ul>
+    <li><a href="/terms/">Terms of Use</a> — acceptance, permitted use, and limitation of liability.</li>
+    <li><a href="/privacy/">Privacy Policy</a> — what account and saved-lookup data we hold and why.</li>
+  </ul>
 
   <h2>Contact</h2>
-  <p>Questions about these terms: <button class="fmail" id="terms-mail" type="button">contact us</button>.</p>
+  <p>Questions about this disclaimer: <button class="fmail" id="disc-mail" type="button">contact us</button>.</p>
 </main>
 
 <footer class="footer-bar">
@@ -176,11 +183,13 @@ a:hover{text-decoration:underline}
 
 <script>
 (function(){
-  document.getElementById('legalYr').textContent=new Date().getFullYear();
+  var yr=new Date().getFullYear();
+  document.getElementById('legalYr').textContent=yr;
+  document.getElementById('dyr').textContent=yr;
   var e='support'+'@'+'app'+'.'+'anjanpatel'+'.'+'ca';
   var fn=function(){window.location.href='mailto:'+e};
   document.getElementById('footer-mail').addEventListener('click',fn);
-  document.getElementById('terms-mail').addEventListener('click',fn);
+  document.getElementById('disc-mail').addEventListener('click',fn);
 })();
 (function(){
   var btn=document.getElementById('themeBtn');
