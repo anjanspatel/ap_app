@@ -309,10 +309,11 @@ body{
 .vsub{font:400 11px var(--font-ui);color:var(--muted);line-height:1.65;margin-bottom:16px}
 
 .legal{
-  position:relative;z-index:1;
+  position:fixed;
+  bottom:max(12px,env(safe-area-inset-bottom,12px));
+  left:0;right:0;z-index:10;
   display:flex;align-items:center;justify-content:center;
   flex-wrap:wrap;gap:4px 12px;
-  margin-top:20px;
   font:400 10px var(--font-mono);color:var(--dim);letter-spacing:0.04em;
   animation:fadeUp 900ms var(--anim-ease) 380ms both;
 }
@@ -350,6 +351,15 @@ body{
   .cta{height:42px}
   .or{margin:12px 0 10px}
   .ob{height:40px;font-size:11px}
+}
+@media(max-height:560px){
+  .hero{margin-bottom:8px}
+  .hero-title{font-size:18px;margin-bottom:0}
+  .hero-eyebrow{margin-bottom:6px}
+  .hero-sub{display:none}
+  .card{padding:16px 20px 14px}
+  .field{margin-bottom:8px}
+  .or{margin:8px 0 8px}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}
