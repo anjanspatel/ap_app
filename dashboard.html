@@ -357,7 +357,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
         </div>
         <div class="metric">
           <div class="metric-label">Tools Online</div>
-          <div class="metric-value">2</div>
+          <div class="metric-value">3</div>
           <div class="metric-footer"><span class="status-dot dot-ok"></span>All operational</div>
         </div>
         <div class="metric">
@@ -376,7 +376,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
         <div class="panel">
           <div class="panel-hd">
             <span class="panel-title">Calculators</span>
-            <span class="panel-count">2 active</span>
+            <span class="panel-count">3 active</span>
           </div>
           <div class="tool-list">
             <a class="tool-item" href="/flange/">
@@ -405,6 +405,21 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
               <div class="tool-info">
                 <div class="tool-name">Safety Block Calculator</div>
                 <div class="tool-desc">SWL · BHN · Von Mises · PDF export</div>
+              </div>
+              <span class="tool-status status-operational">OPERATIONAL</span>
+              <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <a class="tool-item" href="/torque/">
+              <div class="tool-icon">
+                <svg width="16" height="16" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="8" cy="18" r="4" stroke="#00d27a"/>
+                  <line x1="11.8" y1="14.2" x2="20" y2="6" stroke="#00d27a"/>
+                  <polyline points="17,4 22,4 22,9" stroke="#00d27a"/>
+                </svg>
+              </div>
+              <div class="tool-info">
+                <div class="tool-name">Bolt Torque Calculator</div>
+                <div class="tool-desc">T = K·D·F · A193 B7/L7 · 3-pass sequence</div>
               </div>
               <span class="tool-status status-operational">OPERATIONAL</span>
               <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -459,6 +474,21 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
           <div class="tool-info">
             <div class="tool-name">Safety Block Calculator</div>
             <div class="tool-desc">SWL from Brinell hardness, width, thickness · Von Mises shear · PDF export</div>
+          </div>
+          <span class="tool-status status-operational">OPERATIONAL</span>
+          <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="tool-item" href="/torque/">
+          <div class="tool-icon">
+            <svg width="16" height="16" viewBox="0 0 26 26" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="18" r="4" stroke="#00d27a"/>
+              <line x1="11.8" y1="14.2" x2="20" y2="6" stroke="#00d27a"/>
+              <polyline points="17,4 22,4 22,9" stroke="#00d27a"/>
+            </svg>
+          </div>
+          <div class="tool-info">
+            <div class="tool-name">Bolt Torque Calculator</div>
+            <div class="tool-desc">T = K·D·F · ASTM A193 B7/B7M, A320 L7 · 3-pass crossbolt sequence table</div>
           </div>
           <span class="tool-status status-operational">OPERATIONAL</span>
           <svg class="tool-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -616,6 +646,7 @@ function fmtP(tool,p){
   if(!p)return'—';
   if(tool==='flange'){return[(p.size?'Size: '+p.size:''),(p.rating?p.rating:''),(p.bore?'Bore: '+p.bore:'')].filter(Boolean).join(' · ')||esc(JSON.stringify(p))}
   if(tool==='tubing'){return[(p.bhn?'BHN: '+p.bhn:''),(p.width?'W: '+p.width+'"':''),(p.thickness?'T: '+p.thickness+'"':'')].filter(Boolean).join(' · ')||esc(JSON.stringify(p))}
+  if(tool==='torque'){return[(p.size?p.size+'"':''), (p.grade||''),(p.bolts?p.bolts+' bolts':''),(p.lube||''),(p.preload?p.preload+'% preload':'')].filter(Boolean).join(' · ')||esc(JSON.stringify(p))}
   return esc(JSON.stringify(p));
 }
 
@@ -668,9 +699,10 @@ async function loadDashboard(){
     /* breakdown bar */
     var nF=rows.filter(function(r){return r.tool==='flange'}).length;
     var nT=rows.filter(function(r){return r.tool==='tubing'}).length;
+    var nTq=rows.filter(function(r){return r.tool==='torque'}).length;
     var pct=rows.length>0?Math.round((nF/rows.length)*100):0;
     $('actLblA').textContent='Flange '+nF;
-    $('actLblB').textContent='Tubing '+nT;
+    $('actLblB').textContent='Torque '+nTq+(nT?' / Block '+nT:'');
     $('actBreak').style.display='flex';
     setTimeout(function(){$('actFill').style.width=pct+'%'},80);
   } else {
@@ -690,7 +722,7 @@ function renderRecent(rows){
   rows.forEach(function(l){
     var idx=allRows.findIndex(function(r){return r.id===l.id});
     var jobNum=idx<0?'?':(total-idx);
-    var tool=l.tool==='flange'?'Flange':'Tubing';
+    var tool=l.tool==='flange'?'Flange':l.tool==='torque'?'Torque':'Tubing';
     html+='<tr style="cursor:pointer" data-id="'+l.id+'"><td class="td-mono" style="color:var(--indigo-fg)">#'+jobNum+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-mono">'+relTime(l.created_at)+'</td></tr>';
   });
   html+='</tbody></table></div>';
@@ -718,7 +750,7 @@ async function loadLogs(){
   var html='<div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Tool</th><th>Parameters</th><th>Label</th><th>Date</th><th></th></tr></thead><tbody>';
   rows.forEach(function(l,i){
     var jobNum=total-i;
-    var tool=l.tool==='flange'?'Flange':'Tubing';
+    var tool=l.tool==='flange'?'Flange':l.tool==='torque'?'Torque':'Tubing';
     var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
     var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
     html+='<tr style="cursor:pointer" data-id="'+l.id+'"><td class="td-mono" style="color:var(--indigo-fg)">#'+jobNum+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="event.stopPropagation();delLookup(\''+l.id+'\')" title="Delete">✕</button></td></tr>';
@@ -749,7 +781,7 @@ async function loadAdmin(){
   if(!rows.length){tbody.innerHTML='<tr><td colspan="5" class="empty"><span class="empty-label">No data.</span></td></tr>';return}
   tbody.innerHTML=rows.map(function(l){
     var uid=l.user_id?l.user_id.substring(0,8)+'…':'';
-    var tool=l.tool==='flange'?'Flange':'Tubing';
+    var tool=l.tool==='flange'?'Flange':l.tool==='torque'?'Torque':'Tubing';
     var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
     var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
     return'<tr><td class="td-mono" title="'+esc(l.user_id||'')+'">'+esc(uid)+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td></tr>';
@@ -763,8 +795,8 @@ function openDetail(id){
   var total=allRows.length;
   var idx=allRows.findIndex(function(r){return r.id===id});
   var jobNum=total-idx;
-  var toolName=l.tool==='flange'?'Flange Slide Rule':'Safety Block Calculator';
-  var toolBase=l.tool==='flange'?'/flange/':'/tubing/';
+  var toolName=l.tool==='flange'?'Flange Slide Rule':l.tool==='torque'?'Bolt Torque Calculator':'Safety Block Calculator';
+  var toolBase=l.tool==='flange'?'/flange/':l.tool==='torque'?'/torque/':'/tubing/';
   var toolPath=toolBase;
   if(l.params){
     var qp=new URLSearchParams();
@@ -776,6 +808,13 @@ function openDetail(id){
       if(l.params.bhn!=null)qp.set('bhn',l.params.bhn);
       if(l.params.width!=null)qp.set('width',l.params.width);
       if(l.params.thickness!=null)qp.set('thickness',l.params.thickness);
+    } else if(l.tool==='torque'){
+      if(l.params.size)qp.set('size',l.params.size);
+      if(l.params.grade)qp.set('grade',l.params.grade);
+      if(l.params.bolts)qp.set('bolts',l.params.bolts);
+      if(l.params.lube)qp.set('lube',l.params.lube);
+      if(l.params.preload)qp.set('preload',l.params.preload);
+      if(l.params.units)qp.set('units',l.params.units);
     }
     var qs=qp.toString();
     if(qs)toolPath=toolBase+'?'+qs;
@@ -797,7 +836,7 @@ function openDetail(id){
   if(l.params){
     html+='<div class="det-row"><span class="det-k">Raw</span><span class="det-v muted" style="font-size:10px;word-break:break-all">'+esc(JSON.stringify(l.params))+'</span></div>';
   }
-  $('detTitle').textContent='Job #'+jobNum+' · '+esc(l.tool==='flange'?'Flange':'Tubing');
+  $('detTitle').textContent='Job #'+jobNum+' · '+esc(l.tool==='flange'?'Flange':l.tool==='torque'?'Torque':'Tubing');
   $('detBody').innerHTML=html;
   $('detLink').href=toolPath;
   $('detLink').textContent='Open in '+toolName+' →';

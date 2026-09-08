@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<script>(function(){try{var t=localStorage.getItem('ap-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}}());</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bolt Torque Calculator — API 6A | Anjan Patel</title>
+<meta name="description" content="Bolt torque calculator for API 6A flanges — ASTM A193 B7/L7, nut factor, 3-pass sequence table.">
+<meta name="theme-color" content="#0b0f19" id="themeColorMeta">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
+<link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+  var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
+  var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+  var _sb=supabase.createClient(SB_URL,SB_KEY);
+  window.__sb=_sb;
+  window.__sbReady=_sb.auth.getSession().then(function(r){
+    if(!r.data||!r.data.session){window.location.replace('/');return null;}
+    return r.data.session;
+  });
+})();
+</script>
+<style>
+/* ── tokens ── */
+:root{
+  color-scheme:light;
+  --bg:#f0f4f8;--surface:#fff;--surface-2:#f7fafc;--text:#0f172a;
+  --muted:#475569;--dim:#94a3b8;--line:#e2e8f0;--control:#fff;
+  --indigo:#6366f1;--indigo-fg:#818cf8;--emerald:#00d27a;
+  --shadow:0 12px 34px rgba(11,31,58,.10);
+  --ease:150ms ease-in-out;
+  --font:'IBM Plex Sans',Arial,Helvetica,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0b0f19;--surface:#171e2e;--surface-2:#1b2435;--text:#f8fafc;
+  --muted:#94a3b8;--dim:#64748b;--line:#2d3748;--control:#1b2435;
+  --shadow:0 14px 40px rgba(0,0,0,.34);
+}
+@media(prefers-color-scheme:dark){
+  html:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0b0f19;--surface:#171e2e;--surface-2:#1b2435;--text:#f8fafc;
+    --muted:#94a3b8;--dim:#64748b;--line:#2d3748;--control:#1b2435;
+    --shadow:0 14px 40px rgba(0,0,0,.34);
+  }
+}
+
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}
+body{background:var(--bg);font-family:var(--font);color:var(--text);
+  -webkit-font-smoothing:antialiased;transition:background .22s,color .22s}
+
+/* ── header ── */
+.site-header{width:100%;border-bottom:1px solid var(--line);background:var(--surface);
+  transition:background .22s,border-color .22s}
+.header-inner{max-width:980px;margin:0 auto;padding:11px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;
+  -webkit-tap-highlight-color:transparent}
+.brand-logo-wrap{width:44px;height:44px;border-radius:10px;background:#fff;
+  border:1px solid rgba(11,31,58,.16);display:grid;place-items:center;
+  overflow:hidden;flex:0 0 auto;box-shadow:0 2px 8px rgba(11,31,58,.08)}
+html[data-theme="dark"] .brand-logo-wrap,
+.brand-logo-wrap{background:#fff;border-color:rgba(99,102,241,.3)}
+@media(prefers-color-scheme:dark){
+  html:not([data-theme="light"]) .brand-logo-wrap{background:#fff;border-color:rgba(99,102,241,.3)}
+}
+.brand-logo{width:41px;height:41px;object-fit:contain;display:block}
+.brand-copy{display:flex;flex-direction:column;line-height:1.05}
+.brand-name{font-size:14px;font-weight:800;letter-spacing:.08em;color:var(--text);white-space:nowrap}
+.brand-sub{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.04em;white-space:nowrap}
+.hub-back{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.03em;white-space:nowrap;
+  text-decoration:none;display:block;opacity:.65;transition:opacity .15s}
+.hub-back:hover{opacity:1;color:var(--indigo-fg)}
+.header-actions{display:flex;align-items:center;gap:8px}
+.action-btn{appearance:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  min-height:40px;padding:0 14px;cursor:pointer;display:flex;align-items:center;gap:6px;
+  color:var(--text);font:600 13px var(--font);transition:background var(--ease),border-color var(--ease);flex:0 0 auto}
+.action-btn:hover{background:var(--surface-2)}
+.action-btn.primary{background:var(--indigo);color:#fff;border-color:var(--indigo-fg)}
+.action-btn.primary:hover{filter:brightness(1.1)}
+.theme-toggle{appearance:none;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+  min-height:40px;width:40px;cursor:pointer;display:grid;place-items:center;
+  color:var(--muted);transition:background var(--ease),border-color var(--ease),color var(--ease)}
+.theme-toggle:hover{border-color:var(--indigo-fg);color:var(--text)}
+.action-btn:focus-visible,.theme-toggle:focus-visible{outline:3px solid rgba(99,102,241,.35);outline-offset:2px}
+
+/* ── page ── */
+.page{max-width:980px;margin:0 auto;padding:22px 18px 60px}
+.title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 0 16px}
+h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin:0;line-height:1.15}
+.title-accent{width:48px;height:4px;background:var(--indigo);border-radius:99px;margin-top:8px}
+
+/* ── job row ── */
+.job-row{display:flex;align-items:center;gap:9px;margin:0 0 12px;padding:9px 11px;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:9px}
+.job-row label{font-size:11px;font-weight:800;color:var(--text);white-space:nowrap}
+.job-row input{flex:1;min-width:0;height:36px;border:1px solid var(--line);border-radius:7px;
+  background:var(--control);color:var(--text);font:600 13px var(--font);padding:7px 10px;outline:none}
+.job-row input:focus{border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.job-row .hint{font-size:10px;color:var(--muted);white-space:nowrap}
+.offline-dot{width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block;margin-right:4px}
+
+/* ── card ── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:20px;box-shadow:var(--shadow);transition:background .22s,border-color .22s;margin-bottom:12px}
+
+/* ── 2-column calculator grid ── */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media(max-width:680px){.calc-grid{grid-template-columns:1fr;gap:16px}}
+
+/* ── input fields ── */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field-label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field select,.field input[type="number"]{
+  width:100%;height:42px;background:var(--control);border:1px solid var(--line);
+  border-radius:8px;color:var(--text);font:600 14px var(--font);padding:0 12px;outline:none;
+  transition:border-color var(--ease),box-shadow var(--ease);appearance:none;
+  -webkit-appearance:none;
+}
+.field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;cursor:pointer;
+}
+.field select:focus,.field input[type="number"]:focus{
+  border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+
+/* preload row: slider + number */
+.preload-row{display:flex;gap:8px;align-items:center}
+.preload-row input[type="range"]{
+  flex:1;height:6px;border-radius:3px;cursor:pointer;
+  accent-color:var(--indigo);border:none;background:none;padding:0;outline:none}
+.preload-num{width:68px;text-align:center;flex:0 0 auto}
+
+/* units toggle pill */
+.units-toggle{display:flex;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:8px;padding:3px;gap:0;margin-bottom:0}
+.units-btn{flex:1;height:34px;border:none;background:none;cursor:pointer;
+  font:700 11px var(--font);letter-spacing:.04em;color:var(--muted);border-radius:5px;
+  transition:background var(--ease),color var(--ease);-webkit-tap-highlight-color:transparent}
+.units-btn.active{background:var(--indigo);color:#fff}
+
+/* ── k-note ── */
+.k-note{font:400 10.5px var(--mono);color:var(--dim);margin-top:6px;
+  letter-spacing:.02em;display:flex;align-items:center;gap:6px}
+.k-badge{display:inline-block;font:700 10px var(--mono);color:var(--indigo-fg);
+  background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);
+  padding:2px 7px;border-radius:3px;letter-spacing:.04em}
+
+/* ── result tiles ── */
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.r-tile{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.r-tile.span-full{grid-column:1/-1}
+.r-label{font:700 9px var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:8px}
+.r-value{font:700 28px/1 var(--mono);color:var(--text);letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;margin-bottom:3px}
+.r-value.em{color:var(--indigo-fg)}
+.r-unit{font:400 11px var(--mono);color:var(--muted);letter-spacing:.04em}
+.r-sub{font:400 10px var(--mono);color:var(--dim);margin-top:5px}
+.r-warn{color:#f59e0b}
+.r-ok{color:var(--emerald)}
+
+/* ── torque sequence table ── */
+.seq-table{width:100%;border-collapse:collapse}
+.seq-table th{font:700 9px var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--line)}
+.seq-table td{font:500 13px var(--mono);color:var(--text);padding:10px 12px;
+  border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums}
+.seq-table tr:last-child td{border-bottom:none}
+.seq-table td.pass-label{color:var(--muted);font-size:11px}
+.seq-bar-cell{width:140px}
+.seq-bar-wrap{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.seq-bar-fill{height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--indigo) 0%,rgba(99,102,241,.5) 100%);
+  transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.seq-pct{font:700 11px var(--mono);color:var(--indigo-fg);min-width:36px;text-align:right}
+.seq-table .pass-final td{color:var(--emerald)}
+.seq-table .pass-final .pass-label{color:var(--emerald)}
+
+/* ── info cards ── */
+.info-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:0}
+.info-card{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;color:var(--muted);font-size:11px;line-height:1.55}
+.info-card strong{color:var(--text)}
+@media(max-width:540px){.info-row{grid-template-columns:1fr}}
+
+/* ── section label ── */
+.sec-label{font:700 9px var(--mono);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+/* ── footer ── */
+footer{max-width:980px;margin:14px auto 0;font-size:10.5px;line-height:1.6;
+  color:var(--muted);text-align:center}
+.footer-legal{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:3px 8px}
+.footer-dot{opacity:.35;user-select:none}
+.footer-link{background:none;border:none;color:inherit;cursor:pointer;font-size:inherit;
+  padding:0;font-family:inherit;text-decoration:underline;text-decoration-color:transparent;
+  transition:text-decoration-color .15s}
+.footer-link:hover{text-decoration-color:var(--muted)}
+footer a{color:var(--text);font-weight:700;text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* ── modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .18s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  max-width:460px;width:100%;max-height:80vh;overflow-y:auto;padding:26px 28px 22px;
+  position:relative;box-shadow:0 24px 64px rgba(0,0,0,.28)}
+.modal-close{position:absolute;top:10px;right:12px;background:none;border:none;
+  font-size:22px;cursor:pointer;color:var(--muted);line-height:1;padding:4px 6px;border-radius:6px}
+.modal-close:hover{background:var(--surface-2)}
+.modal-box h2{font-size:15px;font-weight:700;color:var(--text);margin:0 0 14px;padding-right:28px}
+.modal-box p,.modal-box li{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 6px}
+.modal-box ul{padding-left:16px;margin:0 0 6px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font:700 10px var(--mono);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.modal-field input{width:100%;height:40px;border:1px solid var(--line);border-radius:7px;
+  background:var(--control);color:var(--text);font:500 13px var(--font);padding:0 12px;outline:none}
+.modal-field input:focus{border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.modal-btn{height:38px;padding:0 16px;border-radius:7px;font:600 13px var(--font);
+  cursor:pointer;border:1px solid var(--line);background:var(--surface-2);color:var(--text);
+  transition:background var(--ease)}
+.modal-btn:hover{background:var(--line)}
+.modal-btn.modal-save{background:var(--indigo);color:#fff;border-color:var(--indigo-fg)}
+.modal-btn.modal-save:hover{filter:brightness(1.1)}
+.modal-msg{font:400 11px var(--mono);color:var(--dim);margin-top:8px;min-height:16px}
+.modal-msg.ok{color:var(--emerald)}
+.modal-msg.err{color:#f87171}
+
+/* ── responsive ── */
+@media(max-width:680px){
+  .header-actions .action-btn span{display:none}
+  .action-btn{padding:0 10px}
+  .brand-sub{display:none}
+  .result-grid{grid-template-columns:1fr}
+  .r-tile.span-full{grid-column:1}
+  .r-value{font-size:22px}
+  .page{padding:14px 10px 48px}
+}
+</style>
+<link rel="stylesheet" href="/premium.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/dashboard.html">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="/favicon.svg" alt="AP logo" width="41" height="41">
+      </div>
+      <div class="brand-copy">
+        <span class="brand-name">AP Workspace</span>
+        <span class="brand-sub">Bolt Torque Calculator</span>
+        <a class="hub-back" href="/dashboard.html">← Dashboard</a>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="action-btn btn-shimmer" id="saveLookupBtn" type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span>Save Lookup</span>
+      </button>
+      <button class="action-btn primary btn-shimmer" id="savePdfBtn" type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <span>Export PDF</span>
+      </button>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="title-row">
+    <div>
+      <h1>Bolt Torque Calculator</h1>
+      <div class="title-accent"></div>
+    </div>
+  </div>
+
+  <div class="job-row">
+    <label for="jobNum">Job #</label>
+    <input type="text" id="jobNum" placeholder="Enter job number…" maxlength="40" autocomplete="off">
+    <span class="hint"><span class="offline-dot" id="connDot"></span><span id="connLabel">Checking…</span></span>
+  </div>
+
+  <div class="card">
+    <div class="calc-grid">
+
+      <!-- INPUTS -->
+      <div>
+        <div class="sec-label">Bolt parameters</div>
+
+        <div class="field">
+          <label class="field-label" for="boltSize">Bolt Size</label>
+          <select id="boltSize">
+            <option value="0.5">1/2" — UNC 13 TPI</option>
+            <option value="0.625">5/8" — UNC 11 TPI</option>
+            <option value="0.75">3/4" — UNC 10 TPI</option>
+            <option value="0.875">7/8" — UNC 9 TPI</option>
+            <option value="1.0" selected>1" — UNC 8 TPI</option>
+            <option value="1.125">1-1/8" — UNC 7 TPI</option>
+            <option value="1.25">1-1/4" — UNC 7 TPI</option>
+            <option value="1.375">1-3/8" — UNC 6 TPI</option>
+            <option value="1.5">1-1/2" — UNC 6 TPI</option>
+            <option value="1.625">1-5/8" — UNC 5.5 TPI</option>
+            <option value="1.75">1-3/4" — UNC 5 TPI</option>
+            <option value="2.0">2" — UNC 4.5 TPI</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="boltGrade">Bolt Grade / Specification</label>
+          <select id="boltGrade">
+            <option value="B7" selected>ASTM A193 B7 — Cr-Mo (standard)</option>
+            <option value="B7M">ASTM A193 B7M — low strength</option>
+            <option value="L7">ASTM A320 L7 — low temperature</option>
+            <option value="L7M">ASTM A320 L7M — low temp, low strength</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="numBolts">Number of Bolts</label>
+          <input type="number" id="numBolts" value="8" min="1" max="200" step="1">
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="lubeCond">Lubrication / Surface Condition</label>
+          <select id="lubeCond">
+            <option value="dry">Dry — no lubricant</option>
+            <option value="oil">Thread oil / machine oil</option>
+            <option value="grease">Heavy grease</option>
+            <option value="moly" selected>Molykote / MoS₂ anti-seize</option>
+            <option value="nickel">Nickel-based anti-seize</option>
+            <option value="ptfe">PTFE tape / Teflon</option>
+          </select>
+          <div class="k-note">Nut factor K = <span class="k-badge" id="kDisplay">0.12</span></div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="preloadSlider">Target Preload — % of Proof Load</label>
+          <div class="preload-row">
+            <input type="range" id="preloadSlider" min="30" max="90" value="60" step="5">
+            <input type="number" class="field preload-num" id="preloadNum" value="60" min="30" max="90" step="5" style="margin:0">
+            <span style="font:600 12px var(--mono);color:var(--dim)">%</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Units</label>
+          <div class="units-toggle">
+            <button class="units-btn active" id="unitImperial" type="button">ft-lb · in</button>
+            <button class="units-btn" id="unitMetric" type="button">N-m · mm</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div>
+        <div class="sec-label">Results</div>
+        <div class="result-grid">
+          <div class="r-tile">
+            <div class="r-label">Torque per Bolt</div>
+            <div class="r-value em" id="torquePerBolt">—</div>
+            <div class="r-unit" id="torqueUnit">ft-lb</div>
+            <div class="r-sub" id="torqueSubNote"></div>
+          </div>
+          <div class="r-tile">
+            <div class="r-label">Total All Bolts</div>
+            <div class="r-value" id="torqueTotal">—</div>
+            <div class="r-unit" id="totalUnit">ft-lb</div>
+          </div>
+          <div class="r-tile">
+            <div class="r-label">Clamp Load / Bolt</div>
+            <div class="r-value" id="clampLoad">—</div>
+            <div class="r-unit" id="clampUnit">lb</div>
+            <div class="r-sub" id="proofNote"></div>
+          </div>
+          <div class="r-tile">
+            <div class="r-label">Bolt Stress</div>
+            <div class="r-value" id="stressDisp">—</div>
+            <div class="r-unit">% proof load</div>
+            <div class="r-sub" id="stressBar" style="margin-top:6px">
+              <div style="height:4px;background:var(--line);border-radius:2px;overflow:hidden">
+                <div id="stressBarFill" style="height:100%;border-radius:2px;background:var(--indigo);width:0%;transition:width .5s ease"></div>
+              </div>
+            </div>
+          </div>
+          <div class="r-tile span-full">
+            <div class="r-label">Tensile Stress Area</div>
+            <div style="display:flex;gap:24px;align-items:baseline;flex-wrap:wrap">
+              <div><span class="r-value" id="stressAreaVal" style="font-size:18px">—</span> <span class="r-unit" id="stressAreaUnit">in²</span></div>
+              <div style="font:400 10.5px var(--mono);color:var(--dim)" id="proofStrengthNote"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TORQUE SEQUENCE TABLE -->
+  <div class="card">
+    <div class="sec-label">3-Pass torque sequence — crossbolt pattern</div>
+    <table class="seq-table" id="seqTable">
+      <thead>
+        <tr>
+          <th>Pass</th>
+          <th>Description</th>
+          <th>% of Final</th>
+          <th>Torque / Bolt</th>
+          <th class="seq-bar-cell" style="min-width:120px">Progress</th>
+        </tr>
+      </thead>
+      <tbody id="seqBody">
+        <tr>
+          <td class="pass-label">Pass 1</td>
+          <td class="pass-label">Snug tight — hand wrench</td>
+          <td class="seq-pct">30%</td>
+          <td id="seq1">—</td>
+          <td class="seq-bar-cell"><div class="seq-bar-wrap"><div class="seq-bar-fill" style="width:30%"></div></div></td>
+        </tr>
+        <tr>
+          <td class="pass-label">Pass 2</td>
+          <td class="pass-label">Intermediate — crossbolt pattern</td>
+          <td class="seq-pct">70%</td>
+          <td id="seq2">—</td>
+          <td class="seq-bar-cell"><div class="seq-bar-wrap"><div class="seq-bar-fill" style="width:70%"></div></div></td>
+        </tr>
+        <tr class="pass-final">
+          <td class="pass-label">Pass 3</td>
+          <td class="pass-label">Final — full torque, verify all</td>
+          <td class="seq-pct">100%</td>
+          <td id="seq3">—</td>
+          <td class="seq-bar-cell"><div class="seq-bar-wrap"><div class="seq-bar-fill" style="width:100%;background:var(--emerald)"></div></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- INFO CARDS -->
+  <div class="info-row">
+    <div class="info-card">
+      <strong>Formula — T = K × D × F</strong><br>
+      T = torque, K = nut factor, D = nominal bolt diameter (in), F = clamp load (lb).
+      Proof load = tensile stress area × proof strength (ASME PCC-1 Appendix K).
+    </div>
+    <div class="info-card">
+      <strong>B7 Proof Strength</strong><br>
+      ≤ 1" dia: <strong>105,000 psi</strong> &nbsp;|&nbsp;
+      1-1/8" – 1-1/2": <strong>95,000 psi</strong> &nbsp;|&nbsp;
+      &gt; 1-1/2": <strong>75,000 psi</strong>.
+      Per ASTM A193 / API 20E.
+    </div>
+    <div class="info-card">
+      <strong>Nut Factor (K) guidance</strong><br>
+      Dry: 0.20 · Oil: 0.15 · Grease: 0.13 · MoS₂: 0.12 · Ni anti-seize: 0.13 · PTFE: 0.10.
+      Always verify K with lube supplier data sheet.
+    </div>
+    <div class="info-card">
+      <strong>Reference only</strong><br>
+      Results are estimates. Verify with a certified engineer before field use.
+      Not a substitute for stamped engineering drawings or authoritative standards.
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<footer>
+  <div class="footer-legal">
+    <span>&copy; <span id="legalYr"></span> Anjan Patel. All rights reserved.</span>
+    <span class="footer-dot">·</span>
+    <a href="/terms/">Terms</a>
+    <span class="footer-dot">·</span>
+    <a href="/privacy/">Privacy</a>
+    <span class="footer-dot">·</span>
+    <button class="footer-link" id="footerMail" type="button">Contact</button>
+    <span class="footer-dot">·</span>
+    <span style="font-family:var(--mono);font-size:9.5px;opacity:.45">Reference only — not for construction</span>
+  </div>
+</footer>
+
+<!-- SAVE LOOKUP MODAL -->
+<div class="modal-overlay" id="saveModal" role="dialog" aria-modal="true" aria-labelledby="saveMTitle">
+  <div class="modal-box">
+    <button class="modal-close" id="saveModalClose" aria-label="Close">&times;</button>
+    <h2 id="saveMTitle">Save Lookup</h2>
+    <div class="modal-field">
+      <label for="saveLabel">Label (optional)</label>
+      <input type="text" id="saveLabel" placeholder="e.g. 3-1/16" 5000 psi wing valve" maxlength="80" autocomplete="off">
+    </div>
+    <p id="saveSummaryLine" style="font:400 11px var(--mono);color:var(--dim);margin-bottom:0"></p>
+    <div class="modal-actions">
+      <button class="modal-btn" id="saveCancelBtn" type="button">Cancel</button>
+      <button class="modal-btn modal-save btn-shimmer" id="saveConfirmBtn" type="button">Save Lookup</button>
+    </div>
+    <div class="modal-msg" id="saveMsg"></div>
+  </div>
+</div>
+
+<script>
+/* ── data tables ── */
+var BOLTS = {
+  '0.5':  {label:'1/2"',   tpi:13,  area:0.1419},
+  '0.625':{label:'5/8"',   tpi:11,  area:0.2260},
+  '0.75': {label:'3/4"',   tpi:10,  area:0.3340},
+  '0.875':{label:'7/8"',   tpi:9,   area:0.4620},
+  '1.0':  {label:'1"',     tpi:8,   area:0.6060},
+  '1.125':{label:'1-1/8"', tpi:7,   area:0.7630},
+  '1.25': {label:'1-1/4"', tpi:7,   area:0.9690},
+  '1.375':{label:'1-3/8"', tpi:6,   area:1.1540},
+  '1.5':  {label:'1-1/2"', tpi:6,   area:1.4050},
+  '1.625':{label:'1-5/8"', tpi:5.5, area:1.6800},
+  '1.75': {label:'1-3/4"', tpi:5,   area:1.9800},
+  '2.0':  {label:'2"',     tpi:4.5, area:2.5020},
+};
+
+var GRADES = {
+  'B7' :{label:'A193 B7', proofFn:function(d){return d<=1?105000:d<=1.5?95000:75000;}},
+  'B7M':{label:'A193 B7M',proofFn:function(d){return 80000;}},
+  'L7' :{label:'A320 L7', proofFn:function(d){return d<=1?105000:d<=1.5?95000:75000;}},
+  'L7M':{label:'A320 L7M',proofFn:function(d){return 80000;}},
+};
+
+var LUBES = {
+  'dry'   :{label:'Dry', k:0.20},
+  'oil'   :{label:'Thread oil', k:0.15},
+  'grease':{label:'Heavy grease', k:0.13},
+  'moly'  :{label:'Molykote MoS₂', k:0.12},
+  'nickel':{label:'Ni anti-seize', k:0.13},
+  'ptfe'  :{label:'PTFE/Teflon', k:0.10},
+};
+
+/* ── helpers ── */
+function $(id){return document.getElementById(id);}
+function fmt(n,dec){return n.toLocaleString('en-CA',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
+function round(n,d){var f=Math.pow(10,d);return Math.round(n*f)/f;}
+
+/* ── state ── */
+var state = {
+  size:'1.0', grade:'B7', bolts:8, lube:'moly', preload:60, metric:false
+};
+var calc = {};
+
+/* ── URL params (re-open from dashboard) ── */
+(function(){
+  var sp=new URLSearchParams(window.location.search);
+  if(sp.get('size')&&BOLTS[sp.get('size')]){state.size=sp.get('size');$('boltSize').value=state.size;}
+  if(sp.get('grade')&&GRADES[sp.get('grade')]){state.grade=sp.get('grade');$('boltGrade').value=state.grade;}
+  if(sp.get('bolts')&&parseInt(sp.get('bolts'))>0){state.bolts=parseInt(sp.get('bolts'));$('numBolts').value=state.bolts;}
+  if(sp.get('lube')&&LUBES[sp.get('lube')]){state.lube=sp.get('lube');$('lubeCond').value=state.lube;}
+  if(sp.get('preload')){var p=parseInt(sp.get('preload'));if(p>=30&&p<=90){state.preload=p;$('preloadSlider').value=p;$('preloadNum').value=p;}}
+  if(sp.get('units')==='metric'){state.metric=true;$('unitMetric').classList.add('active');$('unitImperial').classList.remove('active');}
+})();
+
+/* ── compute ── */
+function compute(){
+  var b=BOLTS[state.size];
+  var g=GRADES[state.grade];
+  var lube=LUBES[state.lube];
+  var d=parseFloat(state.size);
+  var K=lube.k;
+  var proofStr=g.proofFn(d);
+  var area=b.area;
+  var proofLoad=area*proofStr;
+  var clamp=proofLoad*(state.preload/100);
+  var torqueInLb=K*d*clamp;
+  var torqueFtLb=torqueInLb/12;
+  var torqueNm=torqueFtLb*1.35582;
+  var totalFtLb=torqueFtLb*state.bolts;
+  var totalNm=totalFtLb*1.35582;
+  var clampKn=clamp*4.44822/1000;
+
+  calc={K:K,proofStr:proofStr,area:area,proofLoad:proofLoad,clamp:clamp,
+    torqueFtLb:torqueFtLb,torqueNm:torqueNm,totalFtLb:totalFtLb,totalNm:totalNm,
+    clampKn:clampKn,pct:state.preload};
+
+  var metric=state.metric;
+  var tVal=metric?torqueNm:torqueFtLb;
+  var tUnit=metric?'N·m':'ft-lb';
+  var totVal=metric?totalNm:totalFtLb;
+  var clampDisp=metric?(clamp/1000*4.44822).toFixed(1)+' kN':fmt(Math.round(clamp),0)+' lb';
+
+  $('torquePerBolt').textContent=fmt(round(tVal,0),0);
+  $('torqueUnit').textContent=tVal>=1000?tUnit+' ← verify wrench capacity':tUnit;
+  $('torqueSubNote').textContent='('+fmt(round(metric?torqueFtLb:torqueNm,0),0)+' '+(metric?'ft-lb':'N·m')+')';
+  $('torqueTotal').textContent=fmt(round(totVal,0),0);
+  $('totalUnit').textContent=tUnit+' total';
+  $('clampLoad').textContent=clampDisp;
+  $('clampUnit').textContent='';
+  $('proofNote').textContent='Proof: '+(metric?(proofLoad/1000*4.44822).toFixed(1)+' kN':fmt(Math.round(proofLoad),0)+' lb');
+  $('stressDisp').textContent=state.preload+'%';
+  $('stressBarFill').style.width=Math.min(state.preload,100)+'%';
+  $('stressBarFill').style.background=state.preload>=80?'#f59e0b':state.preload>=65?'var(--indigo)':'var(--emerald)';
+  $('kDisplay').textContent=K.toFixed(2);
+  $('stressAreaVal').textContent=metric?(area*645.16).toFixed(0):area.toFixed(4);
+  $('stressAreaUnit').textContent=metric?'mm²':'in²';
+  $('proofStrengthNote').textContent='Proof strength: '+(metric?Math.round(proofStr*6.89476)+' MPa':fmt(proofStr,0)+' psi');
+
+  /* sequence table */
+  var passes=[0.30,0.70,1.00];
+  var seqIds=['seq1','seq2','seq3'];
+  passes.forEach(function(p,i){
+    var v=tVal*p;
+    $(seqIds[i]).textContent=fmt(round(v,0),0)+' '+tUnit;
+  });
+}
+
+/* ── event wiring ── */
+$('boltSize').addEventListener('change',function(){state.size=this.value;compute();});
+$('boltGrade').addEventListener('change',function(){state.grade=this.value;compute();});
+$('numBolts').addEventListener('input',function(){var v=parseInt(this.value)||1;state.bolts=Math.max(1,Math.min(200,v));compute();});
+$('lubeCond').addEventListener('change',function(){state.lube=this.value;compute();});
+
+$('preloadSlider').addEventListener('input',function(){
+  state.preload=parseInt(this.value);$('preloadNum').value=state.preload;compute();
+});
+$('preloadNum').addEventListener('input',function(){
+  var v=parseInt(this.value)||60;v=Math.max(30,Math.min(90,v));
+  state.preload=v;$('preloadSlider').value=v;$('preloadNum').value=v;compute();
+});
+
+$('unitImperial').addEventListener('click',function(){
+  state.metric=false;
+  $('unitImperial').classList.add('active');$('unitMetric').classList.remove('active');
+  compute();
+});
+$('unitMetric').addEventListener('click',function(){
+  state.metric=true;
+  $('unitMetric').classList.add('active');$('unitImperial').classList.remove('active');
+  compute();
+});
+
+/* ── theme ── */
+$('themeBtn').addEventListener('click',function(){
+  var curr=document.documentElement.dataset.theme||'dark';
+  var next=curr==='dark'?'light':'dark';
+  document.documentElement.dataset.theme=next;
+  try{localStorage.setItem('ap-theme',next);}catch(e){}
+});
+
+/* ── footer year + email ── */
+$('legalYr').textContent=new Date().getFullYear();
+$('footerMail').addEventListener('click',function(){
+  var e='support'+'@'+'app'+'.'+'anjanpatel'+'.'+'ca';
+  window.location.href='mailto:'+e;
+});
+
+/* ── connection status ── */
+window.__sbReady.then(function(sess){
+  if(!sess)return;
+  $('connDot').style.background='#00d27a';
+  $('connLabel').textContent='Connected';
+}).catch(function(){
+  $('connDot').style.background='#f59e0b';
+  $('connLabel').textContent='Offline';
+});
+
+/* ── save lookup ── */
+$('saveLookupBtn').addEventListener('click',function(){
+  var b=BOLTS[state.size];
+  var g=GRADES[state.grade];
+  var lube=LUBES[state.lube];
+  var metric=state.metric;
+  var tVal=metric?calc.torqueNm:calc.torqueFtLb;
+  var tUnit=metric?'N·m':'ft-lb';
+  var summary=b.label+' '+g.label+' · '+state.bolts+' bolts · '+
+    Math.round(tVal)+' '+tUnit+'/bolt · '+lube.label;
+  $('saveSummaryLine').textContent=summary;
+  $('saveLabel').value='';
+  $('saveMsg').textContent='';
+  $('saveMsg').className='modal-msg';
+  $('saveModal').classList.add('open');
+  setTimeout(function(){$('saveLabel').focus();},80);
+});
+function closeModal(){$('saveModal').classList.remove('open');}
+$('saveModalClose').addEventListener('click',closeModal);
+$('saveCancelBtn').addEventListener('click',closeModal);
+$('saveModal').addEventListener('click',function(e){if(e.target===$('saveModal'))closeModal();});
+
+$('saveConfirmBtn').addEventListener('click',function(){
+  var jobNum=($('jobNum').value||'').trim();
+  if(!jobNum){$('saveMsg').textContent='Enter a job number first.';$('saveMsg').className='modal-msg err';return;}
+  $('saveConfirmBtn').disabled=true;
+  $('saveMsg').textContent='Saving…';$('saveMsg').className='modal-msg';
+
+  var b=BOLTS[state.size];
+  var g=GRADES[state.grade];
+  var lube=LUBES[state.lube];
+  var metric=state.metric;
+  var tVal=metric?calc.torqueNm:calc.torqueFtLb;
+  var tUnit=metric?'N·m':'ft-lb';
+  var summary=b.label+' '+g.label+' · '+state.bolts+' bolts · '+
+    Math.round(tVal)+' '+tUnit+'/bolt · '+lube.label;
+
+  window.__sbReady.then(function(sess){
+    if(!sess){$('saveMsg').textContent='Not signed in.';$('saveMsg').className='modal-msg err';$('saveConfirmBtn').disabled=false;return;}
+    return window.__sb.from('calc_logs').insert({
+      user_id:sess.user.id,
+      tool:'torque',
+      job_number:jobNum,
+      label:($('saveLabel').value||'').trim()||null,
+      params:{
+        size:state.size, grade:state.grade,
+        bolts:String(state.bolts), lube:state.lube,
+        preload:String(state.preload),
+        units:state.metric?'metric':'imperial'
+      },
+      result_summary:summary
+    });
+  }).then(function(res){
+    if(res&&res.error){throw res.error;}
+    $('saveMsg').textContent='Saved!';$('saveMsg').className='modal-msg ok';
+    $('saveConfirmBtn').disabled=false;
+    setTimeout(closeModal,1200);
+  }).catch(function(err){
+    $('saveMsg').textContent='Error: '+(err&&err.message?err.message:'save failed');
+    $('saveMsg').className='modal-msg err';
+    $('saveConfirmBtn').disabled=false;
+  });
+});
+
+/* ── PDF export ── */
+$('savePdfBtn').addEventListener('click',function(){
+  window.print();
+});
+
+/* ── initial compute ── */
+compute();
+</script>
+</body>
+</html>
