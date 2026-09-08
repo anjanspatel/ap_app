@@ -321,7 +321,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     <span class="tb-title" id="tbTitle">Dashboard</span>
     <div class="tb-search-wrap" role="search" aria-label="Search saved lookups">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="search" id="tbSearch" class="tb-search-input" placeholder="Search lookups…" autocomplete="off" aria-label="Search saved lookups" oninput="filterLookups(this.value)">
+      <input type="search" id="tbSearch" class="tb-search-input" placeholder="Search lookups… (⌘K)" autocomplete="off" aria-label="Search saved lookups" oninput="filterLookups(this.value)">
     </div>
     <div class="tb-right">
       <span class="tb-clock" id="tbClock"></span>
@@ -506,7 +506,10 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       <div class="panel">
         <div class="panel-hd">
           <span class="panel-title">Saved Lookups</span>
-          <span class="panel-count" id="logCount">—</span>
+          <div style="display:flex;align-items:center;gap:12px">
+            <button class="panel-action" id="exportCsvBtn" type="button">Export CSV</button>
+            <span class="panel-count" id="logCount">—</span>
+          </div>
         </div>
         <div id="logsWrap">
           <div class="empty"><span class="empty-label">Loading…</span></div>
@@ -767,6 +770,45 @@ async function loadLogs(){
   var searchBox=$('tbSearch');
   if(searchBox&&searchBox.value)filterLookups(searchBox.value);
 }
+
+/* ── CSV export ── */
+function exportLogsCsv(){
+  if(!allRows.length){toast('No saved lookups to export.');return}
+  var cols=['#','Tool','Parameters','Label','Date'];
+  var lines=[cols.join(',')];
+  var total=allRows.length;
+  allRows.forEach(function(l,i){
+    var jobNum=total-i;
+    var tool=l.tool==='flange'?'Flange':l.tool==='torque'?'Torque':'Tubing';
+    var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
+    var params=fmtP(l.tool,l.params).replace(/<[^>]*>/g,'');
+    var row=[jobNum,tool,params,l.label||'',date].map(function(v){
+      v=String(v).replace(/"/g,'""');
+      return/[",\n]/.test(v)?'"'+v+'"':v;
+    });
+    lines.push(row.join(','));
+  });
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='ap-workspace-lookups-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
+$('exportCsvBtn').addEventListener('click',exportLogsCsv);
+
+/* ── Search keyboard shortcut (Ctrl/Cmd+K) ── */
+document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+    e.preventDefault();
+    showSection('logs');
+    var box=$('tbSearch');
+    if(box){box.focus();box.select();}
+  }
+});
 
 async function delLookup(id){
   var r=await sb.from('saved_lookups').delete().eq('id',id).eq('user_id',session.user.id);
