@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
-<meta name="theme-color" content="#0b0f19">
+<meta name="theme-color" content="#0B111A">
 <title>AP Workspace — Sign In</title>
 <meta name="description" content="Sign in to AP Workspace — engineering tools for the field.">
 <meta name="robots" content="noindex,nofollow">
@@ -30,7 +30,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root,[data-theme="dark"]{
-  --canvas:#0b0f19;
+  --canvas:#0B111A;
   --card-bg:rgba(14,20,38,0.75);
   --edge:#1e2a3d;
   --border:#2a3650;
@@ -39,8 +39,8 @@
   --muted:#8fa0b8;
   --dim:#516078;
   --emerald:#00d27a;
-  --indigo:#6366f1;
-  --indigo-fg:#818cf8;
+  --indigo:#19D3E6;
+  --indigo-fg:#5EEAF5;
   --error:#ef4444;
   --input-bg:rgba(4,7,16,0.65);
   --tabs-bg:rgba(6,9,18,0.7);
@@ -62,8 +62,8 @@
   --muted:#475569;
   --dim:#94a3b8;
   --emerald:#00a85a;
-  --indigo:#4f46e5;
-  --indigo-fg:#4f46e5;
+  --indigo:#0891B2;
+  --indigo-fg:#0891B2;
   --error:#dc2626;
   --input-bg:rgba(255,255,255,0.92);
   --tabs-bg:rgba(225,232,240,0.9);
@@ -95,7 +95,7 @@ body{
   font-family:var(--font-ui);font-weight:900;
   font-size:clamp(260px,44vw,580px);
   color:transparent;
-  -webkit-text-stroke:1px rgba(99,102,241,0.06);
+  -webkit-text-stroke:1px rgba(25,211,230,0.06);
   letter-spacing:-0.06em;line-height:1;
   user-select:none;white-space:nowrap;
   animation:bgPulse 8s ease-in-out infinite;
@@ -105,7 +105,7 @@ body{
 .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 .orb-1{
   width:600px;height:600px;
-  background:radial-gradient(circle,rgba(99,102,241,0.11) 0%,transparent 70%);
+  background:radial-gradient(circle,rgba(25,211,230,0.11) 0%,transparent 70%);
   top:-150px;right:-150px;
   animation:drift1 12s ease-in-out infinite;
 }
@@ -117,7 +117,7 @@ body{
 }
 .orb-3{
   width:350px;height:350px;
-  background:radial-gradient(circle,rgba(99,102,241,0.05) 0%,transparent 70%);
+  background:radial-gradient(circle,rgba(25,211,230,0.05) 0%,transparent 70%);
   top:50%;left:50%;transform:translate(-50%,-50%);
 }
 @keyframes drift1{0%,100%{transform:translate(0,0)}33%{transform:translate(-40px,30px)}66%{transform:translate(20px,-20px)}}
@@ -143,7 +143,7 @@ body{
   background:linear-gradient(135deg,#161d2e,#1e2a3d);
   border:1px solid var(--border);
   display:grid;place-items:center;flex-shrink:0;
-  box-shadow:0 0 24px rgba(99,102,241,0.18),0 0 0 1px rgba(99,102,241,0.08) inset;
+  box-shadow:0 0 24px rgba(25,211,230,0.18),0 0 0 1px rgba(25,211,230,0.08) inset;
 }
 .hero-mark-text{
   font-family:var(--font-ui);font-weight:900;font-size:14px;
@@ -183,7 +183,7 @@ body{
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.03) inset,
     0 12px 70px rgba(0,0,0,0.65),
-    0 0 50px rgba(99,102,241,0.05);
+    0 0 50px rgba(25,211,230,0.05);
   animation:fadeUp 900ms var(--anim-ease) 230ms both;
 }
 
@@ -239,8 +239,8 @@ body{
 .field input:hover{border-color:var(--edge)}
 .field input:focus{
   outline:none;
-  border-color:rgba(99,102,241,0.55);
-  box-shadow:0 0 0 3px rgba(99,102,241,0.1),0 0 20px rgba(99,102,241,0.07);
+  border-color:rgba(25,211,230,0.55);
+  box-shadow:0 0 0 3px rgba(25,211,230,0.1),0 0 20px rgba(25,211,230,0.07);
 }
 .field input[aria-invalid="true"]{border-color:var(--error)}
 .field input[aria-invalid="true"]:focus{box-shadow:0 0 0 3px rgba(239,68,68,.1)}
@@ -370,7 +370,7 @@ body{
 /* Light theme overrides */
 [data-theme="light"] body{background:var(--canvas)}
 [data-theme="light"] .card{
-  box-shadow:0 0 0 1px rgba(0,0,0,0.04) inset,0 12px 70px rgba(0,0,0,0.12),0 0 30px rgba(99,102,241,0.06);
+  box-shadow:0 0 0 1px rgba(0,0,0,0.04) inset,0 12px 70px rgba(0,0,0,0.12),0 0 30px rgba(25,211,230,0.06);
   border-color:rgba(200,212,232,0.75);
 }
 [data-theme="light"] .hero-mark{
@@ -567,7 +567,7 @@ body{
   var c=document.getElementById('particles'),ctx=c.getContext('2d'),W,H,pts=[];
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
   resize();window.addEventListener('resize',resize);
-  var COLS=['rgba(99,102,241,','rgba(0,210,122,','rgba(160,180,220,'];
+  var COLS=['rgba(25,211,230,','rgba(0,210,122,','rgba(160,180,220,'];
   for(var i=0;i<75;i++){
     pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.5+0.3,vx:(Math.random()-0.5)*0.22,vy:(Math.random()-0.5)*0.22,a:Math.random()*0.2+0.04,c:COLS[Math.floor(Math.random()*COLS.length)]});
   }

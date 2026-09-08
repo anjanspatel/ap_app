@@ -74,8 +74,8 @@
   border-radius: inherit;
   background: radial-gradient(
     300px circle at var(--sx, 50%) var(--sy, -80px),
-    rgba(99,102,241,0.5) 0%,
-    rgba(99,102,241,0.1) 40%,
+    rgba(25,211,230,0.5) 0%,
+    rgba(25,211,230,0.1) 40%,
     transparent 68%
   );
   pointer-events: none;
@@ -96,10 +96,10 @@
     box-shadow 0.25s ease !important;
 }
 .metric:hover {
-  border-color: rgba(99,102,241,0.35) !important;
+  border-color: rgba(25,211,230,0.35) !important;
   box-shadow:
-    0 0 0 1px rgba(99,102,241,0.15),
-    0 0 20px rgba(99,102,241,0.07);
+    0 0 0 1px rgba(25,211,230,0.15),
+    0 0 20px rgba(25,211,230,0.07);
 }
 
 /* ── 5. Mesh grid background ────────────────────
@@ -107,8 +107,8 @@
 ────────────────────────────────────────────────── */
 .mesh-bg {
   background-image:
-    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(25,211,230,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25,211,230,0.04) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 [data-theme="light"] .mesh-bg {
@@ -135,14 +135,14 @@
 }
 .act-bar {
   height: 3px;
-  background: var(--border, #2d3748);
+  background: var(--border, #2B3A4C);
   border-radius: 2px;
   overflow: hidden;
 }
 .act-fill {
   height: 100%;
   border-radius: 2px;
-  background: linear-gradient(90deg, #818cf8 0%, rgba(99,102,241,0.35) 100%);
+  background: linear-gradient(90deg, #5EEAF5 0%, rgba(25,211,230,0.35) 100%);
   width: 0%;
   transition: width 1s cubic-bezier(0.34,1.56,0.64,1);
 }
@@ -153,11 +153,11 @@
   letter-spacing: 0.04em;
   color: var(--dim, #64748b);
 }
-.act-labels .act-a { color: var(--indigo-fg, #818cf8); }
+.act-labels .act-a { color: var(--indigo-fg, #5EEAF5); }
 
 /* ── Focus ring upgrade ─────────────────────────── */
 :focus-visible {
-  outline: 2px solid rgba(99,102,241,0.65);
+  outline: 2px solid rgba(25,211,230,0.65);
   outline-offset: 2px;
   border-radius: 3px;
 }

@@ -7,12 +7,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bolt Torque Calculator — API 6A | Anjan Patel</title>
 <meta name="description" content="Bolt torque calculator for API 6A flanges — ASTM A193 B7/L7, nut factor, 3-pass sequence table.">
-<meta name="theme-color" content="#0b0f19" id="themeColorMeta">
+<meta name="theme-color" content="#0B111A" id="themeColorMeta">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
 <link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -34,23 +34,23 @@
   color-scheme:light;
   --bg:#f0f4f8;--surface:#fff;--surface-2:#f7fafc;--text:#0f172a;
   --muted:#475569;--dim:#94a3b8;--line:#e2e8f0;--control:#fff;
-  --indigo:#6366f1;--indigo-fg:#818cf8;--emerald:#00d27a;
+  --indigo:#19D3E6;--indigo-fg:#5EEAF5;--emerald:#00d27a;
   --shadow:0 12px 34px rgba(11,31,58,.10);
   --ease:150ms ease-in-out;
-  --font:'IBM Plex Sans',Arial,Helvetica,sans-serif;
-  --mono:'IBM Plex Mono',monospace;
+  --font:'Inter','Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
 }
 html[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#0b0f19;--surface:#171e2e;--surface-2:#1b2435;--text:#f8fafc;
-  --muted:#94a3b8;--dim:#64748b;--line:#2d3748;--control:#1b2435;
+  --bg:#0B111A;--surface:#151F2C;--surface-2:#1C2938;--text:#f8fafc;
+  --muted:#94a3b8;--dim:#64748b;--line:#2B3A4C;--control:#1C2938;
   --shadow:0 14px 40px rgba(0,0,0,.34);
 }
 @media(prefers-color-scheme:dark){
   html:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#0b0f19;--surface:#171e2e;--surface-2:#1b2435;--text:#f8fafc;
-    --muted:#94a3b8;--dim:#64748b;--line:#2d3748;--control:#1b2435;
+    --bg:#0B111A;--surface:#151F2C;--surface-2:#1C2938;--text:#f8fafc;
+    --muted:#94a3b8;--dim:#64748b;--line:#2B3A4C;--control:#1C2938;
     --shadow:0 14px 40px rgba(0,0,0,.34);
   }
 }
@@ -70,9 +70,9 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);
   border:1px solid rgba(11,31,58,.16);display:grid;place-items:center;
   overflow:hidden;flex:0 0 auto;box-shadow:0 2px 8px rgba(11,31,58,.08)}
 html[data-theme="dark"] .brand-logo-wrap,
-.brand-logo-wrap{background:#fff;border-color:rgba(99,102,241,.3)}
+.brand-logo-wrap{background:#fff;border-color:rgba(25,211,230,.3)}
 @media(prefers-color-scheme:dark){
-  html:not([data-theme="light"]) .brand-logo-wrap{background:#fff;border-color:rgba(99,102,241,.3)}
+  html:not([data-theme="light"]) .brand-logo-wrap{background:#fff;border-color:rgba(25,211,230,.3)}
 }
 .brand-logo{width:41px;height:41px;object-fit:contain;display:block}
 .brand-copy{display:flex;flex-direction:column;line-height:1.05}
@@ -92,7 +92,7 @@ html[data-theme="dark"] .brand-logo-wrap,
   min-height:40px;width:40px;cursor:pointer;display:grid;place-items:center;
   color:var(--muted);transition:background var(--ease),border-color var(--ease),color var(--ease)}
 .theme-toggle:hover{border-color:var(--indigo-fg);color:var(--text)}
-.action-btn:focus-visible,.theme-toggle:focus-visible{outline:3px solid rgba(99,102,241,.35);outline-offset:2px}
+.action-btn:focus-visible,.theme-toggle:focus-visible{outline:3px solid rgba(25,211,230,.35);outline-offset:2px}
 
 /* ── page ── */
 .page{max-width:980px;margin:0 auto;padding:22px 18px 60px}
@@ -106,7 +106,7 @@ h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin
 .job-row label{font-size:11px;font-weight:800;color:var(--text);white-space:nowrap}
 .job-row input{flex:1;min-width:0;height:36px;border:1px solid var(--line);border-radius:7px;
   background:var(--control);color:var(--text);font:600 13px var(--font);padding:7px 10px;outline:none}
-.job-row input:focus{border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.job-row input:focus{border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(25,211,230,.15)}
 .job-row .hint{font-size:10px;color:var(--muted);white-space:nowrap}
 .offline-dot{width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block;margin-right:4px}
 
@@ -135,7 +135,7 @@ h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin
   padding-right:32px;cursor:pointer;
 }
 .field select:focus,.field input[type="number"]:focus{
-  border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+  border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(25,211,230,.15)}
 
 /* preload row: slider + number */
 .preload-row{display:flex;gap:8px;align-items:center}
@@ -156,7 +156,7 @@ h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin
 .k-note{font:400 10.5px var(--mono);color:var(--dim);margin-top:6px;
   letter-spacing:.02em;display:flex;align-items:center;gap:6px}
 .k-badge{display:inline-block;font:700 10px var(--mono);color:var(--indigo-fg);
-  background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);
+  background:rgba(25,211,230,.1);border:1px solid rgba(25,211,230,.2);
   padding:2px 7px;border-radius:3px;letter-spacing:.04em}
 
 /* ── result tiles ── */
@@ -184,7 +184,7 @@ h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin
 .seq-bar-cell{width:140px}
 .seq-bar-wrap{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
 .seq-bar-fill{height:100%;border-radius:2px;
-  background:linear-gradient(90deg,var(--indigo) 0%,rgba(99,102,241,.5) 100%);
+  background:linear-gradient(90deg,var(--indigo) 0%,rgba(25,211,230,.5) 100%);
   transition:width .6s cubic-bezier(.34,1.56,.64,1)}
 .seq-pct{font:700 11px var(--mono);color:var(--indigo-fg);min-width:36px;text-align:right}
 .seq-table .pass-final td{color:var(--emerald)}
@@ -233,7 +233,7 @@ footer a:hover{text-decoration:underline}
   text-transform:uppercase;color:var(--muted);margin-bottom:5px}
 .modal-field input{width:100%;height:40px;border:1px solid var(--line);border-radius:7px;
   background:var(--control);color:var(--text);font:500 13px var(--font);padding:0 12px;outline:none}
-.modal-field input:focus{border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.modal-field input:focus{border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(25,211,230,.12)}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
 .modal-btn{height:38px;padding:0 16px;border-radius:7px;font:600 13px var(--font);
   cursor:pointer;border:1px solid var(--line);background:var(--surface-2);color:var(--text);

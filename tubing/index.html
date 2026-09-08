@@ -19,19 +19,19 @@
 <meta name="twitter:description" content="Field calculator for tubing block and safety block safe working load.">
 <meta name="twitter:image" content="https://app.anjanpatel.ca/tubing/og.png">
 <link rel="canonical" href="https://app.anjanpatel.ca/tubing/">
-<meta name="theme-color" content="#0b0f19">
+<meta name="theme-color" content="#0B111A">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ── design tokens ── */
 :root{
   --brand-navy:#0B1D2D;
-  --brand-orange:#6366f1;
-  --brand-orange-fg:#818cf8;
+  --brand-orange:#19D3E6;
+  --brand-orange-fg:#5EEAF5;
   --bg:#f0f4f8;
   --surface:#ffffff;
   --surface-2:#f7fafc;
@@ -44,28 +44,28 @@
   --step-line:#e2e8f0;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0b0f19;
-  --surface:#171e2e;
-  --surface-2:#1b2435;
-  --border:#2d3748;
+  --bg:#0B111A;
+  --surface:#151F2C;
+  --surface-2:#1C2938;
+  --border:#2B3A4C;
   --text:#f8fafc;
   --muted:#94a3b8;
   --header-bg:rgba(11,15,25,0.9);
   --shadow:0 2px 14px rgba(0,0,0,.4);
   --shadow-sm:0 1px 4px rgba(0,0,0,.25);
-  --step-line:#2d3748;
+  --step-line:#2B3A4C;
 }}
 :root[data-theme="dark"]{
-  --bg:#0b0f19;
-  --surface:#171e2e;
-  --surface-2:#1b2435;
-  --border:#2d3748;
+  --bg:#0B111A;
+  --surface:#151F2C;
+  --surface-2:#1C2938;
+  --border:#2B3A4C;
   --text:#f8fafc;
   --muted:#94a3b8;
   --header-bg:rgba(11,15,25,0.9);
   --shadow:0 2px 14px rgba(0,0,0,.4);
   --shadow-sm:0 1px 4px rgba(0,0,0,.25);
-  --step-line:#2d3748;
+  --step-line:#2B3A4C;
 }
 
 /* ── reset ── */
@@ -73,7 +73,7 @@
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--text);
-  font-family:'IBM Plex Sans',Arial,sans-serif;
+  font-family:'Inter',Arial,sans-serif;
   -webkit-font-smoothing:antialiased;min-height:100vh;
   transition:background .2s,color .2s;
 }
@@ -182,7 +182,7 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
 }
 input[type=number]{
   width:100%;padding:10px 13px;
-  font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:500;
+  font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;
   background:var(--surface-2);color:var(--text);
   border:1.5px solid var(--border);border-radius:9px;
   outline:none;transition:border-color .15s,box-shadow .15s;
@@ -192,37 +192,37 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 input[type=number]:focus{
   border-color:var(--brand-orange-fg);
-  box-shadow:0 0 0 3px rgba(99,102,241,.12);
+  box-shadow:0 0 0 3px rgba(25,211,230,.12);
 }
 .sf-display{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 13px;
   background:var(--surface-2);border:1.5px solid var(--border);border-radius:9px;
-  font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:500;
+  font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;
   color:var(--muted);
 }
-.sf-display small{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'IBM Plex Sans',sans-serif}
+.sf-display small{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:'Inter',sans-serif}
 
 /* ── SWL hero ── */
 .swl-hero{
   border-radius:14px;padding:28px 22px 24px;
   margin-bottom:20px;
-  background:linear-gradient(140deg,var(--brand-navy) 0%,#171e2e 100%);
+  background:linear-gradient(140deg,var(--brand-navy) 0%,#151F2C 100%);
   text-align:center;position:relative;overflow:hidden;
 }
 .swl-hero::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 60% 60% at 75% 30%,rgba(99,102,241,.18) 0%,transparent 70%);
+  background:radial-gradient(ellipse 60% 60% at 75% 30%,rgba(25,211,230,.18) 0%,transparent 70%);
   pointer-events:none;
 }
 .swl-lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px}
 .swl-num{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:'JetBrains Mono',monospace;
   font-size:clamp(32px,6vw,52px);font-weight:700;
   color:#fff;line-height:1.05;letter-spacing:-.02em;
 }
 .swl-num .swl-u{font-size:.42em;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.04em;vertical-align:middle}
-.swl-alt{margin-top:8px;font-size:12px;color:rgba(255,255,255,.4);font-family:'IBM Plex Mono',monospace;letter-spacing:.02em}
+.swl-alt{margin-top:8px;font-size:12px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
 .swl-empty-msg{font-size:14px;font-weight:500;color:rgba(255,255,255,.3);letter-spacing:.04em}
 
 /* ── steps ── */
@@ -244,21 +244,21 @@ input[type=number]:focus{
 .step-body{}
 .step-name{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
 .step-eq{
-  font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);
   margin-bottom:4px;line-height:1.5;
 }
 .step-val{
-  font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;
+  font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;
   color:var(--text);line-height:1.2;
 }
-.step-val.pending{font-size:13px;font-weight:400;font-family:'IBM Plex Sans',sans-serif;color:var(--muted)}
+.step-val.pending{font-size:13px;font-weight:400;font-family:'Inter',sans-serif;color:var(--muted)}
 
 /* ── PDF button ── */
 .btn-pdf{
   width:100%;padding:12px 16px;
   background:var(--brand-orange);color:#fff;
   border:none;border-radius:10px;cursor:pointer;
-  font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;
   display:flex;align-items:center;justify-content:center;gap:8px;
   transition:opacity .15s,transform .1s;
 }
@@ -312,7 +312,7 @@ footer a:hover{color:var(--text)}
 <header class="site-header">
   <div class="header-inner">
     <a class="brand" href="/dashboard.html">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'IBM Plex Sans',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
       <span class="brand-name">ANJAN PATEL</span>
     </a>
     <div class="header-right">
@@ -597,9 +597,9 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload()});
 }
 </script>
-<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0b0f19;color:#f8fafc;border:1px solid rgba(99,102,241,.45);border-radius:10px;padding:11px 16px;font-size:12.5px;font-family:'IBM Plex Sans',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
+<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0B111A;color:#f8fafc;border:1px solid rgba(25,211,230,.45);border-radius:10px;padding:11px 16px;font-size:12.5px;font-family:'Inter',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
   <span>Update available</span>
-  <button onclick="window.location.reload()" style="background:#6366f1;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Refresh</button>
+  <button onclick="window.location.reload()" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Refresh</button>
 </div>
 
 <style>
@@ -610,11 +610,11 @@ if('serviceWorker' in navigator){
 #saveModalBox p{font-size:12px;color:var(--muted,#667085);margin:0 0 16px}
 #saveModalBox label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#667085);display:block;margin-bottom:5px}
 #saveModalBox input{width:100%;height:40px;border:1px solid var(--line,#d6dde7);border-radius:8px;background:var(--input-bg,var(--surface-2,#f8fafc));color:var(--text,#152033);font:600 14px inherit;padding:0 11px;outline:none;margin-bottom:14px}
-#saveModalBox input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+#saveModalBox input:focus{border-color:#19D3E6;box-shadow:0 0 0 3px rgba(25,211,230,.15)}
 #saveModalBox .modal-row{display:flex;gap:8px}
 #saveModalBox .modal-row button{flex:1;height:40px;border-radius:9px;font:700 13px inherit;cursor:pointer;border:none;transition:opacity .15s}
 #saveModalBox .modal-row .btn-cancel{background:var(--surface-2,#f8fafc);border:1px solid var(--line,#d6dde7);color:var(--text,#152033)}
-#saveModalBox .modal-row .btn-save{background:#6366f1;color:#fff}
+#saveModalBox .modal-row .btn-save{background:#19D3E6;color:#fff}
 #saveModalBox .modal-row button:hover{opacity:.88}
 #saveModalBox .modal-row button:disabled{opacity:.5;cursor:not-allowed}
 #saveToast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;font:700 13px inherit;padding:.6rem 1.2rem;border-radius:9px;box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
