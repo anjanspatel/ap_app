@@ -764,6 +764,8 @@ async function loadLogs(){
     var tr=e.target.closest('tr[data-id]');
     if(tr)openDetail(tr.dataset.id);
   });
+  var searchBox=$('tbSearch');
+  if(searchBox&&searchBox.value)filterLookups(searchBox.value);
 }
 
 async function delLookup(id){

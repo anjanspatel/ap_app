@@ -42,18 +42,37 @@ self.addEventListener('fetch', function(e) {
   if (url.hostname.includes('supabase.co')) return;
   if (url.hostname.includes('googleapis.com') && !url.pathname.includes('/css2')) return;
 
+  var isNav = e.request.mode === 'navigate';
+
+  if (isNav) {
+    /* Network-first for navigation, falling back to cache, then offline shell */
+    e.respondWith(
+      fetch(e.request).then(function(res) {
+        if (res && res.status === 200) {
+          var clone = res.clone();
+          caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
+        }
+        return res;
+      }).catch(function() {
+        return caches.match(e.request).then(function(cached) {
+          return cached || caches.match('/404.html');
+        });
+      })
+    );
+    return;
+  }
+
+  /* Cache-first for static assets */
   e.respondWith(
     caches.match(e.request).then(function(cached) {
-      var network = fetch(e.request).then(function(res) {
+      if (cached) return cached;
+      return fetch(e.request).then(function(res) {
         if (res && res.status === 200 && res.type !== 'opaque') {
           var clone = res.clone();
           caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
         }
         return res;
-      }).catch(function() {});
-      /* Cache-first for static assets, network-first for HTML navigation */
-      var isNav = e.request.mode === 'navigate';
-      return isNav ? (network || cached) : (cached || network);
+      });
     })
   );
 });

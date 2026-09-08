@@ -213,8 +213,15 @@
         : btn.previousElementSibling;
       if (!target) return;
       var text = target.value !== undefined ? target.value : target.textContent;
+      text = (text || '').trim();
+      if (!text || text === '—' || target.querySelector('.swl-empty-msg')) {
+        var origEmpty = btn.textContent;
+        btn.textContent = 'Nothing yet';
+        setTimeout(function() { btn.textContent = origEmpty; }, 1400);
+        return;
+      }
       try {
-        navigator.clipboard.writeText(text.trim()).then(function() {
+        navigator.clipboard.writeText(text).then(function() {
           var orig = btn.textContent;
           btn.textContent = 'Copied!';
           btn.classList.add('copied');
