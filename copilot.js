@@ -10,8 +10,13 @@
 
   var NOTICE = 'NOTICE: AP CoPilot outputs are for auxiliary informational reference only. All field parameters and calculations must be independently validated by a licensed Professional Engineer (P.E. / P.Eng.).';
   var OUTPUT_TAG = '[ Auxiliary Output — Verify with P.E. prior to field execution ]';
-  var GREETING = 'AP CoPilot online. I can help you navigate AP Workspace, explain standard formulas (ASME PCC-1 target torque, ASME B16.5 flange ratings, tubing pressure derating), and point you to the right calculator. I am not a P.E. — verify all outputs independently before field use. Ask me something.';
+  var GREETING = 'AP CoPilot online — I\'m an automated AI assistant, not a live person. I can help you navigate AP Workspace, explain standard formulas (ASME PCC-1 target torque, ASME B16.5 flange ratings, tubing pressure derating), and point you to the right calculator. I am not a P.E. — verify all outputs independently before field use. Ask me something, or use the contact button for a real person.';
   var FALLBACK = 'I don’t have a reference answer for that yet. Try asking about flange ratings, bolt torque, tubing SWL, saved lookups, offline use, or passkeys — or use the contact button for a direct question.';
+
+  /* Distinct sparkle glyph — deliberately not another chat-bubble shape,
+     so this reads as a separate control from the contact FAB rather
+     than a duplicate of it. */
+  var COPILOT_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.8 5.7 5.7 1.8-5.7 1.8L12 17.5l-1.8-5.7L4.5 10l5.7-1.8L12 2.5z"/><path d="M19 15.5l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4z"/></svg>';
 
   var KB = [
     { kw:['torque','pcc-1','pcc1','bolt','tighten','sequence','preload','lube','k-factor','k factor'],
@@ -56,7 +61,7 @@
     var style = document.createElement('style');
     style.id = 'ap-copilot-style';
     style.textContent = [
-      '#ap-copilot-fab{position:fixed;bottom:calc(140px + env(safe-area-inset-bottom,0px));right:20px;z-index:1000;',
+      '#ap-copilot-fab{position:fixed;bottom:calc(140px + env(safe-area-inset-bottom,0px));left:20px;z-index:1000;',
         'width:48px;height:48px;border-radius:50%;background:var(--bg-panel,#151F2C);',
         'border:1px solid var(--precision-cyan,#19D3E6);color:var(--precision-cyan,#19D3E6);',
         'cursor:pointer;display:flex;align-items:center;justify-content:center;',
@@ -75,7 +80,12 @@
       '.apc-header{display:flex;align-items:center;justify-content:space-between;gap:10px;',
         'padding:14px 16px;background:var(--bg-panel,#151F2C);border-bottom:1px solid var(--border-color,#2B3A4C);',
         'padding-top:calc(14px + env(safe-area-inset-top,0px))}',
+      '.apc-title-row{display:flex;align-items:center;gap:8px;min-width:0}',
+      '.apc-icon{color:var(--precision-cyan,#19D3E6);flex-shrink:0;display:flex}',
+      '.apc-icon svg{width:15px;height:15px}',
       '.apc-title{font:600 11px var(--font-mono,monospace);letter-spacing:.04em;color:var(--precision-cyan,#19D3E6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.apc-badge{font:600 9.5px var(--font-ui,sans-serif);letter-spacing:.03em;color:var(--text-muted,#6C7D95);',
+        'background:var(--bg-panel,#151F2C);border-bottom:1px solid var(--border-color,#2B3A4C);padding:6px 16px}',
       '.apc-close{background:none;border:none;color:var(--text-muted,#6C7D95);font-size:22px;line-height:1;',
         'cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0}',
       '.apc-close:hover{color:var(--text-primary,#F1F5F9);background:var(--bg-elevated,#1C2938)}',
@@ -107,10 +117,11 @@
     var fab = document.createElement('button');
     fab.id = 'ap-copilot-fab';
     fab.type = 'button';
-    fab.setAttribute('aria-label','Open AP CoPilot');
+    fab.setAttribute('aria-label','Open AP CoPilot — automated AI assistant');
+    fab.title = 'AP CoPilot (AI assistant)';
     fab.setAttribute('aria-haspopup','dialog');
     fab.setAttribute('aria-expanded','false');
-    fab.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v3"/><path d="M12 13.5h.01"/></svg>';
+    fab.innerHTML = COPILOT_ICON;
 
     var overlay = document.createElement('div');
     overlay.id = 'ap-copilot-overlay';
@@ -123,9 +134,13 @@
     drawer.setAttribute('aria-hidden','true');
     drawer.innerHTML = [
       '<div class="apc-header">',
-        '<span class="apc-title" id="ap-copilot-title">[ AP COPILOT v1.0 | AUXILIARY ASSISTANT ]</span>',
+        '<span class="apc-title-row">',
+          '<span class="apc-icon">'+COPILOT_ICON+'</span>',
+          '<span class="apc-title" id="ap-copilot-title">[ AP COPILOT v1.0 | AUXILIARY ASSISTANT ]</span>',
+        '</span>',
         '<button type="button" class="apc-close" aria-label="Close AP CoPilot">×</button>',
       '</div>',
+      '<div class="apc-badge">Automated AI assistant — not a live person</div>',
       '<div class="apc-notice">'+escHtml(NOTICE)+'</div>',
       '<div class="apc-offline" id="apc-offline-badge" hidden>[ ● OFFLINE MODE: AP COPILOT UNAVAILABLE ]</div>',
       '<div class="apc-messages" id="apc-messages" aria-live="polite"></div>',

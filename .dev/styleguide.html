@@ -424,9 +424,9 @@ h3.section-h::after{content:'';flex:1;height:1px;background:var(--border-color)}
       <div class="form-grid">
         <div class="form-state-card" style="display:flex;align-items:center;gap:14px">
           <div style="width:48px;height:48px;border-radius:50%;background:var(--bg-panel);border:1px solid var(--precision-cyan);color:var(--precision-cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 14px rgba(25,211,230,0.22)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v3"/><path d="M12 13.5h.01"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.8 5.7 5.7 1.8-5.7 1.8L12 17.5l-1.8-5.7L4.5 10l5.7-1.8L12 2.5z"/><path d="M19 15.5l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4z"/></svg>
           </div>
-          <div style="font:400 11px var(--font-ui);color:var(--text-secondary)">Fixed, bottom-right, stacked above the contact FAB and back-to-top button to avoid overlap on mobile — see the safe-area-inset fix from the mobile UX pass.</div>
+          <div style="font:400 11px var(--font-ui);color:var(--text-secondary)">Fixed, bottom-left, stacked above the contact FAB and back-to-top button. Moved off the bottom-right corner deliberately — that corner is where phone/desktop OS chrome (Assistant orbs, gesture pills, taskbar icons) tends to render its own overlays, which kept visually colliding with our floating buttons across different devices. A distinct sparkle glyph (not another chat-bubble shape) keeps this visually separate from the contact button too.</div>
         </div>
       </div>
 
@@ -434,9 +434,13 @@ h3.section-h::after{content:'';flex:1;height:1px;background:var(--border-color)}
       <div class="form-grid">
         <div class="form-state-card" style="padding:0;overflow:hidden">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:var(--bg-panel);border-bottom:1px solid var(--border-color)">
-            <span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;color:var(--precision-cyan)">[ AP COPILOT v1.0 | AUXILIARY ASSISTANT ]</span>
+            <span style="display:flex;align-items:center;gap:8px;min-width:0">
+              <span style="color:var(--precision-cyan);flex-shrink:0;display:flex"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.8 5.7 5.7 1.8-5.7 1.8L12 17.5l-1.8-5.7L4.5 10l5.7-1.8L12 2.5z"/><path d="M19 15.5l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4z"/></svg></span>
+              <span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;color:var(--precision-cyan)">[ AP COPILOT v1.0 | AUXILIARY ASSISTANT ]</span>
+            </span>
             <span style="color:var(--text-muted);font-size:20px;line-height:1">×</span>
           </div>
+          <div style="font:600 9.5px var(--font-ui);letter-spacing:.03em;color:var(--text-muted);background:var(--bg-panel);border-bottom:1px solid var(--border-color);padding:6px 16px">Automated AI assistant — not a live person</div>
           <div style="font:500 10.5px var(--font-ui);line-height:1.5;color:var(--status-warning);background:rgba(245,158,11,.08);border-bottom:1px solid rgba(245,158,11,.25);padding:10px 16px">
             NOTICE: AP CoPilot outputs are for auxiliary informational reference only. All field parameters and calculations must be independently validated by a licensed Professional Engineer (P.E. / P.Eng.).
           </div>

@@ -119,7 +119,7 @@
   btt.setAttribute('title', 'Back to top');
   btt.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>';
   btt.style.cssText = [
-    'position:fixed','bottom:calc(72px + env(safe-area-inset-bottom,0px))','right:20px','z-index:800',
+    'position:fixed','bottom:calc(72px + env(safe-area-inset-bottom,0px))','left:20px','z-index:800',
     'width:36px','height:36px','border-radius:50%',
     'background:var(--bg-elevated,#1C2938)',
     'border:1px solid var(--border-color,#2B3A4C)',
@@ -259,7 +259,7 @@
   var engNotice = document.getElementById('eng-disclaimer');
   var fabBottom = 20 + (engNotice ? engNotice.offsetHeight + 12 : 0);
   fab.style.cssText = [
-    'position:fixed','bottom:calc(' + fabBottom + 'px + env(safe-area-inset-bottom,0px))','right:20px','z-index:800',
+    'position:fixed','bottom:calc(' + fabBottom + 'px + env(safe-area-inset-bottom,0px))','left:20px','z-index:800',
     'width:40px','height:40px','border-radius:50%',
     'background:var(--precision-cyan,#19D3E6)',
     'border:none','color:#0B111A',
