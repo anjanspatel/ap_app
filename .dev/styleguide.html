@@ -426,7 +426,7 @@ h3.section-h::after{content:'';flex:1;height:1px;background:var(--border-color)}
           <div style="width:48px;height:48px;border-radius:50%;background:var(--bg-panel);border:1px solid var(--precision-cyan);color:var(--precision-cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 14px rgba(25,211,230,0.22)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l1.8 5.7 5.7 1.8-5.7 1.8L12 17.5l-1.8-5.7L4.5 10l5.7-1.8L12 2.5z"/><path d="M19 15.5l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4z"/></svg>
           </div>
-          <div style="font:400 11px var(--font-ui);color:var(--text-secondary)">Fixed, bottom-left, stacked above the contact FAB and back-to-top button. Moved off the bottom-right corner deliberately — that corner is where phone/desktop OS chrome (Assistant orbs, gesture pills, taskbar icons) tends to render its own overlays, which kept visually colliding with our floating buttons across different devices. A distinct sparkle glyph (not another chat-bubble shape) keeps this visually separate from the contact button too.</div>
+          <div style="font:400 11px var(--font-ui);color:var(--text-secondary)">Fixed, bottom-left, stacked above the back-to-top button. Moved off the bottom-right corner deliberately — that corner is where phone/desktop OS chrome (Assistant orbs, gesture pills, taskbar icons) tends to render its own overlays, which kept visually colliding with our floating buttons across different devices. The redundant floating contact button (duplicated the footer's Contact link) was removed outright rather than repositioned again.</div>
         </div>
       </div>
 

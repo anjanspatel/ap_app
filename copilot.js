@@ -10,8 +10,8 @@
 
   var NOTICE = 'NOTICE: AP CoPilot outputs are for auxiliary informational reference only. All field parameters and calculations must be independently validated by a licensed Professional Engineer (P.E. / P.Eng.).';
   var OUTPUT_TAG = '[ Auxiliary Output — Verify with P.E. prior to field execution ]';
-  var GREETING = 'AP CoPilot online — I\'m an automated AI assistant, not a live person. I can help you navigate AP Workspace, explain standard formulas (ASME PCC-1 target torque, ASME B16.5 flange ratings, tubing pressure derating), and point you to the right calculator. I am not a P.E. — verify all outputs independently before field use. Ask me something, or use the contact button for a real person.';
-  var FALLBACK = 'I don’t have a reference answer for that yet. Try asking about flange ratings, bolt torque, tubing SWL, saved lookups, offline use, or passkeys — or use the contact button for a direct question.';
+  var GREETING = 'AP CoPilot online — I\'m an automated AI assistant, not a live person. I can help you navigate AP Workspace, explain standard formulas (ASME PCC-1 target torque, ASME B16.5 flange ratings, tubing pressure derating), and point you to the right calculator. I am not a P.E. — verify all outputs independently before field use. Ask me something, or use the Contact link in the footer for a real person.';
+  var FALLBACK = 'I don’t have a reference answer for that yet. Try asking about flange ratings, bolt torque, tubing SWL, saved lookups, offline use, or passkeys — or use the Contact link in the footer for a direct question.';
 
   /* Distinct sparkle glyph — deliberately not another chat-bubble shape,
      so this reads as a separate control from the contact FAB rather
@@ -61,7 +61,7 @@
     var style = document.createElement('style');
     style.id = 'ap-copilot-style';
     style.textContent = [
-      '#ap-copilot-fab{position:fixed;bottom:calc(140px + env(safe-area-inset-bottom,0px));left:20px;z-index:1000;',
+      '#ap-copilot-fab{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:20px;z-index:1000;',
         'width:48px;height:48px;border-radius:50%;background:var(--bg-panel,#151F2C);',
         'border:1px solid var(--precision-cyan,#19D3E6);color:var(--precision-cyan,#19D3E6);',
         'cursor:pointer;display:flex;align-items:center;justify-content:center;',

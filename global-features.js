@@ -119,7 +119,7 @@
   btt.setAttribute('title', 'Back to top');
   btt.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>';
   btt.style.cssText = [
-    'position:fixed','bottom:calc(72px + env(safe-area-inset-bottom,0px))','left:20px','z-index:800',
+    'position:fixed','bottom:calc(20px + env(safe-area-inset-bottom,0px))','left:20px','z-index:800',
     'width:36px','height:36px','border-radius:50%',
     'background:var(--bg-elevated,#1C2938)',
     'border:1px solid var(--border-color,#2B3A4C)',
@@ -248,42 +248,7 @@
     });
   })();
 
-  /* ── 5. Floating Contact Button ──────────────
-     FAB bottom-right. Email assembled at runtime.
-  ──────────────────────────────────────────────── */
-  var fab = document.createElement('button');
-  fab.id = 'float-contact';
-  fab.setAttribute('aria-label', 'Contact support');
-  fab.setAttribute('title', 'Contact support');
-  fab.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
-  var engNotice = document.getElementById('eng-disclaimer');
-  var fabBottom = 20 + (engNotice ? engNotice.offsetHeight + 12 : 0);
-  fab.style.cssText = [
-    'position:fixed','bottom:calc(' + fabBottom + 'px + env(safe-area-inset-bottom,0px))','left:20px','z-index:800',
-    'width:40px','height:40px','border-radius:50%',
-    'background:var(--precision-cyan,#19D3E6)',
-    'border:none','color:#0B111A',
-    'cursor:pointer','display:flex','align-items:center','justify-content:center',
-    'box-shadow:0 2px 12px rgba(25,211,230,0.3)',
-    'transition:transform 200ms,box-shadow 200ms'
-  ].join(';');
-
-  fab.addEventListener('mouseenter', function() {
-    fab.style.transform = 'scale(1.08)';
-    fab.style.boxShadow = '0 4px 20px rgba(25,211,230,0.45)';
-  });
-  fab.addEventListener('mouseleave', function() {
-    fab.style.transform = '';
-    fab.style.boxShadow = '0 2px 12px rgba(25,211,230,0.3)';
-  });
-  fab.addEventListener('click', function() {
-    var e = 'support' + '@' + 'app' + '.' + 'anjanpatel' + '.' + 'ca';
-    window.location.href = 'mailto:' + e;
-  });
-
-  document.body.appendChild(fab);
-
-  /* ── 6. Skip to Content ──────────────────────
+  /* ── 5. Skip to Content ──────────────────────
      Accessibility: visible on keyboard focus.
   ──────────────────────────────────────────────── */
   var skip = document.createElement('a');
