@@ -414,11 +414,7 @@ body{
   <div class="card">
 
     <section class="view" id="view-auth">
-      <div class="tabs" role="tablist" aria-label="Authentication mode">
-        <div class="tab-track" id="tabTrack" aria-hidden="true"></div>
-        <button class="tab" id="tab-si" role="tab" aria-selected="true" onclick="setMode('signin')">Sign In</button>
-        <button class="tab" id="tab-cr" role="tab" aria-selected="false" onclick="setMode('create')">Create Account</button>
-      </div>
+      <p class="vhd">Sign in</p>
 
       <form id="auth-form" novalidate>
         <div class="field">
@@ -482,6 +478,8 @@ body{
           Continue with GitHub
         </button>
       </div>
+
+      <p class="vsub" style="text-align:center;margin-top:16px">Access is by invitation only. <button type="button" class="link-btn" id="btn-request-access">Contact us</button> if you need an account.</p>
     </section>
 
     <section class="view" id="view-forgot">
@@ -577,6 +575,8 @@ body{
 (function(){
   var e='support'+'@'+'app'+'.'+'anjanpatel'+'.'+'ca';
   document.getElementById('contact-btn').addEventListener('click',function(){window.location.href='mailto:'+e});
+  var ra=document.getElementById('btn-request-access');
+  if(ra)ra.addEventListener('click',function(){window.location.href='mailto:'+e});
   document.getElementById('yr').textContent=new Date().getFullYear();
 })();
 
@@ -612,13 +612,10 @@ var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
 var sb=null;
 try{sb=supabase.createClient(SB_URL,SB_KEY,{auth:{experimental:{passkey:true}}});}catch(e){}
-var mode='signin',busy=false;
+var busy=false;
 var PASSKEY_SUPPORTED=typeof window.PublicKeyCredential!=='undefined';
 var ERE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
-var COPY={
-  signin:{idle:'Access Workspace',work:'Signing In…',done:'Access Granted'},
-  create:{idle:'Create Account',work:'Creating…',done:'Account Created'}
-};
+var COPY={idle:'Access Workspace',work:'Signing In…',done:'Access Granted'};
 function q(id){return document.getElementById(id)}
 function showView(n){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});q('view-'+n).classList.add('active')}
 function setNote(id,msg,cls){var el=q(id);el.textContent=msg;el.className='note'+(msg?' on':'');if(cls)el.classList.add(cls)}
@@ -628,16 +625,7 @@ function setErr(inp,err,msg){
   else{e.textContent='';e.classList.remove('on');i.removeAttribute('aria-invalid')}
 }
 function swapLbl(id,txt){var el=q(id);el.classList.add('fade');setTimeout(function(){el.textContent=txt;el.classList.remove('fade')},140)}
-function setMode(next){
-  if(busy||next===mode)return;mode=next;
-  q('tab-si').setAttribute('aria-selected',String(next==='signin'));
-  q('tab-cr').setAttribute('aria-selected',String(next==='create'));
-  q('tabTrack').style.transform=next==='create'?'translateX(100%)':'translateX(0)';
-  swapLbl('auth-lbl',COPY[mode].idle);
-  q('inp-pw').setAttribute('autocomplete',next==='signin'?'current-password':'new-password');
-  setErr('inp-email','err-email','');setErr('inp-pw','err-pw','');setNote('auth-note','');
-  q('pk-signin-row').style.display=(next==='signin'&&PASSKEY_SUPPORTED&&sb)?'':'none';
-}
+q('pk-signin-row').style.display=(PASSKEY_SUPPORTED&&sb)?'':'none';
 q('inp-email').addEventListener('input',function(){setErr('inp-email','err-email','');setNote('auth-note','')});
 q('inp-pw').addEventListener('input',function(){setErr('inp-pw','err-pw','');setNote('auth-note','')});
 q('auth-form').addEventListener('submit',async function(e){
@@ -650,17 +638,10 @@ q('auth-form').addEventListener('submit',async function(e){
   else if(pw.length<8){setErr('inp-pw','err-pw','Min 8 characters');ok=false}
   if(!ok)return;
   busy=true;q('auth-submit').disabled=true;setNote('auth-note','');
-  swapLbl('auth-lbl',COPY[mode].work);
-  var r=mode==='signin'
-    ?await sb.auth.signInWithPassword({email:em,password:pw})
-    :await sb.auth.signUp({email:em,password:pw});
-  if(r.error){swapLbl('auth-lbl',COPY[mode].idle);setNote('auth-note',r.error.message);q('auth-submit').disabled=false;busy=false;return}
-  if(mode==='create'&&r.data.user&&!r.data.session){
-    swapLbl('auth-lbl',COPY[mode].idle);
-    setNote('auth-note','Check your email to confirm your account.','inf');
-    q('auth-submit').disabled=false;busy=false;return;
-  }
-  swapLbl('auth-lbl',COPY[mode].done);
+  swapLbl('auth-lbl',COPY.work);
+  var r=await sb.auth.signInWithPassword({email:em,password:pw});
+  if(r.error){swapLbl('auth-lbl',COPY.idle);setNote('auth-note',r.error.message);q('auth-submit').disabled=false;busy=false;return}
+  swapLbl('auth-lbl',COPY.done);
   setTimeout(function(){window.location.reload();},700);
 });
 q('btn-forgot').addEventListener('click',function(){setNote('frg-note','');showView('forgot')});
@@ -697,7 +678,6 @@ q('btn-google').addEventListener('click',function(){oauth('google')});
 q('btn-ms').addEventListener('click',function(){oauth('azure')});
 q('btn-gh').addEventListener('click',function(){oauth('github')});
 
-q('pk-signin-row').style.display=(mode==='signin'&&PASSKEY_SUPPORTED&&sb)?'':'none';
 q('btn-passkey').addEventListener('click',async function(){
   if(busy||!sb)return;
   busy=true;q('btn-passkey').disabled=true;setNote('auth-note','');
