@@ -232,7 +232,7 @@ h3.section-h::after{content:'';flex:1;height:1px;background:var(--border-color)}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Prev
     </button>
-    <span class="slide-counter" id="slideCounter">[ SLIDE 01 / 06 ]</span>
+    <span class="slide-counter" id="slideCounter">[ SLIDE 01 / 07 ]</span>
     <button class="nav-btn" id="nextBtn" aria-label="Next slide">
       Next
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -411,6 +411,46 @@ h3.section-h::after{content:'';flex:1;height:1px;background:var(--border-color)}
 
       <div class="route-note">
         <b>Routing note:</b> the live site uses directory routes for legal pages — <code>/terms/</code>, <code>/privacy/</code>, <code>/disclaimer/</code> — not flat files like <code>terms.html</code>. The copyright holder of record in every existing legal page is <b>Anjan Patel</b> (the site is operated by an individual, per /terms/), shown here rather than a placeholder "AP WORKSPACE Inc." to stay accurate to what's actually published.
+      </div>
+    </section>
+
+    <!-- ══════════ SLIDE 7 — AP COPILOT ══════════ -->
+    <section class="slide">
+      <p class="slide-eyebrow">07 / AP CoPilot</p>
+      <h2 class="slide-title">Auxiliary Assistant — Launcher, Header &amp; Bubbles</h2>
+      <p class="slide-sub">Injected site-wide via <code>copilot.js</code> — a static on-device Q&amp;A engine, not a live LLM call (this site has no backend to hold an API key safely). Every response carries the auxiliary-output tag; the top notice is permanent and non-dismissible.</p>
+
+      <h3 class="section-h">FAB launcher</h3>
+      <div class="form-grid">
+        <div class="form-state-card" style="display:flex;align-items:center;gap:14px">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--bg-panel);border:1px solid var(--precision-cyan);color:var(--precision-cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 14px rgba(25,211,230,0.22)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v3"/><path d="M12 13.5h.01"/></svg>
+          </div>
+          <div style="font:400 11px var(--font-ui);color:var(--text-secondary)">Fixed, bottom-right, stacked above the contact FAB and back-to-top button to avoid overlap on mobile — see the safe-area-inset fix from the mobile UX pass.</div>
+        </div>
+      </div>
+
+      <h3 class="section-h">Drawer header &amp; notice</h3>
+      <div class="form-grid">
+        <div class="form-state-card" style="padding:0;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:var(--bg-panel);border-bottom:1px solid var(--border-color)">
+            <span style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:.04em;color:var(--precision-cyan)">[ AP COPILOT v1.0 | AUXILIARY ASSISTANT ]</span>
+            <span style="color:var(--text-muted);font-size:20px;line-height:1">×</span>
+          </div>
+          <div style="font:500 10.5px var(--font-ui);line-height:1.5;color:var(--status-warning);background:rgba(245,158,11,.08);border-bottom:1px solid rgba(245,158,11,.25);padding:10px 16px">
+            NOTICE: AP CoPilot outputs are for auxiliary informational reference only. All field parameters and calculations must be independently validated by a licensed Professional Engineer (P.E. / P.Eng.).
+          </div>
+          <div style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:.03em;color:var(--status-warning);background:rgba(245,158,11,.1);padding:8px 16px">[ ● OFFLINE MODE: AP COPILOT UNAVAILABLE ]</div>
+        </div>
+      </div>
+
+      <h3 class="section-h">Message bubbles &amp; output tag</h3>
+      <div class="form-grid">
+        <div class="form-state-card" style="background:var(--bg-workspace);display:flex;flex-direction:column;gap:12px">
+          <div style="align-self:flex-end;max-width:80%;font:400 12.5px var(--font-ui);line-height:1.5;padding:10px 12px;border-radius:8px;background:var(--precision-cyan);color:#0B111A">What's the target torque sequence?</div>
+          <div style="align-self:flex-start;max-width:88%;font:400 12.5px var(--font-ui);line-height:1.5;padding:10px 12px;border-radius:8px;background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border-color)">Bolt torque follows ASME PCC-1: target torque is derived from bolt size, grade, K-factor, and preload — applied in a star-pattern, multi-pass sequence.</div>
+          <div style="align-self:flex-start;font:500 9.5px 'JetBrains Mono',monospace;color:var(--text-muted);letter-spacing:.02em;margin-top:-6px">[ Auxiliary Output — Verify with P.E. prior to field execution ]</div>
+        </div>
       </div>
     </section>
 
