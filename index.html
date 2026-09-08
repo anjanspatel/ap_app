@@ -25,51 +25,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 <link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root,[data-theme="dark"]{
-  --canvas:#0B111A;
-  --card-bg:rgba(14,20,38,0.75);
-  --edge:#1e2a3d;
-  --border:#2a3650;
-  --border2:#1a2438;
-  --text:#f0f4f8;
-  --muted:#8fa0b8;
-  --dim:#516078;
-  --emerald:#00d27a;
-  --indigo:#19D3E6;
-  --indigo-fg:#5EEAF5;
-  --error:#ef4444;
-  --input-bg:rgba(4,7,16,0.65);
-  --tabs-bg:rgba(6,9,18,0.7);
-  --track-bg:rgba(26,36,56,0.9);
-  --ob-bg:rgba(4,7,16,0.5);
-  --ob-hover-bg:rgba(26,36,56,0.6);
-  --anim-ease:cubic-bezier(.22,1,.36,1);
-  --ease:140ms cubic-bezier(.22,1,.36,1);
-  --font-ui:'Inter',-apple-system,system-ui,sans-serif;
-  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+/* Page-specific login tokens */
+:root {
+  --anim-ease: cubic-bezier(.22,1,.36,1);
+  --card-bg:   var(--bg-panel);
+  --input-bg:  var(--bg-elevated);
+  --tabs-bg:   var(--bg-workspace);
+  --track-bg:  var(--bg-elevated);
+  --ob-bg:     var(--bg-elevated);
+  --ob-hover-bg: var(--bg-workspace);
+  --edge:      var(--border-color);
+  --border2:   var(--border-color);
 }
-[data-theme="light"]{
-  --canvas:#f0f4f8;
-  --card-bg:rgba(255,255,255,0.88);
-  --edge:#e2e8f0;
-  --border:#c8d4e8;
-  --border2:#dae2ef;
-  --text:#0f172a;
-  --muted:#475569;
-  --dim:#94a3b8;
-  --emerald:#00a85a;
-  --indigo:#0891B2;
-  --indigo-fg:#0891B2;
-  --error:#dc2626;
-  --input-bg:rgba(255,255,255,0.92);
-  --tabs-bg:rgba(225,232,240,0.9);
-  --track-bg:#ffffff;
-  --ob-bg:rgba(255,255,255,0.75);
-  --ob-hover-bg:rgba(240,244,248,0.95);
+[data-theme="light"] {
+  --tabs-bg:   var(--bg-workspace);
+  --track-bg:  var(--bg-panel);
+  --ob-bg:     var(--bg-panel);
+  --ob-hover-bg: var(--bg-elevated);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{height:100%}
@@ -175,15 +152,11 @@ body{
 
 .card{
   width:100%;max-width:400px;
-  background:var(--card-bg);
-  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-  border:1px solid rgba(42,54,80,0.75);
-  border-radius:16px;
+  background:var(--bg-panel);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius-lg);
   padding:28px 28px 22px;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.03) inset,
-    0 12px 70px rgba(0,0,0,0.65),
-    0 0 50px rgba(25,211,230,0.05);
+  box-shadow:0 8px 40px rgba(0,0,0,0.32);
   animation:fadeUp 900ms var(--anim-ease) 230ms both;
 }
 
@@ -266,14 +239,13 @@ body{
 
 .cta{
   width:100%;height:44px;margin-top:4px;
-  background:var(--emerald);color:#040d07;
+  background:var(--precision-cyan);color:#0B111A;
   font:700 13px var(--font-ui);letter-spacing:0.05em;
-  border:none;border-radius:8px;cursor:pointer;
-  transition:filter var(--ease),transform var(--ease),box-shadow var(--ease);
-  box-shadow:0 4px 24px rgba(0,210,122,0.28);
+  border:none;border-radius:var(--radius-lg);cursor:pointer;
+  transition:filter var(--motion-fast),transform var(--motion-fast);
   -webkit-tap-highlight-color:transparent;
 }
-.cta:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,210,122,0.38)}
+.cta:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
 .cta:active:not(:disabled){transform:none}
 .cta:disabled{opacity:0.5;cursor:default}
 .cta:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
@@ -389,12 +361,11 @@ body{
 /* Theme toggle button */
 .theme-btn{
   position:fixed;top:16px;right:16px;z-index:200;
-  width:36px;height:36px;border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--card-bg);color:var(--muted);
+  width:36px;height:36px;border-radius:var(--radius-lg);
+  border:1px solid var(--border-color);
+  background:var(--bg-panel);color:var(--text-secondary);
   cursor:pointer;display:grid;place-items:center;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  transition:border-color var(--ease),color var(--ease),background var(--ease);
+  transition:border-color var(--motion-fast),color var(--motion-fast);
   -webkit-tap-highlight-color:transparent;
 }
 .theme-btn:hover{color:var(--text);border-color:var(--indigo-fg)}
@@ -431,7 +402,6 @@ body{
     <h1 class="hero-title">Engineering<br><em>Intelligence.</em></h1>
   </div>
 
-  <div class="sp-ring" id="loginSpRing">
   <div class="card">
 
     <section class="view" id="view-auth">
@@ -452,7 +422,12 @@ body{
             <label for="inp-pw">Password</label>
             <button type="button" class="link-btn" id="btn-forgot">Forgot?</button>
           </div>
-          <input type="password" id="inp-pw" placeholder="••••••••" autocomplete="current-password">
+          <div style="position:relative">
+            <input type="password" id="inp-pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px;width:100%">
+            <button type="button" id="pw-eye" aria-label="Toggle password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:color var(--motion-fast)">
+              <svg id="pw-eye-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
           <p class="err-txt" id="err-pw" role="alert" aria-live="polite"></p>
         </div>
         <p class="note" id="auth-note" role="alert" aria-live="polite"></p>
@@ -527,7 +502,41 @@ body{
     </section>
 
   </div>
-  </div><!-- /.sp-ring -->
+
+  <!-- AP WORKSPACE Launcher (shown when authenticated) -->
+  <div id="view-launcher" style="display:none;width:100%;max-width:560px;animation:fadeUp 500ms var(--anim-ease) both">
+    <div style="text-align:center;margin-bottom:24px">
+      <p style="font:700 10px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--precision-cyan);margin-bottom:4px">AP WORKSPACE</p>
+      <h1 style="font-size:clamp(20px,3vw,28px);font-weight:900;letter-spacing:-.03em;color:var(--text-primary);margin:0">Welcome back<span id="launcher-name"></span></h1>
+      <p style="font:400 12px var(--font-mono);color:var(--text-muted);margin-top:4px;letter-spacing:.04em">Select a tool to launch</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <a href="/dashboard.html" style="background:var(--bg-panel);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:18px 16px;text-decoration:none;display:flex;flex-direction:column;gap:8px;transition:border-color var(--motion-fast),background var(--motion-fast)" onmouseenter="this.style.borderColor='var(--precision-cyan)'" onmouseleave="this.style.borderColor='var(--border-color)'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--precision-cyan)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span style="font:700 13px var(--font-ui);color:var(--text-primary)">Dashboard</span>
+        <span style="font:400 11px var(--font-mono);color:var(--text-muted);letter-spacing:.02em">Saved lookups + overview</span>
+      </a>
+      <a href="/flange/" style="background:var(--bg-panel);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:18px 16px;text-decoration:none;display:flex;flex-direction:column;gap:8px;transition:border-color var(--motion-fast),background var(--motion-fast)" onmouseenter="this.style.borderColor='var(--precision-cyan)'" onmouseleave="this.style.borderColor='var(--border-color)'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--precision-cyan)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/></svg>
+        <span style="font:700 13px var(--font-ui);color:var(--text-primary)">Flange Slide Rule</span>
+        <span style="font:400 11px var(--font-mono);color:var(--text-muted);letter-spacing:.02em">API 6A / 3K–15K dims</span>
+      </a>
+      <a href="/torque/" style="background:var(--bg-panel);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:18px 16px;text-decoration:none;display:flex;flex-direction:column;gap:8px;transition:border-color var(--motion-fast),background var(--motion-fast)" onmouseenter="this.style.borderColor='var(--precision-cyan)'" onmouseleave="this.style.borderColor='var(--border-color)'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--precision-cyan)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span style="font:700 13px var(--font-ui);color:var(--text-primary)">Torque Calculator</span>
+        <span style="font:400 11px var(--font-mono);color:var(--text-muted);letter-spacing:.02em">API 6A bolt torque + SF</span>
+      </a>
+      <a href="/tubing/" style="background:var(--bg-panel);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:18px 16px;text-decoration:none;display:flex;flex-direction:column;gap:8px;transition:border-color var(--motion-fast),background var(--motion-fast)" onmouseenter="this.style.borderColor='var(--precision-cyan)'" onmouseleave="this.style.borderColor='var(--border-color)'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--precision-cyan)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 7v10M7 7v10M17 7v10"/></svg>
+        <span style="font:700 13px var(--font-ui);color:var(--text-primary)">Safety Block Calc</span>
+        <span style="font:400 11px var(--font-mono);color:var(--text-muted);letter-spacing:.02em">Tubing SWL by BHN</span>
+      </a>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center">
+      <a href="/settings.html" style="font:500 11px var(--font-ui);color:var(--text-muted);text-decoration:none;padding:6px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);transition:color var(--motion-fast)" onmouseenter="this.style.color='var(--text-primary)'" onmouseleave="this.style.color='var(--text-muted)'">Settings</a>
+      <button onclick="doSignOut()" style="font:500 11px var(--font-ui);color:var(--text-muted);background:none;border:1px solid var(--border-color);border-radius:var(--radius-md);cursor:pointer;padding:6px 12px;transition:color var(--motion-fast)" onmouseenter="this.style.color='var(--status-danger,#EF4444)'" onmouseleave="this.style.color='var(--text-muted)'">Sign out</button>
+    </div>
+  </div>
 
   <footer class="legal" role="contentinfo">
     <span>&copy; <span id="yr"></span> Anjan Patel. All rights reserved.</span>
@@ -628,7 +637,7 @@ q('auth-form').addEventListener('submit',async function(e){
     q('auth-submit').disabled=false;busy=false;return;
   }
   swapLbl('auth-lbl',COPY[mode].done);
-  setTimeout(function(){window.location.href='/dashboard.html'},700);
+  setTimeout(function(){window.location.reload();},700);
 });
 q('btn-forgot').addEventListener('click',function(){setNote('frg-note','');showView('forgot')});
 q('btn-back-forgot').addEventListener('click',function(){showView('auth')});
@@ -662,6 +671,8 @@ q('btn-google').addEventListener('click',function(){oauth('google')});
 q('btn-ms').addEventListener('click',function(){oauth('azure')});
 q('btn-gh').addEventListener('click',function(){oauth('github')});
 
+async function doSignOut(){await sb.auth.signOut();window.location.reload();}
+
 (async function boot(){
   var hash=window.location.hash;
   if(hash.includes('type=recovery')){
@@ -675,25 +686,36 @@ q('btn-gh').addEventListener('click',function(){oauth('github')});
     }
   }
   var r=await sb.auth.getSession();
-  if(r.data&&r.data.session){window.location.href='/dashboard.html';return}
+  if(r.data&&r.data.session){
+    var u=r.data.session.user;
+    var nameEl=document.getElementById('launcher-name');
+    if(nameEl&&u&&u.email){
+      var name=u.user_metadata&&u.user_metadata.name?u.user_metadata.name:u.email.split('@')[0];
+      nameEl.textContent=', '+name;
+    }
+    document.querySelector('.hero').style.display='none';
+    document.querySelector('.card').style.display='none';
+    document.getElementById('view-launcher').style.display='block';
+    return;
+  }
   showView('auth');
 })();
-</script>
-<script>
-/* ── Spotlight ring: track cursor on login card ── */
+
+/* ── PW visibility toggle ── */
 (function(){
-  var ring=document.getElementById('loginSpRing');
-  if(!ring)return;
-  ring.addEventListener('mousemove',function(e){
-    var r=ring.getBoundingClientRect();
-    ring.style.setProperty('--sx',(e.clientX-r.left)+'px');
-    ring.style.setProperty('--sy',(e.clientY-r.top)+'px');
-  });
-  ring.addEventListener('mouseleave',function(){
-    ring.style.setProperty('--sx','50%');
-    ring.style.setProperty('--sy','-80px');
+  var btn=document.getElementById('pw-eye');
+  var inp=document.getElementById('inp-pw');
+  var ico=document.getElementById('pw-eye-icon');
+  if(!btn||!inp)return;
+  btn.addEventListener('click',function(){
+    var show=inp.type==='password';
+    inp.type=show?'text':'password';
+    ico.innerHTML=show
+      ?'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      :'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
   });
 })();
 </script>
+<script src="/global-features.js"></script>
 </body>
 </html>

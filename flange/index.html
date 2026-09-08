@@ -28,11 +28,17 @@
 <meta name="apple-mobile-web-app-title" content="Flange Slide Rule">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
 <link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 <style>
-:root{color-scheme:light;--navy:#0B1F3A;--gunmetal:#3A3F45;--orange:#19D3E6;
-  --orange-fg:#5EEAF5;--bg:#f0f4f8;--surface:#fff;--surface-2:#f7fafc;--text:#0f172a;--muted:#475569;--line:#e2e8f0;--control:#fff;--tool-bg:#fff;--tool-line:#8d99a8;--shadow:0 12px 34px rgba(11,31,58,.10);--button:#19D3E6;--button-text:#fff}
-html[data-theme="dark"]{color-scheme:dark;--bg:#0B111A;--surface:#151F2C;--surface-2:#1C2938;--text:#f8fafc;--muted:#94a3b8;--line:#2B3A4C;--control:#1C2938;--tool-bg:#0B111A;--tool-line:#647487;--shadow:0 14px 40px rgba(0,0,0,.34);--button:#edf3f8;--button-text:#0B1F3A}
-@media(prefers-color-scheme:dark){html:not([data-theme="light"]){color-scheme:dark;--bg:#0B111A;--surface:#151F2C;--surface-2:#1C2938;--text:#f8fafc;--muted:#94a3b8;--line:#2B3A4C;--control:#1C2938;--tool-bg:#0B111A;--tool-line:#647487;--shadow:0 14px 40px rgba(0,0,0,.34);--button:#edf3f8;--button-text:#0B1F3A}}
+/* tokens.css provides all design tokens */
+:root{
+  --tool-bg:var(--bg-app);--tool-line:#647487;--button:var(--precision-cyan);--button-text:#fff;
+}
+[data-theme="light"]{--tool-bg:#fff;--tool-line:#8d99a8;--button:var(--precision-cyan);--button-text:#fff;}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--tool-bg:#fff;--tool-line:#8d99a8;}}
 
 html[data-theme="dark"] .brand-logo-wrap{background:#fff;border-color:rgba(25,211,230,.42);box-shadow:0 0 0 1px rgba(25,211,230,.08),0 5px 16px rgba(0,0,0,.26)}
 @media(prefers-color-scheme:dark){html:not([data-theme="light"]) .brand-logo-wrap{background:#fff;border-color:rgba(25,211,230,.42);box-shadow:0 0 0 1px rgba(25,211,230,.08),0 5px 16px rgba(0,0,0,.26)}}
@@ -724,5 +730,6 @@ async function confirmSave(){
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSaveModal();});
 </script>
+<script src="/global-features.js"></script>
 </body>
 </html>

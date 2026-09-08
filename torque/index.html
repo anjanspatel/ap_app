@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 <link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -29,31 +30,7 @@
 })();
 </script>
 <style>
-/* ── tokens ── */
-:root{
-  color-scheme:light;
-  --bg:#f0f4f8;--surface:#fff;--surface-2:#f7fafc;--text:#0f172a;
-  --muted:#475569;--dim:#94a3b8;--line:#e2e8f0;--control:#fff;
-  --indigo:#19D3E6;--indigo-fg:#5EEAF5;--emerald:#00d27a;
-  --shadow:0 12px 34px rgba(11,31,58,.10);
-  --ease:150ms ease-in-out;
-  --font:'Inter','Inter',system-ui,sans-serif;
-  --mono:'JetBrains Mono',monospace;
-}
-html[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#0B111A;--surface:#151F2C;--surface-2:#1C2938;--text:#f8fafc;
-  --muted:#94a3b8;--dim:#64748b;--line:#2B3A4C;--control:#1C2938;
-  --shadow:0 14px 40px rgba(0,0,0,.34);
-}
-@media(prefers-color-scheme:dark){
-  html:not([data-theme="light"]){
-    color-scheme:dark;
-    --bg:#0B111A;--surface:#151F2C;--surface-2:#1C2938;--text:#f8fafc;
-    --muted:#94a3b8;--dim:#64748b;--line:#2B3A4C;--control:#1C2938;
-    --shadow:0 14px 40px rgba(0,0,0,.34);
-  }
-}
+/* tokens.css provides all design tokens */
 
 *{box-sizing:border-box}html,body{margin:0;min-height:100%}
 body{background:var(--bg);font-family:var(--font);color:var(--text);
@@ -746,5 +723,6 @@ $('savePdfBtn').addEventListener('click',function(){
 /* ── initial compute ── */
 compute();
 </script>
+<script src="/global-features.js"></script>
 </body>
 </html>

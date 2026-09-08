@@ -26,47 +26,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 <style>
-/* ── design tokens ── */
-:root{
-  --brand-navy:#0B1D2D;
-  --brand-orange:#19D3E6;
-  --brand-orange-fg:#5EEAF5;
-  --bg:#f0f4f8;
-  --surface:#ffffff;
-  --surface-2:#f7fafc;
-  --border:#e2e8f0;
-  --text:#0f172a;
-  --muted:#475569;
-  --header-bg:rgba(255,255,255,0.9);
-  --shadow:0 2px 14px rgba(11,29,45,.09);
-  --shadow-sm:0 1px 4px rgba(11,29,45,.06);
-  --step-line:#e2e8f0;
+/* Page-specific tokens */
+:root {
+  --step-line: var(--border-color);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.06);
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0B111A;
-  --surface:#151F2C;
-  --surface-2:#1C2938;
-  --border:#2B3A4C;
-  --text:#f8fafc;
-  --muted:#94a3b8;
-  --header-bg:rgba(11,15,25,0.9);
-  --shadow:0 2px 14px rgba(0,0,0,.4);
-  --shadow-sm:0 1px 4px rgba(0,0,0,.25);
-  --step-line:#2B3A4C;
-}}
-:root[data-theme="dark"]{
-  --bg:#0B111A;
-  --surface:#151F2C;
-  --surface-2:#1C2938;
-  --border:#2B3A4C;
-  --text:#f8fafc;
-  --muted:#94a3b8;
-  --header-bg:rgba(11,15,25,0.9);
-  --shadow:0 2px 14px rgba(0,0,0,.4);
-  --shadow-sm:0 1px 4px rgba(0,0,0,.25);
-  --step-line:#2B3A4C;
-}
+[data-theme="dark"] { --shadow-sm: 0 1px 4px rgba(0,0,0,.25); }
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){ --shadow-sm:0 1px 4px rgba(0,0,0,.25); }}
 
 /* ── reset ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -81,9 +49,8 @@ body{
 /* ── header ── */
 .site-header{
   position:sticky;top:0;z-index:100;
-  background:var(--header-bg);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:var(--bg-panel);
+  border-bottom:1px solid var(--border-color);
 }
 .header-inner{
   max-width:1140px;margin:0 auto;padding:10px 20px;
@@ -684,5 +651,6 @@ async function confirmSave(){
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSaveModal();});
 </script>
+<script src="/global-features.js"></script>
 </body>
 </html>

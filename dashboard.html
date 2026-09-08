@@ -13,44 +13,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 <link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root,[data-theme="dark"]{
-  --canvas:#0B111A;
-  --surface:#151F2C;
-  --elevated:#1C2938;
-  --border:#2B3A4C;
-  --text:#f8fafc;
-  --muted:#94a3b8;
-  --dim:#64748b;
-  --emerald:#00d27a;
-  --indigo:#19D3E6;
-  --indigo-fg:#5EEAF5;
-  --error:#ef4444;
-  --warn:#f59e0b;
-  --chart-bg:#151F2C;
-  --chart-grid:#2B3A4C;
-  --ease:150ms ease-in-out;
-  --sb-w:228px;
-  --tb-h:48px;
+/* Page-specific layout tokens */
+:root {
+  --sb-w: 228px;
+  --tb-h: 48px;
+  --chart-bg: var(--bg-panel);
+  --chart-grid: var(--border-color);
 }
-[data-theme="light"]{
-  --canvas:#f0f4f8;
-  --surface:#ffffff;
-  --elevated:#f7fafc;
-  --border:#e2e8f0;
-  --text:#0f172a;
-  --muted:#475569;
-  --dim:#94a3b8;
-  --emerald:#00a85a;
-  --indigo:#0891B2;
-  --indigo-fg:#0891B2;
-  --error:#dc2626;
-  --warn:#d97706;
-  --chart-bg:#ffffff;
-  --chart-grid:#e2e8f0;
+[data-theme="light"] {
+  --chart-bg: var(--bg-panel);
+  --chart-grid: var(--border-color);
 }
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -875,5 +852,6 @@ init();
   });
 })();
 </script>
+<script src="/global-features.js"></script>
 </body>
 </html>

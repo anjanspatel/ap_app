@@ -1,0 +1,109 @@
+/* ════════════════════════════════════════════════
+   AP WORKSPACE — tokens.css
+   Engineering Graphite Design System
+   Single source of truth. Import first on every page.
+════════════════════════════════════════════════ */
+
+/* ── Dark (default) ───────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-app:           #0B111A;
+  --bg-workspace:     #0F1722;
+  --bg-panel:         #151F2C;
+  --bg-elevated:      #1C2938;
+
+  /* Borders */
+  --border-color:     #2B3A4C;
+
+  /* Text */
+  --text-primary:     #F1F5F9;
+  --text-secondary:   #94A3B8;
+  --text-muted:       #64748B;
+
+  /* Brand accent */
+  --precision-cyan:       #19D3E6;
+  --precision-cyan-hover: #46E0EF;
+
+  /* Status */
+  --status-safe:    #22C55E;
+  --status-warning: #F59E0B;
+  --status-danger:  #EF4444;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Motion */
+  --motion-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Typography */
+  --font-ui:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Utility */
+  --ease:   var(--motion-fast);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+
+  /* ── Backward-compat aliases ─────────────────
+     Old variable names → canonical tokens.
+     Pages still using old names will resolve correctly. */
+  --bg:         var(--bg-app);
+  --canvas:     var(--bg-app);
+  --surface:    var(--bg-panel);
+  --surface-2:  var(--bg-elevated);
+  --control:    var(--bg-elevated);
+  --elevated:   var(--bg-elevated);
+  --line:       var(--border-color);
+  --border:     var(--border-color);
+  --text:       var(--text-primary);
+  --muted:      var(--text-secondary);
+  --dim:        var(--text-muted);
+  --indigo:     var(--precision-cyan);
+  --orange:     var(--precision-cyan);
+  --indigo-fg:  var(--precision-cyan-hover);
+  --orange-fg:  var(--precision-cyan-hover);
+  --emerald:    var(--status-safe);
+  --warn:       var(--status-warning);
+  --error:      var(--status-danger);
+  --font:       var(--font-ui);
+  --mono:       var(--font-mono);
+}
+
+/* ── Light mode (explicit toggle) ─────────────── */
+[data-theme="light"] {
+  --bg-app:       #F4F7FA;
+  --bg-workspace: #EAEFF5;
+  --bg-panel:     #FFFFFF;
+  --bg-elevated:  #F1F5F9;
+  --border-color: #CBD5E1;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted:   #94A3B8;
+  --precision-cyan:       #0891B2;
+  --precision-cyan-hover: #0891B2;
+  --status-safe:    #16A34A;
+  --status-warning: #D97706;
+  --status-danger:  #DC2626;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Light mode (system default) ──────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg-app:       #F4F7FA;
+    --bg-workspace: #EAEFF5;
+    --bg-panel:     #FFFFFF;
+    --bg-elevated:  #F1F5F9;
+    --border-color: #CBD5E1;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted:   #94A3B8;
+    --precision-cyan:       #0891B2;
+    --precision-cyan-hover: #0891B2;
+    --status-safe:    #16A34A;
+    --status-warning: #D97706;
+    --status-danger:  #DC2626;
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+}

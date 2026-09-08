@@ -1,30 +1,19 @@
 /* ════════════════════════════════════════════════
-   AP Workspace — premium.css  v1.0
-   Premium component layer — shared across all pages
-   Requires: /premium.css linked after page CSS
+   AP WORKSPACE — premium.css  v2.0
+   Shared component layer. No glassmorphism.
+   Requires: /tokens.css imported before this file.
 ════════════════════════════════════════════════ */
 
-/* ── 1. Glass topbar ────────────────────────────
-   Converts the sticky topbar from solid to frosted
-   glass. Works with all three theme states.
+/* ── 1. Solid topbar ────────────────────────────
+   All topbars use solid panel background — no blur.
 ────────────────────────────────────────────────── */
 .topbar {
-  background: rgba(11,15,25,0.80) !important;
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-}
-[data-theme="light"] .topbar {
-  background: rgba(255,255,255,0.85) !important;
-}
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .topbar {
-    background: rgba(255,255,255,0.85) !important;
-  }
+  background: var(--bg-panel) !important;
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* ── 2. Shimmer button ──────────────────────────
-   Add class .btn-shimmer to any button or link.
-   A light sweep animates at a staggered interval.
+   Add .btn-shimmer to any CTA button.
 ────────────────────────────────────────────────── */
 .btn-shimmer {
   position: relative !important;
@@ -50,82 +39,48 @@
   z-index: 1;
 }
 @keyframes ap-shimmer {
-  0%, 45%  { left: -130%; }
-  100%     { left: 210%;  }
+  0%, 45% { left: -130%; }
+  100%     { left: 210%; }
 }
 .btn-shimmer:active { transform: scale(0.97); }
 
-/* ── 3. Spotlight ring ──────────────────────────
-   Wrap any card with <div class="sp-ring"> to get
-   a cursor-tracking indigo border glow.
-   JS sets --sx / --sy via mousemove on the wrapper.
-────────────────────────────────────────────────── */
-.sp-ring {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  border-radius: 18px;
-}
-.sp-ring .card { max-width: none; }
-.sp-ring::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: radial-gradient(
-    300px circle at var(--sx, 50%) var(--sy, -80px),
-    rgba(25,211,230,0.5) 0%,
-    rgba(25,211,230,0.1) 40%,
-    transparent 68%
-  );
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.sp-ring:hover::before { opacity: 1; }
-
-/* ── 4. Metric tile cursor glow ─────────────────
-   Dashboard metric tiles get a hover border glow.
-   JS also tracks mouse position for radial effect.
+/* ── 3. Metric tile hover ───────────────────────
+   Subtle border highlight — no glow shadows.
 ────────────────────────────────────────────────── */
 .metric {
   transition:
-    background 0.2s,
-    border-color 0.2s,
-    box-shadow 0.25s ease !important;
+    background var(--motion-fast),
+    border-color var(--motion-fast) !important;
 }
 .metric:hover {
-  border-color: rgba(25,211,230,0.35) !important;
-  box-shadow:
-    0 0 0 1px rgba(25,211,230,0.15),
-    0 0 20px rgba(25,211,230,0.07);
+  border-color: rgba(25, 211, 230, 0.4) !important;
 }
 
-/* ── 5. Mesh grid background ────────────────────
-   Add class .mesh-bg to body or any container.
+/* ── 4. Mesh grid background ────────────────────
+   Add .mesh-bg to body or any container.
 ────────────────────────────────────────────────── */
 .mesh-bg {
   background-image:
-    linear-gradient(rgba(25,211,230,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(25,211,230,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(25, 211, 230, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25, 211, 230, 0.04) 1px, transparent 1px);
   background-size: 44px 44px;
 }
-[data-theme="light"] .mesh-bg {
+[data-theme="light"] .mesh-bg,
+:root:not([data-theme="dark"]) .mesh-bg {
   background-image:
-    linear-gradient(rgba(79,70,229,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79,70,229,0.05) 1px, transparent 1px);
+    linear-gradient(rgba(25, 211, 230, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25, 211, 230, 0.03) 1px, transparent 1px);
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) .mesh-bg {
     background-image:
-      linear-gradient(rgba(79,70,229,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(79,70,229,0.05) 1px, transparent 1px);
+      linear-gradient(rgba(25, 211, 230, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(25, 211, 230, 0.03) 1px, transparent 1px);
   }
 }
 
-/* ── 6. Telemetry breakdown bar ─────────────────
-   Used in dashboard "Saved Lookups" metric tile.
+/* ── 5. Telemetry breakdown bar ─────────────────
+   Dashboard "Saved Lookups" metric tile.
 ────────────────────────────────────────────────── */
 .act-break {
   margin-top: 10px;
@@ -135,29 +90,121 @@
 }
 .act-bar {
   height: 3px;
-  background: var(--border, #2B3A4C);
+  background: var(--border-color);
   border-radius: 2px;
   overflow: hidden;
 }
 .act-fill {
   height: 100%;
   border-radius: 2px;
-  background: linear-gradient(90deg, #5EEAF5 0%, rgba(25,211,230,0.35) 100%);
+  background: linear-gradient(90deg, var(--precision-cyan-hover) 0%, rgba(25,211,230,0.35) 100%);
   width: 0%;
-  transition: width 1s cubic-bezier(0.34,1.56,0.64,1);
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .act-labels {
   display: flex;
   justify-content: space-between;
   font: 400 9px/1 'JetBrains Mono', monospace;
   letter-spacing: 0.04em;
-  color: var(--dim, #64748b);
+  color: var(--text-muted);
 }
-.act-labels .act-a { color: var(--indigo-fg, #5EEAF5); }
+.act-labels .act-a { color: var(--precision-cyan-hover); }
 
-/* ── Focus ring upgrade ─────────────────────────── */
+/* ── 6. Focus ring ──────────────────────────────
+   WCAG-compliant keyboard focus indicator.
+────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid rgba(25,211,230,0.65);
+  outline: 2px solid rgba(25, 211, 230, 0.65);
   outline-offset: 2px;
   border-radius: 3px;
 }
+
+/* ── 7. Copy button ─────────────────────────────
+   Add .copy-btn to any element containing output.
+────────────────────────────────────────────────── */
+.copy-wrap {
+  position: relative;
+}
+.copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  font: 500 10px var(--font-mono);
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast);
+}
+.copy-btn:hover { color: var(--precision-cyan); border-color: var(--precision-cyan); }
+.copy-btn.copied { color: var(--status-safe); border-color: var(--status-safe); }
+
+/* ── 8. Print stylesheet ────────────────────────
+   Clean print output for tool pages.
+────────────────────────────────────────────────── */
+@media print {
+  .topbar, .sidebar, .sb-overlay, .hamburger,
+  #back-to-top, #scroll-progress, #cookie-banner,
+  #float-contact, .no-print { display: none !important; }
+  .main-wrap { margin-left: 0 !important; }
+  body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+  a { color: #000 !important; text-decoration: underline; }
+  .s-block, .card, .metric { border: 1px solid #ccc !important; break-inside: avoid; }
+}
+
+/* ── 9. Confirmation modal ──────────────────────
+   Shared modal overlay for destructive actions.
+────────────────────────────────────────────────── */
+.ap-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 900;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 150ms ease;
+}
+.ap-modal-overlay.open { display: flex; }
+.ap-modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 380px;
+  width: calc(100% - 40px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  animation: slideUp 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ap-modal-title { font: 600 14px var(--font-ui); color: var(--text-primary); margin-bottom: 8px; }
+.ap-modal-body  { font: 400 12px var(--font-ui); color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+.ap-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.ap-modal-cancel { background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-secondary); cursor: pointer; font: 500 12px var(--font-ui); padding: 8px 16px; transition: color var(--motion-fast), border-color var(--motion-fast); min-height: 36px; }
+.ap-modal-cancel:hover { color: var(--text-primary); border-color: var(--text-muted); }
+.ap-modal-confirm { background: var(--status-danger); border: none; border-radius: var(--radius-md); color: #fff; cursor: pointer; font: 600 12px var(--font-ui); padding: 8px 16px; transition: opacity var(--motion-fast); min-height: 36px; }
+.ap-modal-confirm:hover { opacity: 0.88; }
+
+@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+
+/* ── 10. FAQ accordion ──────────────────────────
+   Expandable FAQ sections on tool pages.
+────────────────────────────────────────────────── */
+.faq-section { margin-top: 24px; }
+.faq-title { font: 700 10px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+.faq-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 6px; overflow: hidden; }
+.faq-q {
+  width: 100%; background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; font: 500 12px var(--font-ui); color: var(--text-primary);
+  text-align: left; transition: background var(--motion-fast); gap: 10px;
+}
+.faq-q:hover { background: rgba(25, 211, 230, 0.04); }
+.faq-q[aria-expanded="true"] { color: var(--precision-cyan); }
+.faq-chevron { flex-shrink: 0; transition: transform var(--motion-fast); }
+.faq-q[aria-expanded="true"] .faq-chevron { transform: rotate(180deg); }
+.faq-a { display: none; padding: 0 14px 12px; font: 400 12px var(--font-ui); color: var(--text-secondary); line-height: 1.6; border-top: 1px solid var(--border-color); }
+.faq-a.open { display: block; }

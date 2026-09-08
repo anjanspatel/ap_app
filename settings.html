@@ -5,44 +5,21 @@
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#0b0f19">
-<title>AP Workspace — Settings</title>
+<meta name="theme-color" content="#0B111A">
+<title>AP WORKSPACE — Settings</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root,[data-theme="dark"]{
-  --canvas:#0b0f19;
-  --surface:#171e2e;
-  --elevated:#1b2435;
-  --border:#2d3748;
-  --text:#f8fafc;
-  --muted:#94a3b8;
-  --dim:#64748b;
-  --emerald:#00d27a;
-  --indigo:#6366f1;
-  --indigo-fg:#818cf8;
-  --error:#ef4444;
-  --ease:150ms ease-in-out;
-  --sb-w:228px;
-  --tb-h:48px;
-}
-[data-theme="light"]{
-  --canvas:#f0f4f8;
-  --surface:#ffffff;
-  --elevated:#f7fafc;
-  --border:#e2e8f0;
-  --text:#0f172a;
-  --muted:#475569;
-  --dim:#94a3b8;
-  --emerald:#00a85a;
-  --indigo:#4f46e5;
-  --indigo-fg:#4f46e5;
-  --error:#dc2626;
+/* Page-specific layout tokens */
+:root {
+  --sb-w: 228px;
+  --tb-h: 48px;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow-x:hidden}
@@ -58,8 +35,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .sb-nav{flex:1;padding:8px 0;overflow-y:auto}
 .sb-section{padding:16px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif;border-left:2px solid transparent;transition:color var(--ease),background var(--ease),border-color var(--ease)}
-.nav-item:hover{background:rgba(99,102,241,.06);color:var(--text)}
-.nav-item.active{background:rgba(99,102,241,.1);color:var(--text);border-left-color:var(--indigo-fg)}
+.nav-item:hover{background:rgba(25,211,230,.06);color:var(--text)}
+.nav-item.active{background:rgba(25,211,230,.1);color:var(--text);border-left-color:var(--indigo-fg)}
 .nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
 .nav-item.active svg,.nav-item:hover svg{opacity:1}
 .sb-user{padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -118,10 +95,10 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 
 .theme-opts{display:flex;gap:8px;flex-wrap:wrap}
 .theme-opt{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:4px;border:1px solid var(--border);cursor:pointer;font:500 12px 'Inter',sans-serif;color:var(--muted);background:var(--elevated);transition:border-color var(--ease),color var(--ease);min-height:44px}
-.theme-opt.active{border-color:var(--indigo-fg);color:var(--text);background:rgba(99,102,241,.08)}
+.theme-opt.active{border-color:var(--indigo-fg);color:var(--text);background:rgba(25,211,230,.08)}
 .theme-opt:hover:not(.active){border-color:var(--dim);color:var(--text)}
 .swatch{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0}
-.sw-l{background:#f8fafc}.sw-d{background:#0b0f19}.sw-s{background:linear-gradient(135deg,#f8fafc 50%,#0b0f19 50%)}
+.sw-l{background:#F4F7FA}.sw-d{background:#0B111A}.sw-s{background:linear-gradient(135deg,#F4F7FA 50%,#0B111A 50%)}
 
 .fb{padding:8px 12px;border-radius:4px;font:500 11px 'JetBrains Mono',monospace;display:none;margin-top:4px}
 .fb.ok{display:block;color:var(--emerald);background:rgba(0,210,122,.06);border:1px solid rgba(0,210,122,.2)}
@@ -151,6 +128,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 </style>
 <link rel="stylesheet" href="/premium.css">
 </head>
+
 <body>
 
 <aside class="sidebar" id="sidebar">
@@ -185,7 +163,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       <span class="sb-user-email" id="sbEmail">—</span>
       <span class="sb-user-role" id="sbRole">Member</span>
     </div>
-    <button class="sb-signout" onclick="signOut()" title="Sign out" aria-label="Sign out">
+    <button class="sb-signout" onclick="signOut()" title="Sign out" aria-label="Open sign out confirmation">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
@@ -250,11 +228,21 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
         <div class="s-body" style="padding:16px;gap:14px">
           <div class="inp-group">
             <label class="inp-label" for="newPw">New Password</label>
-            <input class="inp" type="password" id="newPw" placeholder="Enter new password" autocomplete="new-password">
+            <div style="position:relative">
+              <input class="inp" type="password" id="newPw" placeholder="Enter new password" autocomplete="new-password" style="padding-right:40px">
+              <button type="button" onclick="togglePw('newPw','eye1')" aria-label="Toggle password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
+                <svg id="eye1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
           <div class="inp-group">
             <label class="inp-label" for="confirmPw">Confirm Password</label>
-            <input class="inp" type="password" id="confirmPw" placeholder="Re-enter password" autocomplete="new-password">
+            <div style="position:relative">
+              <input class="inp" type="password" id="confirmPw" placeholder="Re-enter password" autocomplete="new-password" style="padding-right:40px">
+              <button type="button" onclick="togglePw('confirmPw','eye2')" aria-label="Toggle confirm password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
+                <svg id="eye2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
           <div id="pwFb" class="fb"></div>
           <button class="btn btn-em" id="pwBtn" onclick="changePassword()">Update Password</button>
@@ -288,6 +276,19 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   </button>
 </footer>
 
+<!-- Sign-out confirmation modal -->
+<div class="ap-modal-overlay" id="signout-modal">
+  <div class="ap-modal" role="dialog" aria-modal="true" aria-labelledby="signout-modal-title">
+    <div class="ap-modal-title" id="signout-modal-title">Sign out?</div>
+    <div class="ap-modal-body">You will need to sign in again to access AP Workspace.</div>
+    <div class="ap-modal-actions">
+      <button class="ap-modal-cancel" onclick="closeSignoutModal()">Cancel</button>
+      <button class="ap-modal-confirm" onclick="confirmSignOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<script src="/global-features.js"></script>
 <script>
 var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
@@ -361,8 +362,20 @@ async function changePassword(){
   $('newPw').value='';$('confirmPw').value='';
 }
 function fb(type,msg){var el=$('pwFb');el.textContent=msg;el.className='fb '+type;setTimeout(function(){el.className='fb'},4000)}
-async function signOut(){await sb.auth.signOut();window.location.href='/'}
-async function signOutAll(){await sb.auth.signOut({scope:'global'});window.location.href='/'}
+function signOut(){document.getElementById('signout-modal').classList.add('open')}
+function closeSignoutModal(){document.getElementById('signout-modal').classList.remove('open')}
+async function confirmSignOut(){closeSignoutModal();await sb.auth.signOut();window.location.href='/'}
+async function signOutAll(){closeSignoutModal();await sb.auth.signOut({scope:'global'});window.location.href='/'}
+
+function togglePw(fieldId,iconId){
+  var f=document.getElementById(fieldId);
+  var show=f.type==='password';
+  f.type=show?'text':'password';
+  var ic=document.getElementById(iconId);
+  ic.innerHTML=show
+    ?'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    :'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
 
 init();
 </script>
