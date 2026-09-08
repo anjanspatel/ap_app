@@ -674,8 +674,14 @@ function calc(){
   );
 
   /* hero */
-  document.getElementById('swlNum').innerHTML =
-    n(swl_tons,1) + '<span class="swl-u">&nbsp;US tons</span>';
+  var swlNumEl = document.getElementById('swlNum');
+  var newSwlHtml = n(swl_tons,1) + '<span class="swl-u">&nbsp;US tons</span>';
+  if(swlNumEl.innerHTML !== newSwlHtml){
+    swlNumEl.innerHTML = newSwlHtml;
+    swlNumEl.classList.remove('ap-value-pulse');
+    void swlNumEl.offsetWidth;
+    swlNumEl.classList.add('ap-value-pulse');
+  }
   document.getElementById('swlAlt').textContent =
     n(swl_mt,2) + ' t  ·  ' + n(swl_kn,1) + ' kN';
 }

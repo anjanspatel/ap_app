@@ -4,6 +4,23 @@
    Requires: /tokens.css imported before this file.
 ════════════════════════════════════════════════ */
 
+/* ── 0. Result-value pulse ───────────────────────
+   Add .ap-value-pulse to a result element right after
+   changing its text, to confirm "yes, that registered"
+   after an input edit. Functional, not decorative —
+   the opposite of the shimmer effect removed below.
+────────────────────────────────────────────────── */
+@keyframes ap-value-pulse {
+  0%   { background-color: rgba(25,211,230,.28); border-radius: 4px; }
+  100% { background-color: transparent; border-radius: 4px; }
+}
+.ap-value-pulse {
+  animation: ap-value-pulse 650ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ap-value-pulse { animation: none; }
+}
+
 /* ── 1. Solid topbar ────────────────────────────
    All topbars use solid panel background — no blur.
 ────────────────────────────────────────────────── */
@@ -12,36 +29,15 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-/* ── 2. Shimmer button ──────────────────────────
-   Add .btn-shimmer to any CTA button.
+/* ── 2. CTA button press feedback ───────────────
+   .btn-shimmer previously added a looping light-sweep
+   animation to every CTA (Sign In, Export PDF, Save...).
+   Removed — a continuous decorative sweep read as a
+   marketing-site trope, not a precision-tool one. The
+   class name stays on existing buttons (harmless) so
+   only this rule needed to change; kept the press
+   feedback since that's functional, not decorative.
 ────────────────────────────────────────────────── */
-.btn-shimmer {
-  position: relative !important;
-  overflow: hidden !important;
-  isolation: isolate;
-}
-.btn-shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -130%;
-  width: 55%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255,255,255,0.13) 50%,
-    transparent 100%
-  );
-  transform: skewX(-20deg);
-  animation: ap-shimmer 3.2s infinite;
-  pointer-events: none;
-  z-index: 1;
-}
-@keyframes ap-shimmer {
-  0%, 45% { left: -130%; }
-  100%     { left: 210%; }
-}
 .btn-shimmer:active { transform: scale(0.97); }
 
 /* ── 3. Metric tile hover ───────────────────────

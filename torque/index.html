@@ -589,6 +589,13 @@ footer a:hover{text-decoration:underline}
 
 /* ── helpers ── */
 function $(id){return document.getElementById(id);}
+function setResultText(el,text){
+  if(el.textContent===text)return;
+  el.textContent=text;
+  el.classList.remove('ap-value-pulse');
+  void el.offsetWidth;
+  el.classList.add('ap-value-pulse');
+}
 function fmt(n,dec){return n.toLocaleString('en-CA',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
 function round(n,d){var f=Math.pow(10,d);return Math.round(n*f)/f;}
 
@@ -677,7 +684,7 @@ function compute(){
   var totVal=metric?totalNm:totalFtLb;
   var clampDisp=metric?(clamp/1000*4.44822).toFixed(1)+' kN':fmt(Math.round(clamp),0)+' lb';
 
-  $('torquePerBolt').textContent=fmt(round(tVal,0),0);
+  setResultText($('torquePerBolt'),fmt(round(tVal,0),0));
   $('torqueUnit').textContent=tVal>=1000?tUnit+' ← verify wrench capacity':tUnit;
   $('torqueSubNote').textContent='('+fmt(round(metric?torqueFtLb:torqueNm,0),0)+' '+(metric?'ft-lb':'N·m')+')';
   $('torqueTotal').textContent=fmt(round(totVal,0),0);
