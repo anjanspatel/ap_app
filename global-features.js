@@ -5,6 +5,70 @@
    skip-to-content, loading transitions.
    Include before </body> on every page.
 ════════════════════════════════════════════════ */
+/* ── 0. Error Monitoring ────────────────────────
+   Lightweight client-side error capture. Always logs
+   to console; if a Supabase client is available on
+   this page (window.__sb, set by flange/torque/tubing)
+   it also best-effort inserts into an `error_logs`
+   table. On pages without a global __sb reference
+   (dashboard/settings/index use a page-scoped `sb`
+   instead) this silently stays console-only — it is
+   not full site-wide coverage, just what's reachable
+   without restructuring how each page holds its
+   Supabase client. Requires this table to exist:
+
+   create table if not exists public.error_logs (
+     id uuid primary key default gen_random_uuid(),
+     created_at timestamptz default now(),
+     message text,
+     source text,
+     stack text,
+     page text,
+     user_agent text
+   );
+   alter table public.error_logs enable row level security;
+   create policy "anyone can insert" on public.error_logs
+     for insert to anon, authenticated with check (true);
+──────────────────────────────────────────────── */
+(function () {
+  'use strict';
+  var reported = 0;
+  var MAX_REPORTS = 10; /* per page load, avoid flooding on an error loop */
+
+  function logError(entry) {
+    if (reported >= MAX_REPORTS) return;
+    reported++;
+    console.error('[AP Workspace error]', entry);
+    try {
+      if (window.__sb && window.__sb.from) {
+        window.__sb.from('error_logs').insert({
+          message: String(entry.message || '').slice(0, 500),
+          source: String(entry.source || '').slice(0, 300),
+          stack: String(entry.stack || '').slice(0, 2000),
+          page: location.pathname,
+          user_agent: navigator.userAgent
+        }).then(function(){}, function(){});
+      }
+    } catch (e) {}
+  }
+
+  window.addEventListener('error', function (e) {
+    logError({
+      message: e.message,
+      source: e.filename + ':' + e.lineno + ':' + e.colno,
+      stack: e.error && e.error.stack
+    });
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var reason = e.reason || {};
+    logError({
+      message: 'Unhandled promise rejection: ' + (reason.message || reason),
+      source: 'unhandledrejection',
+      stack: reason.stack
+    });
+  });
+})();
+
 (function () {
   'use strict';
 

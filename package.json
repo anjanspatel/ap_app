@@ -1,0 +1,11 @@
+{
+  "name": "ap-workspace",
+  "private": true,
+  "description": "AP Workspace — engineering field calculators (API 6A flange, bolt torque, safety block SWL)",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

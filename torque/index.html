@@ -130,6 +130,16 @@ h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin
   border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(25,211,230,.15)}
 .field-warn-msg{font-size:10px;color:var(--status-warning,#F59E0B);margin-top:4px;font-family:var(--mono,monospace);display:none}
 .field-warn-msg.show{display:block}
+#shareBtn{position:relative}
+#shareBtn .share-toast{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--navy,#0B1D2D);color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.04em;
+  white-space:nowrap;padding:4px 9px;border-radius:6px;
+  opacity:0;pointer-events:none;transition:opacity .15s;
+}
+#shareBtn.copied .share-toast{opacity:1}
+@media(max-width:700px){#shareBtn{display:none}}
 
 /* preload row: slider + number */
 .preload-row{display:flex;gap:8px;align-items:center}
@@ -268,6 +278,7 @@ footer a:hover{text-decoration:underline}
       </div>
     </a>
     <div class="header-actions">
+      <button class="action-btn" id="shareBtn" type="button" title="Copy shareable link to this torque setup"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
       <button class="action-btn btn-shimmer" id="saveLookupBtn" type="button">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         <span>Save Lookup</span>
@@ -538,38 +549,11 @@ footer a:hover{text-decoration:underline}
   </div>
 </div>
 
+<script src="calc.js"></script>
 <script>
-/* ── data tables ── */
-var BOLTS = {
-  '0.5':  {label:'1/2"',   tpi:13,  area:0.1419},
-  '0.625':{label:'5/8"',   tpi:11,  area:0.2260},
-  '0.75': {label:'3/4"',   tpi:10,  area:0.3340},
-  '0.875':{label:'7/8"',   tpi:9,   area:0.4620},
-  '1.0':  {label:'1"',     tpi:8,   area:0.6060},
-  '1.125':{label:'1-1/8"', tpi:7,   area:0.7630},
-  '1.25': {label:'1-1/4"', tpi:7,   area:0.9690},
-  '1.375':{label:'1-3/8"', tpi:6,   area:1.1540},
-  '1.5':  {label:'1-1/2"', tpi:6,   area:1.4050},
-  '1.625':{label:'1-5/8"', tpi:5.5, area:1.6800},
-  '1.75': {label:'1-3/4"', tpi:5,   area:1.9800},
-  '2.0':  {label:'2"',     tpi:4.5, area:2.5020},
-};
-
-var GRADES = {
-  'B7' :{label:'A193 B7', proofFn:function(d){return d<=1?105000:d<=1.5?95000:75000;}},
-  'B7M':{label:'A193 B7M',proofFn:function(d){return 80000;}},
-  'L7' :{label:'A320 L7', proofFn:function(d){return d<=1?105000:d<=1.5?95000:75000;}},
-  'L7M':{label:'A320 L7M',proofFn:function(d){return 80000;}},
-};
-
-var LUBES = {
-  'dry'   :{label:'Dry', k:0.20},
-  'oil'   :{label:'Thread oil', k:0.15},
-  'grease':{label:'Heavy grease', k:0.13},
-  'moly'  :{label:'Molykote MoS₂', k:0.12},
-  'nickel':{label:'Ni anti-seize', k:0.13},
-  'ptfe'  :{label:'PTFE/Teflon', k:0.10},
-};
+/* BOLTS, GRADES, LUBES, computeTorque() now come from calc.js —
+   the same file the test suite imports, so the page and the tests
+   can never quietly drift apart. */
 
 /* ── helpers ── */
 function $(id){return document.getElementById(id);}
@@ -593,6 +577,49 @@ var calc = {};
   if(sp.get('units')==='metric'){state.metric=true;$('unitMetric').classList.add('active');$('unitImperial').classList.remove('active');}
 })();
 
+/* ── Shareable URL — silently synced, no reload ── */
+function buildTorqueParams(){
+  var p=new URLSearchParams();
+  p.set('size',state.size);
+  p.set('grade',state.grade);
+  p.set('bolts',state.bolts);
+  p.set('lube',state.lube);
+  p.set('preload',state.preload);
+  if(state.metric)p.set('units','metric');
+  return p;
+}
+function syncURL(){
+  try{ history.replaceState(null,'',location.pathname+'?'+buildTorqueParams().toString()); }catch(e){}
+}
+(function(){
+  var shareBtn=$('shareBtn');
+  if(!shareBtn)return;
+  var toast=document.createElement('span');
+  toast.className='share-toast';
+  toast.textContent='Link copied!';
+  shareBtn.appendChild(toast);
+  shareBtn.addEventListener('click',function(){
+    syncURL();
+    var url=location.href;
+    function showCopied(){
+      shareBtn.classList.add('copied');
+      setTimeout(function(){shareBtn.classList.remove('copied');},2000);
+    }
+    function fallback(){
+      try{
+        var ta=document.createElement('textarea');
+        ta.value=url;ta.style.position='fixed';ta.style.opacity='0';
+        document.body.appendChild(ta);ta.focus();ta.select();
+        document.execCommand('copy');document.body.removeChild(ta);
+        showCopied();
+      }catch(e){}
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(showCopied).catch(fallback);
+    }else{ fallback(); }
+  });
+})();
+
 /* ── compute ── */
 function compute(){
   var b=BOLTS[state.size];
@@ -602,14 +629,11 @@ function compute(){
   var K=lube.k;
   var proofStr=g.proofFn(d);
   var area=b.area;
-  var proofLoad=area*proofStr;
-  var clamp=proofLoad*(state.preload/100);
-  var torqueInLb=K*d*clamp;
-  var torqueFtLb=torqueInLb/12;
-  var torqueNm=torqueFtLb*1.35582;
-  var totalFtLb=torqueFtLb*state.bolts;
-  var totalNm=totalFtLb*1.35582;
-  var clampKn=clamp*4.44822/1000;
+
+  /* pure formula lives in calc.js — shared with the test suite */
+  var r=computeTorque({area:area,proofStr:proofStr,preloadPct:state.preload,K:K,d:d,numBolts:state.bolts});
+  var proofLoad=r.proofLoad, clamp=r.clamp, torqueFtLb=r.torqueFtLb, torqueNm=r.torqueNm,
+      totalFtLb=r.totalFtLb, totalNm=r.totalNm, clampKn=r.clampKn;
 
   calc={K:K,proofStr:proofStr,area:area,proofLoad:proofLoad,clamp:clamp,
     torqueFtLb:torqueFtLb,torqueNm:torqueNm,totalFtLb:totalFtLb,totalNm:totalNm,
@@ -647,8 +671,8 @@ function compute(){
 }
 
 /* ── event wiring ── */
-$('boltSize').addEventListener('change',function(){state.size=this.value;compute();});
-$('boltGrade').addEventListener('change',function(){state.grade=this.value;compute();});
+$('boltSize').addEventListener('change',function(){state.size=this.value;compute();syncURL();});
+$('boltGrade').addEventListener('change',function(){state.grade=this.value;compute();syncURL();});
 $('numBolts').addEventListener('input',function(){
   var raw=parseInt(this.value);
   var clamped=Math.max(1,Math.min(200,isFinite(raw)?raw:1));
@@ -659,27 +683,27 @@ $('numBolts').addEventListener('input',function(){
   }else{
     warnEl.classList.remove('show');
   }
-  state.bolts=clamped;compute();
+  state.bolts=clamped;compute();syncURL();
 });
-$('lubeCond').addEventListener('change',function(){state.lube=this.value;compute();});
+$('lubeCond').addEventListener('change',function(){state.lube=this.value;compute();syncURL();});
 
 $('preloadSlider').addEventListener('input',function(){
-  state.preload=parseInt(this.value);$('preloadNum').value=state.preload;compute();
+  state.preload=parseInt(this.value);$('preloadNum').value=state.preload;compute();syncURL();
 });
 $('preloadNum').addEventListener('input',function(){
   var v=parseInt(this.value)||60;v=Math.max(30,Math.min(90,v));
-  state.preload=v;$('preloadSlider').value=v;$('preloadNum').value=v;compute();
+  state.preload=v;$('preloadSlider').value=v;$('preloadNum').value=v;compute();syncURL();
 });
 
 $('unitImperial').addEventListener('click',function(){
   state.metric=false;
   $('unitImperial').classList.add('active');$('unitMetric').classList.remove('active');
-  compute();
+  compute();syncURL();
 });
 $('unitMetric').addEventListener('click',function(){
   state.metric=true;
   $('unitMetric').classList.add('active');$('unitImperial').classList.remove('active');
-  compute();
+  compute();syncURL();
 });
 
 /* ── theme ── */

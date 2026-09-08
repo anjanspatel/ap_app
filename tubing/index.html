@@ -147,6 +147,15 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
 .input-error-msg{font-size:10px;color:var(--status-danger);margin-top:4px;display:none;font-family:'JetBrains Mono',monospace}
 .input-group.has-error input[type=number]{border-color:var(--status-danger)}
 .input-group.has-error .input-error-msg{display:block}
+#shareBtn .share-toast{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--brand-navy,#0B1D2D);color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.04em;
+  white-space:nowrap;padding:4px 9px;border-radius:6px;
+  opacity:0;pointer-events:none;transition:opacity .15s;
+}
+#shareBtn.copied .share-toast{opacity:1}
+@media(max-width:700px){#shareBtn{display:none}}
 .input-label{
   display:flex;align-items:center;justify-content:space-between;
   font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
@@ -295,6 +304,7 @@ footer a:hover{color:var(--text)}
     </a>
     <div class="header-right">
       <a class="hub-link" href="/dashboard.html">&#8592; Dashboard</a>
+      <button class="theme-btn" id="shareBtn" type="button" title="Copy shareable link to this calculation" style="position:relative"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
       <button class="theme-btn" id="saveLookupBtn" type="button" title="Save this lookup to your dashboard" onclick="openSaveModal()" style="gap:6px;display:flex;align-items:center;padding:0 12px;width:auto;font-size:13px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
       <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle colour theme"><span id="themeIcon" aria-hidden="true"></span></button>
     </div>
@@ -327,7 +337,7 @@ footer a:hover{color:var(--text)}
           BHN — Brinell Hardness
           <span class="unit-tag">HB</span>
         </div>
-        <input type="number" id="inBHN" min="1" max="900" step="1" placeholder="e.g. 250" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
+        <input type="number" id="inBHN" min="1" max="900" step="1" placeholder="e.g. 250" oninput="calc();syncURL()" inputmode="decimal" pattern="[0-9]*">
         <div class="input-error-msg">Enter a positive number.</div>
       </div>
 
@@ -336,7 +346,7 @@ footer a:hover{color:var(--text)}
           Width
           <span class="unit-tag" id="lblW">in</span>
         </div>
-        <input type="number" id="inW" min="0.001" step="0.001" placeholder="e.g. 4.000" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
+        <input type="number" id="inW" min="0.001" step="0.001" placeholder="e.g. 4.000" oninput="calc();syncURL()" inputmode="decimal" pattern="[0-9]*">
         <div class="input-error-msg">Enter a positive number.</div>
       </div>
 
@@ -345,7 +355,7 @@ footer a:hover{color:var(--text)}
           Thickness
           <span class="unit-tag" id="lblT">in</span>
         </div>
-        <input type="number" id="inT" min="0.001" step="0.001" placeholder="e.g. 2.500" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
+        <input type="number" id="inT" min="0.001" step="0.001" placeholder="e.g. 2.500" oninput="calc();syncURL()" inputmode="decimal" pattern="[0-9]*">
         <div class="input-error-msg">Enter a positive number.</div>
       </div>
 
@@ -445,6 +455,7 @@ footer a:hover{color:var(--text)}
   <a href="https://www.linkedin.com/in/anjanspatel" target="_blank" rel="noopener">LinkedIn</a>
 </footer>
 
+<script src="calc.js"></script>
 <script>
 /* ── theme ── */
 (function(){
@@ -485,7 +496,64 @@ function setUnits(u){
   document.getElementById('inW').placeholder  = u==='met'?'e.g. 100.0':'e.g. 4.000';
   document.getElementById('inT').placeholder  = u==='met'?'e.g. 60.0':'e.g. 2.500';
   calc();
+  syncURL();
 }
+
+/* ── Shareable URL — silently synced, no reload ── */
+function buildTubingParams(){
+  var p=new URLSearchParams();
+  var bhn=document.getElementById('inBHN').value;
+  var w=document.getElementById('inW').value;
+  var t=document.getElementById('inT').value;
+  if(bhn)p.set('bhn',bhn);
+  if(w)p.set('w',w);
+  if(t)p.set('t',t);
+  if(_u==='met')p.set('units','met');
+  return p;
+}
+function syncURL(){
+  try{ history.replaceState(null,'',location.pathname+'?'+buildTubingParams().toString()); }catch(e){}
+}
+(function(){
+  try{
+    var p=new URLSearchParams(location.search);
+    var pu=p.get('units');
+    if(pu==='met')setUnits('met');
+    var pb=p.get('bhn'), pw=p.get('w'), pt=p.get('t');
+    if(pb)document.getElementById('inBHN').value=pb;
+    if(pw)document.getElementById('inW').value=pw;
+    if(pt)document.getElementById('inT').value=pt;
+    if(pb||pw||pt)calc();
+  }catch(e){}
+})();
+(function(){
+  var shareBtn=document.getElementById('shareBtn');
+  if(!shareBtn)return;
+  var toast=document.createElement('span');
+  toast.className='share-toast';
+  toast.textContent='Link copied!';
+  shareBtn.appendChild(toast);
+  shareBtn.addEventListener('click',function(){
+    syncURL();
+    var url=location.href;
+    function showCopied(){
+      shareBtn.classList.add('copied');
+      setTimeout(function(){shareBtn.classList.remove('copied');},2000);
+    }
+    function fallback(){
+      try{
+        var ta=document.createElement('textarea');
+        ta.value=url;ta.style.position='fixed';ta.style.opacity='0';
+        document.body.appendChild(ta);ta.focus();ta.select();
+        document.execCommand('copy');document.body.removeChild(ta);
+        showCopied();
+      }catch(e){}
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(showCopied).catch(fallback);
+    }else{ fallback(); }
+  });
+})();
 
 function n(x, dec){ return x.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec}); }
 
@@ -545,22 +613,23 @@ function calc(){
   var w_in = _u==='met' ? wRaw/25.4 : wRaw;
   var t_in = _u==='met' ? tRaw/25.4 : tRaw;
 
+  /* pure formula lives in calc.js — shared with the test suite */
+  var result = computeSWL(bhn, w_in, t_in);
+  var uts = result.uts, tau = result.tau, area = result.area, swl_lbs = result.swl_lbs;
+
   /* step 1: UTS */
-  var uts = 500 * bhn;
   setStep(1,
     'UTS = 500 × ' + n(bhn,0) + ' HB',
     n(uts,0) + ' psi'
   );
 
   /* step 2: shear strength */
-  var tau = uts * 0.577;
   setStep(2,
     'τ = ' + n(uts,0) + ' × 0.577',
     n(tau,0) + ' psi'
   );
 
   /* step 3: area */
-  var area = w_in * t_in;
   var areaEq;
   if(_u==='met'){
     var area_mm2 = wRaw * tRaw;
@@ -572,7 +641,6 @@ function calc(){
   }
 
   /* step 4: SWL in lbs */
-  var swl_lbs = (tau / 3) * area;
   setStep(4,
     'SWL = (' + n(tau,0) + ' ÷ 3) × ' + n(area,4),
     n(swl_lbs,0) + ' lbs'
