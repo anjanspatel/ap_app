@@ -20,6 +20,7 @@
   --muted:#94a3b8;
   --dim:#64748b;
   --indigo:#6366f1;
+  --indigo-fg:#818cf8;
 }
 [data-theme="light"]{
   --canvas:#f0f4f8;
@@ -29,17 +30,19 @@
   --muted:#475569;
   --dim:#94a3b8;
   --indigo:#4f46e5;
+  --indigo-fg:#4f46e5;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%;background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
 .page{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
 .code{font-size:clamp(5rem,18vw,9rem);font-weight:900;letter-spacing:-.05em;line-height:1;color:var(--text);opacity:.07;margin-bottom:-.4rem;user-select:none;font-family:'Inter',sans-serif}
-.code span{color:var(--indigo);opacity:1}
+.code span{color:var(--indigo-fg);opacity:1}
 .title{font-size:clamp(1.1rem,3vw,1.4rem);font-weight:700;color:var(--text);margin-bottom:.4rem;letter-spacing:-.01em}
 .sub{font-size:13px;color:var(--muted);margin-bottom:2rem;font-family:'JetBrains Mono',monospace}
 .btn{display:inline-flex;align-items:center;gap:6px;background:var(--indigo);color:#fff;border:none;border-radius:6px;padding:.6rem 1.3rem;font:600 12px 'Inter',system-ui,sans-serif;text-decoration:none;cursor:pointer;transition:opacity .15s;letter-spacing:.01em}
 .btn:hover{opacity:.85}
 </style>
+<script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
 <div class="page">

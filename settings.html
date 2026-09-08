@@ -25,6 +25,7 @@
   --dim:#64748b;
   --emerald:#00d27a;
   --indigo:#6366f1;
+  --indigo-fg:#818cf8;
   --error:#ef4444;
   --ease:150ms ease-in-out;
   --sb-w:228px;
@@ -40,6 +41,7 @@
   --dim:#94a3b8;
   --emerald:#00a85a;
   --indigo:#4f46e5;
+  --indigo-fg:#4f46e5;
   --error:#dc2626;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -57,7 +59,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .sb-section{padding:16px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif;border-left:2px solid transparent;transition:color var(--ease),background var(--ease),border-color var(--ease)}
 .nav-item:hover{background:rgba(99,102,241,.06);color:var(--text)}
-.nav-item.active{background:rgba(99,102,241,.1);color:var(--text);border-left-color:var(--indigo)}
+.nav-item.active{background:rgba(99,102,241,.1);color:var(--text);border-left-color:var(--indigo-fg)}
 .nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
 .nav-item.active svg,.nav-item:hover svg{opacity:1}
 .sb-user{padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -78,13 +80,13 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 
 .content{flex:1;padding:24px;max-width:640px}
 .page-hd{margin-bottom:20px}
-.page-eyebrow{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.page-eyebrow{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo-fg);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
 .page-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}
 
 .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
 .tab-btn{font:500 12px 'Inter',sans-serif;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;cursor:pointer;letter-spacing:.02em;transition:color var(--ease),border-color var(--ease);margin-bottom:-1px;min-height:44px}
 .tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--indigo);border-bottom-color:var(--indigo)}
+.tab-btn.active{color:var(--indigo-fg);border-bottom-color:var(--indigo-fg)}
 .tab-pane{display:none}
 .tab-pane.active{display:block}
 
@@ -100,7 +102,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .field-val{font:500 11px 'JetBrains Mono',monospace;color:var(--dim);word-break:break-all}
 
 .inp{width:100%;font:500 12px 'JetBrains Mono',monospace;color:var(--text);background:var(--elevated);border:1px solid var(--border);border-radius:4px;padding:8px 10px;height:44px;outline:none;transition:border-color var(--ease);-webkit-appearance:none;appearance:none}
-.inp:focus{border-color:var(--indigo)}
+.inp:focus{border-color:var(--indigo-fg)}
 .inp::placeholder{color:var(--dim)}
 .inp-group{display:flex;flex-direction:column;gap:6px}
 .inp-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
@@ -116,7 +118,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 
 .theme-opts{display:flex;gap:8px;flex-wrap:wrap}
 .theme-opt{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:4px;border:1px solid var(--border);cursor:pointer;font:500 12px 'Inter',sans-serif;color:var(--muted);background:var(--elevated);transition:border-color var(--ease),color var(--ease);min-height:44px}
-.theme-opt.active{border-color:var(--indigo);color:var(--text);background:rgba(99,102,241,.08)}
+.theme-opt.active{border-color:var(--indigo-fg);color:var(--text);background:rgba(99,102,241,.08)}
 .theme-opt:hover:not(.active){border-color:var(--dim);color:var(--text)}
 .swatch{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0}
 .sw-l{background:#f8fafc}.sw-d{background:#0b0f19}.sw-s{background:linear-gradient(135deg,#f8fafc 50%,#0b0f19 50%)}

@@ -25,6 +25,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
+<link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root,[data-theme="dark"]{
@@ -38,6 +40,7 @@
   --dim:#516078;
   --emerald:#00d27a;
   --indigo:#6366f1;
+  --indigo-fg:#818cf8;
   --error:#ef4444;
   --input-bg:rgba(4,7,16,0.65);
   --tabs-bg:rgba(6,9,18,0.7);
@@ -60,6 +63,7 @@
   --dim:#94a3b8;
   --emerald:#00a85a;
   --indigo:#4f46e5;
+  --indigo-fg:#4f46e5;
   --error:#dc2626;
   --input-bg:rgba(255,255,255,0.92);
   --tabs-bg:rgba(225,232,240,0.9);
@@ -383,13 +387,14 @@ body{
   transition:border-color var(--ease),color var(--ease),background var(--ease);
   -webkit-tap-highlight-color:transparent;
 }
-.theme-btn:hover{color:var(--text);border-color:var(--indigo)}
+.theme-btn:hover{color:var(--text);border-color:var(--indigo-fg)}
 .theme-btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .theme-btn .icon-sun{display:none}
 .theme-btn .icon-moon{display:block}
 [data-theme="light"] .theme-btn .icon-sun{display:block}
 [data-theme="light"] .theme-btn .icon-moon{display:none}
 </style>
+<script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
 
