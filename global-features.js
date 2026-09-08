@@ -39,9 +39,12 @@
     var el = document.documentElement;
     var scrolled = el.scrollTop || document.body.scrollTop;
     var total = el.scrollHeight - el.clientHeight;
-    prog.style.width = (total > 0 ? (scrolled / total * 100) : 0) + '%';
+    if (total < 50) { prog.style.display = 'none'; return; }
+    prog.style.display = '';
+    prog.style.width = (scrolled / total * 100) + '%';
   }
   window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
 
   /* ── 3. Back-to-Top Button ───────────────────
      Appears after scrolling 400px.

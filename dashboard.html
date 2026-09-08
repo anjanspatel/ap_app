@@ -94,6 +94,25 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 }
 .hamburger{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:4px;min-height:44px;min-width:44px;align-items:center;justify-content:center}
 .hamburger:hover{color:var(--text);background:var(--elevated)}
+/* ── Topbar search ── */
+.tb-search-wrap{display:flex;align-items:center;gap:6px;background:var(--elevated);border:1px solid var(--border);border-radius:5px;padding:0 10px;height:32px;margin-left:10px;transition:border-color var(--ease)}
+.tb-search-wrap:focus-within{border-color:rgba(25,211,230,.5)}
+.tb-search-wrap svg{flex-shrink:0;color:var(--dim)}
+.tb-search-input{background:none;border:none;outline:none;color:var(--text);font:400 11px 'Inter',sans-serif;width:160px;padding:0}
+.tb-search-input::placeholder{color:var(--dim)}
+.tb-search-input::-webkit-search-cancel-button{-webkit-appearance:none}
+/* ── Skeleton loader ── */
+@keyframes skPulse{0%,100%{opacity:.45}50%{opacity:.9}}
+.sk-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.sk-row:last-child{border-bottom:none}
+.sk-block{background:var(--elevated);border-radius:4px;animation:skPulse 1.4s ease-in-out infinite}
+.sk-icon{width:32px;height:32px;border-radius:5px;flex-shrink:0;animation-delay:.1s}
+.sk-lines{flex:1;display:flex;flex-direction:column;gap:6px}
+.sk-line-a{height:10px;width:55%;animation-delay:.05s}
+.sk-line-b{height:8px;width:38%;animation-delay:.15s}
+.sk-chip{width:72px;height:20px;border-radius:3px;animation-delay:.2s}
+/* ── No-result state ── */
+.no-results{padding:20px 16px;font:400 11px var(--mono,monospace);color:var(--dim);text-align:center}
 .tb-title{font-size:12px;font-weight:600;color:var(--text);letter-spacing:.02em}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 .tb-clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);padding:0 8px}
@@ -300,6 +319,10 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <span class="tb-title" id="tbTitle">Dashboard</span>
+    <div class="tb-search-wrap" role="search" aria-label="Search saved lookups">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="tbSearch" class="tb-search-input" placeholder="Search lookups…" autocomplete="off" aria-label="Search saved lookups" oninput="filterLookups(this.value)">
+    </div>
     <div class="tb-right">
       <span class="tb-clock" id="tbClock"></span>
       <button class="tb-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
@@ -712,6 +735,7 @@ function renderRecent(rows){
 
 /* ── Logs ── */
 async function loadLogs(){
+  showSkeleton('logsWrap',5);
   var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
   if(r.error){
     console.error('saved_lookups logs error:',r.error.message);
@@ -730,9 +754,10 @@ async function loadLogs(){
     var tool=l.tool==='flange'?'Flange':l.tool==='torque'?'Torque':'Tubing';
     var date=new Date(l.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'});
     var label=l.label?esc(l.label):'<span style="color:var(--dim)">—</span>';
-    html+='<tr style="cursor:pointer" data-id="'+l.id+'"><td class="td-mono" style="color:var(--indigo-fg)">#'+jobNum+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="event.stopPropagation();delLookup(\''+l.id+'\')" title="Delete">✕</button></td></tr>';
+    var searchText=(tool+' '+(l.label||'')+' '+fmtP(l.tool,l.params)).toLowerCase();
+    html+='<tr style="cursor:pointer" data-id="'+l.id+'" data-lookup-row="1" data-lookup-text="'+esc(searchText)+'"><td class="td-mono" style="color:var(--indigo-fg)">#'+jobNum+'</td><td class="td-mono">'+esc(tool)+'</td><td class="td-dim">'+esc(fmtP(l.tool,l.params))+'</td><td class="td-label">'+label+'</td><td class="td-mono">'+date+'</td><td><button class="btn-del" onclick="event.stopPropagation();delLookup(\''+l.id+'\')" title="Delete">✕</button></td></tr>';
   });
-  html+='</tbody></table></div>';
+  html+='</tbody></table><div id="search-no-results" class="no-results" style="display:none">No lookups match your search.</div></div>';
   wrap.innerHTML=html;
   wrap.querySelector('tbody').addEventListener('click',function(e){
     if(e.target.closest('.btn-del'))return;
@@ -853,5 +878,35 @@ init();
 })();
 </script>
 <script src="/global-features.js"></script>
+<script>
+/* ── Site search: filter saved-lookup rows ── */
+function filterLookups(q) {
+  q = (q || '').toLowerCase().trim();
+  var rows = document.querySelectorAll('[data-lookup-row]');
+  var visible = 0;
+  rows.forEach(function(row) {
+    var text = (row.dataset.lookupText || '').toLowerCase();
+    var show = !q || text.indexOf(q) !== -1;
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  var noRes = document.getElementById('search-no-results');
+  if (noRes) noRes.style.display = (q && visible === 0) ? '' : 'none';
+}
+/* ── Skeleton loader helper ── */
+function showSkeleton(wrapId, rows) {
+  rows = rows || 4;
+  var wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  var html = '';
+  for (var i = 0; i < rows; i++) {
+    html += '<div class="sk-row"><div class="sk-block sk-icon"></div><div class="sk-lines"><div class="sk-block sk-line-a"></div><div class="sk-block sk-line-b"></div></div><div class="sk-block sk-chip"></div></div>';
+  }
+  wrap.innerHTML = html;
+}
+</script>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+</script>
 </body>
 </html>
