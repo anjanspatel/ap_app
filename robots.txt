@@ -2,6 +2,7 @@ User-agent: *
 Disallow: /dashboard.html
 Disallow: /settings.html
 Disallow: /flange/
+Disallow: /torque/
 Disallow: /tubing/
 Allow: /
 
