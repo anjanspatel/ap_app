@@ -60,7 +60,8 @@
     'background:var(--bg-elevated,#1C2938)',
     'border:1px solid var(--border-color,#2B3A4C)',
     'color:var(--text-secondary,#94A3B8)',
-    'cursor:pointer','display:none','align-items:center','justify-content:center',
+    'cursor:pointer','display:flex','align-items:center','justify-content:center',
+    'opacity:0','transform:translateY(8px)','pointer-events:none','will-change:transform,opacity',
     'transition:opacity 200ms,transform 200ms,color 150ms,border-color 150ms',
     'box-shadow:0 2px 8px rgba(0,0,0,0.25)'
   ].join(';');
@@ -78,9 +79,14 @@
     btt.style.borderColor = 'var(--border-color,#2B3A4C)';
   });
 
+  var bttVisible = false;
   window.addEventListener('scroll', function() {
     var show = (window.scrollY || document.documentElement.scrollTop) > 400;
-    btt.style.display = show ? 'flex' : 'none';
+    if (show === bttVisible) return;
+    bttVisible = show;
+    btt.style.opacity = show ? '1' : '0';
+    btt.style.transform = show ? 'translateY(0)' : 'translateY(8px)';
+    btt.style.pointerEvents = show ? 'auto' : 'none';
   }, { passive: true });
 
   /* ── 4. Cookie / Notice Banner ───────────────
@@ -225,10 +231,24 @@
           var orig = btn.textContent;
           btn.textContent = 'Copied!';
           btn.classList.add('copied');
+          if (navigator.vibrate) { try { navigator.vibrate(12); } catch(e){} }
           setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
         });
       } catch(e) {}
     });
+  });
+
+  /* ── 9b. "/" focuses the primary field ───────
+     Skipped while typing in a field already. Ctrl/Cmd+C is left
+     alone deliberately — hijacking it would break normal text
+     selection/copy anywhere else on the page.
+  ──────────────────────────────────────────────── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+    var tag = (document.activeElement || {}).tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    var target = document.querySelector('#tbSearch, input[type="search"], input[type="number"]:not([disabled]), input[type="text"]:not([disabled])');
+    if (target) { e.preventDefault(); target.focus(); if (target.select) target.select(); }
   });
 
   /* ── 10. Footer copyright year ───────────────

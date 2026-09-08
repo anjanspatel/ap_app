@@ -1,8 +1,8 @@
 /* AP WORKSPACE — Service Worker
    Caches design system assets + tool shells for offline use.
-   Cache-first for static assets, network-first for API calls.
+   Stale-while-revalidate for static assets, network-first for navigation.
 */
-var CACHE = 'ap-v2';
+var CACHE = 'ap-v3';
 var STATIC = [
   '/',
   '/tokens.css',
@@ -65,17 +65,18 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  /* Cache-first for static assets */
+  /* Stale-while-revalidate for static assets: serve from cache instantly
+     when available, and refresh the cache in the background for next time. */
   e.respondWith(
     caches.match(e.request).then(function(cached) {
-      if (cached) return cached;
-      return fetch(e.request).then(function(res) {
+      var network = fetch(e.request).then(function(res) {
         if (res && res.status === 200 && res.type !== 'opaque') {
           var clone = res.clone();
           caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
         }
         return res;
-      });
+      }).catch(function() { return cached; });
+      return cached || network;
     })
   );
 });

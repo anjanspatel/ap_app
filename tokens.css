@@ -18,7 +18,7 @@
   /* Text */
   --text-primary:     #F1F5F9;
   --text-secondary:   #94A3B8;
-  --text-muted:       #64748B;
+  --text-muted:       #6C7D95;
 
   /* Brand accent */
   --precision-cyan:       #19D3E6;
@@ -79,12 +79,12 @@
   --border-color: #CBD5E1;
   --text-primary: #0F172A;
   --text-secondary: #475569;
-  --text-muted:   #94A3B8;
-  --precision-cyan:       #0891B2;
+  --text-muted:   #5F738F;
+  --precision-cyan:       #077B97;
   --precision-cyan-hover: #0891B2;
-  --status-safe:    #16A34A;
-  --status-warning: #D97706;
-  --status-danger:  #DC2626;
+  --status-safe:    #11813B;
+  --status-warning: #AA5D05;
+  --status-danger:  #DC2424;
   --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
@@ -98,12 +98,12 @@
     --border-color: #CBD5E1;
     --text-primary: #0F172A;
     --text-secondary: #475569;
-    --text-muted:   #94A3B8;
-    --precision-cyan:       #0891B2;
+    --text-muted:   #5F738F;
+    --precision-cyan:       #077B97;
     --precision-cyan-hover: #0891B2;
-    --status-safe:    #16A34A;
-    --status-warning: #D97706;
-    --status-danger:  #DC2626;
+    --status-safe:    #11813B;
+    --status-warning: #AA5D05;
+    --status-danger:  #DC2424;
     --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
 }
