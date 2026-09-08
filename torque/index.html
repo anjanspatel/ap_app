@@ -9,8 +9,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bolt Torque Calculator — API 6A | Anjan Patel</title>
 <meta name="description" content="Bolt torque calculator for API 6A flanges — ASTM A193 B7/L7, nut factor, 3-pass sequence table.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://app.anjanpatel.ca/torque/">
+<meta property="og:title" content="Bolt Torque Calculator — API 6A | Anjan Patel">
+<meta property="og:description" content="Bolt torque calculator for API 6A flanges — ASTM A193 B7/L7, nut factor, 3-pass sequence table.">
+<meta property="og:image" content="https://app.anjanpatel.ca/torque/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bolt Torque Calculator — API 6A | Anjan Patel">
+<meta name="twitter:description" content="Bolt torque calculator for API 6A flanges — ASTM A193 B7/L7, nut factor, 3-pass sequence table.">
+<meta name="twitter:image" content="https://app.anjanpatel.ca/torque/og.png">
+<link rel="canonical" href="https://app.anjanpatel.ca/torque/">
 <meta name="theme-color" content="#0B111A" id="themeColorMeta">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -115,6 +128,8 @@ h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin
 }
 .field select:focus,.field input[type="number"]:focus{
   border-color:var(--indigo-fg);box-shadow:0 0 0 3px rgba(25,211,230,.15)}
+.field-warn-msg{font-size:10px;color:var(--status-warning,#F59E0B);margin-top:4px;font-family:var(--mono,monospace);display:none}
+.field-warn-msg.show{display:block}
 
 /* preload row: slider + number */
 .preload-row{display:flex;gap:8px;align-items:center}
@@ -321,6 +336,7 @@ footer a:hover{text-decoration:underline}
         <div class="field">
           <label class="field-label" for="numBolts">Number of Bolts</label>
           <input type="number" id="numBolts" value="8" min="1" max="200" step="1" inputmode="decimal" pattern="[0-9]*">
+          <div class="field-warn-msg" id="numBoltsWarn"></div>
         </div>
 
         <div class="field">
@@ -633,7 +649,18 @@ function compute(){
 /* ── event wiring ── */
 $('boltSize').addEventListener('change',function(){state.size=this.value;compute();});
 $('boltGrade').addEventListener('change',function(){state.grade=this.value;compute();});
-$('numBolts').addEventListener('input',function(){var v=parseInt(this.value)||1;state.bolts=Math.max(1,Math.min(200,v));compute();});
+$('numBolts').addEventListener('input',function(){
+  var raw=parseInt(this.value);
+  var clamped=Math.max(1,Math.min(200,isFinite(raw)?raw:1));
+  var warnEl=$('numBoltsWarn');
+  if(!isFinite(raw)||clamped!==raw){
+    warnEl.textContent='Clamped to '+clamped+' (valid range 1–200)';
+    warnEl.classList.add('show');
+  }else{
+    warnEl.classList.remove('show');
+  }
+  state.bolts=clamped;compute();
+});
 $('lubeCond').addEventListener('change',function(){state.lube=this.value;compute();});
 
 $('preloadSlider').addEventListener('input',function(){

@@ -24,7 +24,7 @@
 <meta name="theme-color" content="#0B111A">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -144,6 +144,9 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
 
 /* ── input groups ── */
 .input-group{margin-bottom:16px}
+.input-error-msg{font-size:10px;color:var(--status-danger);margin-top:4px;display:none;font-family:'JetBrains Mono',monospace}
+.input-group.has-error input[type=number]{border-color:var(--status-danger)}
+.input-group.has-error .input-error-msg{display:block}
 .input-label{
   display:flex;align-items:center;justify-content:space-between;
   font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
@@ -198,6 +201,7 @@ input[type=number]:focus{
 .swl-num .swl-u{font-size:.42em;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.04em;vertical-align:middle}
 .swl-alt{margin-top:8px;font-size:12px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
 .swl-empty-msg{font-size:14px;font-weight:500;color:rgba(255,255,255,.3);letter-spacing:.04em}
+.swl-empty-msg.is-error{color:var(--status-danger)}
 
 /* ── steps ── */
 .steps{display:flex;flex-direction:column;gap:0;margin-bottom:20px}
@@ -324,6 +328,7 @@ footer a:hover{color:var(--text)}
           <span class="unit-tag">HB</span>
         </div>
         <input type="number" id="inBHN" min="1" max="900" step="1" placeholder="e.g. 250" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
+        <div class="input-error-msg">Enter a positive number.</div>
       </div>
 
       <div class="input-group">
@@ -332,6 +337,7 @@ footer a:hover{color:var(--text)}
           <span class="unit-tag" id="lblW">in</span>
         </div>
         <input type="number" id="inW" min="0.001" step="0.001" placeholder="e.g. 4.000" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
+        <div class="input-error-msg">Enter a positive number.</div>
       </div>
 
       <div class="input-group">
@@ -340,6 +346,7 @@ footer a:hover{color:var(--text)}
           <span class="unit-tag" id="lblT">in</span>
         </div>
         <input type="number" id="inT" min="0.001" step="0.001" placeholder="e.g. 2.500" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
+        <div class="input-error-msg">Enter a positive number.</div>
       </div>
 
       <div class="input-group">
@@ -490,24 +497,48 @@ function setStep(idx, eq, val){
   document.getElementById('s'+idx).classList.remove('dimmed');
 }
 
-function clearAll(){
+function clearAll(msg, isError){
   for(var i=1;i<=5;i++){
     var vEl = document.getElementById('v'+i);
     vEl.textContent = '—';
     vEl.className = 'step-val pending';
     document.getElementById('s'+i).classList.add('dimmed');
   }
-  document.getElementById('swlNum').innerHTML = '<span class="swl-empty-msg">Enter values →</span>';
+  var cls = isError ? 'swl-empty-msg is-error' : 'swl-empty-msg';
+  document.getElementById('swlNum').innerHTML = '<span class="' + cls + '">' + (msg || 'Enter values →') + '</span>';
   document.getElementById('swlAlt').textContent = '';
 }
 
-function calc(){
-  var bhn  = parseFloat(document.getElementById('inBHN').value);
-  var wRaw = parseFloat(document.getElementById('inW').value);
-  var tRaw = parseFloat(document.getElementById('inT').value);
+function setFieldError(el){
+  var grp = el.closest('.input-group');
+  if(grp) grp.classList.add('has-error');
+}
+function clearFieldError(el){
+  var grp = el.closest('.input-group');
+  if(grp) grp.classList.remove('has-error');
+}
 
-  if(!isFinite(bhn)||bhn<=0 || !isFinite(wRaw)||wRaw<=0 || !isFinite(tRaw)||tRaw<=0){
-    clearAll(); return;
+function calc(){
+  var bhnEl = document.getElementById('inBHN');
+  var wEl   = document.getElementById('inW');
+  var tEl   = document.getElementById('inT');
+  var bhn  = parseFloat(bhnEl.value);
+  var wRaw = parseFloat(wEl.value);
+  var tRaw = parseFloat(tEl.value);
+
+  clearFieldError(bhnEl); clearFieldError(wEl); clearFieldError(tEl);
+
+  var allEmpty = !bhnEl.value.trim() && !wEl.value.trim() && !tEl.value.trim();
+  if(allEmpty){ clearAll(); return; }
+
+  var hasError = false;
+  if(bhnEl.value.trim() && (!isFinite(bhn)||bhn<=0)){ setFieldError(bhnEl); hasError = true; }
+  if(wEl.value.trim()   && (!isFinite(wRaw)||wRaw<=0)){ setFieldError(wEl);  hasError = true; }
+  if(tEl.value.trim()   && (!isFinite(tRaw)||tRaw<=0)){ setFieldError(tEl);  hasError = true; }
+
+  if(hasError || !isFinite(bhn)||bhn<=0 || !isFinite(wRaw)||wRaw<=0 || !isFinite(tRaw)||tRaw<=0){
+    clearAll(hasError ? 'Check inputs above →' : 'Enter values →', hasError);
+    return;
   }
 
   /* convert to inches for calculation */
