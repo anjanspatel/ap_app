@@ -777,13 +777,12 @@ $('saveConfirmBtn').addEventListener('click',function(){
 
   window.__sbReady.then(function(sess){
     if(!sess){$('saveMsg').textContent='Not signed in.';$('saveMsg').className='modal-msg err';$('saveConfirmBtn').disabled=false;return;}
-    return window.__sb.from('calc_logs').insert({
+    return window.__sb.from('saved_lookups').insert({
       user_id:sess.user.id,
       tool:'torque',
-      job_number:jobNum,
       label:($('saveLabel').value||'').trim()||null,
       params:{
-        size:state.size, grade:state.grade,
+        job:jobNum, size:state.size, grade:state.grade,
         bolts:String(state.bolts), lube:state.lube,
         preload:String(state.preload),
         units:state.metric?'metric':'imperial'

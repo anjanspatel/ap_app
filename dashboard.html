@@ -684,7 +684,7 @@ function relTime(iso){
 }
 
 /* ── Escape ── */
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 
 /* ── Format params ── */
 function fmtP(tool,p){
@@ -706,7 +706,7 @@ async function init(){
   $('sbEmail').textContent=email;
   $('sbAvatar').textContent=init;
   $('tbAvatar').textContent=init;
-  var meta=session.user.user_metadata||{};
+  var meta=session.user.app_metadata||{};
   if(meta.is_admin===true){
     $('sbRole').textContent='Admin';
     $('adminPanel').style.display='';

@@ -352,7 +352,7 @@ async function init(){
   $('tbAvatar').textContent=ini;
   $('fEmail').textContent=email;
   $('fUid').textContent=u.id;
-  var meta=u.user_metadata||{};
+  var meta=u.app_metadata||{};
   if(meta.is_admin===true){$('fRole').textContent='Admin';$('sbRole').textContent='Admin'}
   var prov=(u.app_metadata&&u.app_metadata.provider)||'email';
   $('fProvider').textContent=prov.charAt(0).toUpperCase()+prov.slice(1);

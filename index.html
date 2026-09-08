@@ -636,7 +636,7 @@ q('auth-form').addEventListener('submit',async function(e){
   if(!em){setErr('inp-email','err-email','Email required');ok=false}
   else if(!ERE.test(em)){setErr('inp-email','err-email','Enter valid email');ok=false}
   if(!pw){setErr('inp-pw','err-pw','Password required');ok=false}
-  else if(pw.length<6){setErr('inp-pw','err-pw','Min 6 characters');ok=false}
+  else if(pw.length<8){setErr('inp-pw','err-pw','Min 8 characters');ok=false}
   if(!ok)return;
   busy=true;q('auth-submit').disabled=true;setNote('auth-note','');
   swapLbl('auth-lbl',COPY[mode].work);

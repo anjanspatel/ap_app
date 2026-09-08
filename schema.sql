@@ -61,3 +61,17 @@ create policy "anyone can insert" on public.error_logs
 alter table public.saved_lookups drop constraint if exists saved_lookups_tool_check;
 alter table public.saved_lookups add constraint saved_lookups_tool_check
   check (tool in ('flange', 'torque', 'tubing'));
+
+-- ═══════════════════════════════════════════════════
+-- ADMIN FLAG — dashboard.html/settings.html now read is_admin from
+-- app_metadata, not user_metadata. user_metadata can be rewritten by
+-- any signed-in user via the client SDK (auth.updateUser({data:{...}})
+-- is intentionally self-service in Supabase), so it must never gate
+-- admin UI or, worse, an RLS policy — app_metadata can only be set
+-- from here (SQL editor / service role), never from the browser.
+-- Run this once per account that should see the admin panel, replacing
+-- the email:
+-- ═══════════════════════════════════════════════════
+update auth.users
+set raw_app_meta_data = raw_app_meta_data || '{"is_admin": true}'::jsonb
+where email = 'you@example.com';
