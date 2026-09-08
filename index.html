@@ -281,9 +281,10 @@ body{
 .vsub{font:400 11px var(--font-ui);color:var(--muted);line-height:1.65;margin-bottom:16px}
 
 .legal{
-  position:fixed;
-  bottom:max(12px,env(safe-area-inset-bottom,12px));
-  left:0;right:0;z-index:10;
+  position:relative;
+  width:100%;
+  margin-top:20px;
+  z-index:10;
   display:flex;align-items:center;justify-content:center;
   flex-wrap:wrap;gap:4px 12px;
   font:400 10px var(--font-mono);color:var(--dim);letter-spacing:0.04em;
