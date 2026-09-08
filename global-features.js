@@ -119,7 +119,7 @@
   btt.setAttribute('title', 'Back to top');
   btt.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>';
   btt.style.cssText = [
-    'position:fixed','bottom:72px','right:20px','z-index:800',
+    'position:fixed','bottom:calc(72px + env(safe-area-inset-bottom,0px))','right:20px','z-index:800',
     'width:36px','height:36px','border-radius:50%',
     'background:var(--bg-elevated,#1C2938)',
     'border:1px solid var(--border-color,#2B3A4C)',
@@ -167,7 +167,7 @@
       'position:fixed','bottom:0','left:0','right:0',
       'background:var(--bg-panel,#151F2C)',
       'border-top:1px solid var(--border-color,#2B3A4C)',
-      'padding:12px 20px',
+      'padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))',
       'display:flex','align-items:center','flex-wrap:wrap','gap:10px 16px',
       'z-index:700','font-family:var(--font-ui,Inter,sans-serif)',
       'font-size:11px','color:var(--text-secondary,#94A3B8)',
@@ -218,7 +218,7 @@
       'position:fixed','left:0','right:0','bottom:' + offset + 'px',
       'background:var(--bg-elevated,#1C2938)',
       'border-top:1px solid rgba(245,158,11,.35)',
-      'padding:12px 20px',
+      'padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))',
       'display:flex','align-items:center','flex-wrap:wrap','gap:8px 16px',
       'z-index:750','font-family:var(--font-ui,Inter,sans-serif)',
       'font-size:11px','line-height:1.5','color:var(--text-secondary,#94A3B8)',
@@ -259,7 +259,7 @@
   var engNotice = document.getElementById('eng-disclaimer');
   var fabBottom = 20 + (engNotice ? engNotice.offsetHeight + 12 : 0);
   fab.style.cssText = [
-    'position:fixed','bottom:' + fabBottom + 'px','right:20px','z-index:800',
+    'position:fixed','bottom:calc(' + fabBottom + 'px + env(safe-area-inset-bottom,0px))','right:20px','z-index:800',
     'width:40px','height:40px','border-radius:50%',
     'background:var(--precision-cyan,#19D3E6)',
     'border:none','color:#0B111A',
