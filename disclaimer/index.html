@@ -208,7 +208,23 @@ a:hover{text-decoration:underline}
     try{localStorage.setItem('ap-theme',next)}catch(e){}
   });
 })();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(function(reg){
+    reg.addEventListener('updatefound',function(){
+      var sw=reg.installing;
+      sw.addEventListener('statechange',function(){
+        if(sw.state==='installed'&&navigator.serviceWorker.controller){
+          var b=document.getElementById('sw-update-banner');if(b)b.style.display='flex';
+        }
+      });
+    });
+  }).catch(function(){});
+  navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload()});
+}
 </script>
+<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--bg-elevated);color:var(--text-primary);border:1px solid rgba(25,211,230,.45);border-radius:8px;padding:11px 16px;font-size:12.5px;font-family:'Inter',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
+  <span>Update available</span>
+  <button onclick="window.location.reload()" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px">Refresh</button>
+</div>
 </body>
 </html>

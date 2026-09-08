@@ -8,6 +8,12 @@
 (function(){
   'use strict';
 
+  var SB_URL = 'https://uejlrooupfcrqimffgsn.supabase.co';
+  var SB_KEY = 'sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+  var FUNCTION_URL = SB_URL + '/functions/v1/copilot-chat';
+  var sb = null;
+  try { sb = supabase.createClient(SB_URL, SB_KEY); } catch (e) {}
+
   var NOTICE = 'NOTICE: AP CoPilot outputs are for auxiliary informational reference only. All field parameters and calculations must be independently validated by a licensed Professional Engineer (P.E. / P.Eng.).';
   var OUTPUT_TAG = '[ Auxiliary Output — Verify with P.E. prior to field execution ]';
   var GREETING = 'AP CoPilot online — I\'m an automated AI assistant, not a live person. I can help you navigate AP Workspace, explain standard formulas (ASME PCC-1 target torque, ASME B16.5 flange ratings, tubing pressure derating), and point you to the right calculator. I am not a P.E. — verify all outputs independently before field use. Ask me something, or use the Contact link in the footer for a real person.';
@@ -64,7 +70,7 @@
       '#ap-copilot-fab{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:20px;z-index:1000;',
         'width:48px;height:48px;border-radius:50%;background:var(--bg-panel,#151F2C);',
         'border:1px solid var(--precision-cyan,#19D3E6);color:var(--precision-cyan,#19D3E6);',
-        'cursor:pointer;display:flex;align-items:center;justify-content:center;',
+        'cursor:grab;touch-action:none;display:flex;align-items:center;justify-content:center;',
         'box-shadow:0 2px 14px rgba(25,211,230,0.22);transition:transform 150ms,box-shadow 150ms}',
       '#ap-copilot-fab:hover{transform:scale(1.06);box-shadow:0 4px 20px rgba(25,211,230,0.35)}',
       '#ap-copilot-fab:focus-visible{outline:2px solid var(--precision-cyan,#19D3E6);outline-offset:3px}',
@@ -154,6 +160,36 @@
     document.body.appendChild(overlay);
     document.body.appendChild(drawer);
 
+    /* ── Drag-to-reposition — lets the launcher be moved off whatever
+       page content it happens to sit on top of. Position is per-device
+       (localStorage), clamped to the viewport, and restored on load. ── */
+    var FAB_POS_KEY = 'ap-copilot-fab-pos';
+    function clampPos(x, y){
+      var w = fab.offsetWidth || 48, h = fab.offsetHeight || 48;
+      var maxX = window.innerWidth - w - 8;
+      var maxY = window.innerHeight - h - 8;
+      return { x: Math.min(Math.max(8, x), Math.max(8, maxX)), y: Math.min(Math.max(8, y), Math.max(8, maxY)) };
+    }
+    function applyPos(x, y){
+      fab.style.left = x + 'px';
+      fab.style.top = y + 'px';
+      fab.style.right = 'auto';
+      fab.style.bottom = 'auto';
+    }
+    try {
+      var savedPos = JSON.parse(localStorage.getItem(FAB_POS_KEY) || 'null');
+      if (savedPos && typeof savedPos.x === 'number' && typeof savedPos.y === 'number') {
+        var c0 = clampPos(savedPos.x, savedPos.y);
+        applyPos(c0.x, c0.y);
+      }
+    } catch(e){}
+    window.addEventListener('resize', function(){
+      if (fab.style.left) {
+        var c = clampPos(parseFloat(fab.style.left), parseFloat(fab.style.top));
+        applyPos(c.x, c.y);
+      }
+    });
+
     var messagesEl = drawer.querySelector('#apc-messages');
     var formEl = drawer.querySelector('#apc-form');
     var inputEl = drawer.querySelector('#apc-input');
@@ -204,12 +240,73 @@
       fab.focus();
     }
 
-    fab.addEventListener('click', function(){ isOpen ? closeDrawer() : openDrawer(); });
+    var dragging = false, moved = false, suppressClick = false, startX = 0, startY = 0, origX = 0, origY = 0;
+    fab.addEventListener('pointerdown', function(e){
+      dragging = true; moved = false;
+      var r = fab.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      origX = r.left; origY = r.top;
+      fab.style.cursor = 'grabbing';
+      try { fab.setPointerCapture(e.pointerId); } catch(e2){}
+    });
+    fab.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (!moved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) moved = true;
+      if (!moved) return;
+      var c = clampPos(origX + dx, origY + dy);
+      applyPos(c.x, c.y);
+    });
+    fab.addEventListener('pointerup', function(){
+      if (!dragging) return;
+      dragging = false;
+      fab.style.cursor = 'grab';
+      if (moved) {
+        suppressClick = true;
+        var r = fab.getBoundingClientRect();
+        try { localStorage.setItem(FAB_POS_KEY, JSON.stringify({ x: r.left, y: r.top })); } catch(e2){}
+      }
+    });
+    fab.addEventListener('click', function(){
+      if (suppressClick) { suppressClick = false; return; }
+      isOpen ? closeDrawer() : openDrawer();
+    });
     closeBtn.addEventListener('click', closeDrawer);
     overlay.addEventListener('click', closeDrawer);
     document.addEventListener('keydown', function(e){
       if (e.key === 'Escape' && isOpen) closeDrawer();
     });
+
+    /* ── Live AI (optional) ──────────────────────
+       Requires a signed-in session and the copilot-chat Edge Function
+       to be deployed (see supabase/functions/copilot-chat/README.md).
+       Falls back to the static knowledge base on any failure — no
+       session (public login page), offline, function not deployed
+       yet, or a request error — so the widget never looks broken.
+    ──────────────────────────────────────────────── */
+    var chatHistory = [];
+    function getLiveReply(text){
+      if (!navigator.onLine || !sb) return Promise.reject(new Error('unavailable'));
+      return sb.auth.getSession().then(function(r){
+        var session = r && r.data && r.data.session;
+        if (!session) return Promise.reject(new Error('signed out'));
+        return fetch(FUNCTION_URL, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + session.access_token,
+            'apikey': SB_KEY
+          },
+          body: JSON.stringify({ message: text, history: chatHistory })
+        });
+      }).then(function(res){
+        if (!res.ok) return Promise.reject(new Error('bad status'));
+        return res.json();
+      }).then(function(data){
+        if (!data || !data.reply) return Promise.reject(new Error('no reply'));
+        return data.reply;
+      });
+    }
 
     formEl.addEventListener('submit', function(e){
       e.preventDefault();
@@ -217,7 +314,14 @@
       if (!text || inputEl.disabled) return;
       addMessage('user', text);
       inputEl.value = '';
-      setTimeout(function(){ addMessage('bot', answer(text)); }, 180);
+      chatHistory.push({ role: 'user', content: text });
+      getLiveReply(text).then(function(reply){
+        chatHistory.push({ role: 'assistant', content: reply });
+        if (chatHistory.length > 12) chatHistory = chatHistory.slice(-12);
+        addMessage('bot', reply);
+      }).catch(function(){
+        addMessage('bot', answer(text));
+      });
     });
   }
 
