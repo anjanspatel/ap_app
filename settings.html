@@ -301,7 +301,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 <script>
 var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=supabase.createClient(SB_URL,SB_KEY);
+var sb=null;
+try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
 
 function $(id){return document.getElementById(id)}
 
@@ -340,6 +341,7 @@ function setTheme(t){
 }
 
 async function init(){
+  if(!sb){window.location.href='/';return}
   var r=await sb.auth.getSession();
   if(!r.data||!r.data.session){window.location.href='/';return}
   var u=r.data.session.user;
@@ -373,8 +375,8 @@ async function changePassword(){
 function fb(type,msg){var el=$('pwFb');el.textContent=msg;el.className='fb '+type;setTimeout(function(){el.className='fb'},4000)}
 function signOut(){document.getElementById('signout-modal').classList.add('open')}
 function closeSignoutModal(){document.getElementById('signout-modal').classList.remove('open')}
-async function confirmSignOut(){closeSignoutModal();await sb.auth.signOut();window.location.href='/'}
-async function signOutAll(){closeSignoutModal();await sb.auth.signOut({scope:'global'});window.location.href='/'}
+async function confirmSignOut(){closeSignoutModal();if(!sb){window.location.href='/';return}await sb.auth.signOut();window.location.href='/'}
+async function signOutAll(){closeSignoutModal();if(!sb){window.location.href='/';return}await sb.auth.signOut({scope:'global'});window.location.href='/'}
 
 function togglePw(fieldId,iconId){
   var f=document.getElementById(fieldId);

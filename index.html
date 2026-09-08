@@ -601,7 +601,8 @@ body{
 
 var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=supabase.createClient(SB_URL,SB_KEY);
+var sb=null;
+try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
 var mode='signin',busy=false;
 var ERE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
 var COPY={
@@ -630,6 +631,7 @@ q('inp-email').addEventListener('input',function(){setErr('inp-email','err-email
 q('inp-pw').addEventListener('input',function(){setErr('inp-pw','err-pw','');setNote('auth-note','')});
 q('auth-form').addEventListener('submit',async function(e){
   e.preventDefault();if(busy)return;
+  if(!sb){setNote('auth-note','Connection unavailable — check your network and reload.','err');return}
   var em=q('inp-email').value.trim(),pw=q('inp-pw').value,ok=true;
   if(!em){setErr('inp-email','err-email','Email required');ok=false}
   else if(!ERE.test(em)){setErr('inp-email','err-email','Enter valid email');ok=false}
@@ -656,6 +658,7 @@ q('forgot-form').addEventListener('submit',async function(e){
   e.preventDefault();
   var em=q('inp-frg').value.trim();
   setErr('inp-frg','err-frg','');setNote('frg-note','');
+  if(!sb){setNote('frg-note','Connection unavailable — check your network and reload.','err');return}
   if(!em){setErr('inp-frg','err-frg','Email required');return}
   if(!ERE.test(em)){setErr('inp-frg','err-frg','Enter valid email');return}
   q('frg-submit').disabled=true;swapLbl('frg-lbl','Sending…');
@@ -668,6 +671,7 @@ q('reset-form').addEventListener('submit',async function(e){
   e.preventDefault();
   var pw=q('inp-rst').value;
   setErr('inp-rst','err-rst','');setNote('rst-note','');
+  if(!sb){setNote('rst-note','Connection unavailable — check your network and reload.','err');return}
   if(!pw){setErr('inp-rst','err-rst','Password required');return}
   if(pw.length<8){setErr('inp-rst','err-rst','Min 8 characters');return}
   q('rst-submit').disabled=true;swapLbl('rst-lbl','Setting…');
@@ -677,14 +681,15 @@ q('reset-form').addEventListener('submit',async function(e){
   setNote('rst-note','Password updated — signing in…','ok');
   setTimeout(function(){window.location.href='/dashboard.html'},1200);
 });
-function oauth(p){sb.auth.signInWithOAuth({provider:p,options:{redirectTo:window.location.origin+'/dashboard.html'}})}
+function oauth(p){if(!sb){setNote('auth-note','Connection unavailable — check your network and reload.','err');return}sb.auth.signInWithOAuth({provider:p,options:{redirectTo:window.location.origin+'/dashboard.html'}})}
 q('btn-google').addEventListener('click',function(){oauth('google')});
 q('btn-ms').addEventListener('click',function(){oauth('azure')});
 q('btn-gh').addEventListener('click',function(){oauth('github')});
 
-async function doSignOut(){await sb.auth.signOut();window.location.reload();}
+async function doSignOut(){if(!sb){window.location.reload();return}await sb.auth.signOut();window.location.reload();}
 
 (async function boot(){
+  if(!sb){setNote('auth-note','Connection unavailable — check your network and reload.','err');return}
   var hash=window.location.hash;
   if(hash.includes('type=recovery')){
     var p=new URLSearchParams(hash.replace(/^#/,''));

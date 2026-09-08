@@ -119,12 +119,18 @@ select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-nu
 (function(){
   var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
   var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-  var _sb=supabase.createClient(SB_URL,SB_KEY);
-  window.__sb=_sb;
-  window.__sbReady=_sb.auth.getSession().then(function(r){
-    if(!r.data||!r.data.session){window.location.replace('/');return null;}
-    return r.data.session;
-  });
+  try{
+    var _sb=supabase.createClient(SB_URL,SB_KEY);
+    window.__sb=_sb;
+    window.__sbReady=_sb.auth.getSession().then(function(r){
+      if(!r.data||!r.data.session){window.location.replace('/');return null;}
+      return r.data.session;
+    }).catch(function(){window.location.replace('/');return null;});
+  }catch(e){
+    window.__sb=null;
+    window.__sbReady=Promise.resolve(null);
+    window.location.replace('/');
+  }
 })();
 </script>
 <link rel="stylesheet" href="/premium.css">

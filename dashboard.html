@@ -615,7 +615,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 
 var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=supabase.createClient(SB_URL,SB_KEY);
+var sb=null;
+try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
 var session=null;
 var allRows=[];
 
@@ -696,6 +697,7 @@ function fmtP(tool,p){
 
 /* ── Auth guard ── */
 async function init(){
+  if(!sb){window.location.href='/';return}
   var r=await sb.auth.getSession();
   if(!r.data||!r.data.session){window.location.href='/';return}
   session=r.data.session;
@@ -718,6 +720,7 @@ async function init(){
 }
 
 async function signOut(){
+  if(!sb){window.location.href='/';return}
   await sb.auth.signOut();window.location.href='/';
 }
 
