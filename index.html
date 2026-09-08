@@ -445,6 +445,13 @@ body{
         </button>
       </form>
 
+      <div id="pk-signin-row" style="display:none;margin-top:8px">
+        <button type="button" class="ob ob-full btn-shimmer" id="btn-passkey" aria-label="Sign in with a passkey">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M12 13c-4.4 0-8 2.2-8 6v1h6"/><path d="M15 17.5v5"/><path d="M13.5 19h3"/><path d="M13.5 21.5h3"/></svg>
+          Sign in with a passkey
+        </button>
+      </div>
+
       <div class="or" aria-hidden="true">OR CONTINUE WITH</div>
 
       <div class="oauth">
@@ -604,8 +611,9 @@ body{
 var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
 var sb=null;
-try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
+try{sb=supabase.createClient(SB_URL,SB_KEY,{auth:{experimental:{passkey:true}}});}catch(e){}
 var mode='signin',busy=false;
+var PASSKEY_SUPPORTED=typeof window.PublicKeyCredential!=='undefined';
 var ERE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
 var COPY={
   signin:{idle:'Access Workspace',work:'Signing In…',done:'Access Granted'},
@@ -628,6 +636,7 @@ function setMode(next){
   swapLbl('auth-lbl',COPY[mode].idle);
   q('inp-pw').setAttribute('autocomplete',next==='signin'?'current-password':'new-password');
   setErr('inp-email','err-email','');setErr('inp-pw','err-pw','');setNote('auth-note','');
+  q('pk-signin-row').style.display=(next==='signin'&&PASSKEY_SUPPORTED&&sb)?'':'none';
 }
 q('inp-email').addEventListener('input',function(){setErr('inp-email','err-email','');setNote('auth-note','')});
 q('inp-pw').addEventListener('input',function(){setErr('inp-pw','err-pw','');setNote('auth-note','')});
@@ -687,6 +696,21 @@ function oauth(p){if(!sb){setNote('auth-note','Connection unavailable — check 
 q('btn-google').addEventListener('click',function(){oauth('google')});
 q('btn-ms').addEventListener('click',function(){oauth('azure')});
 q('btn-gh').addEventListener('click',function(){oauth('github')});
+
+q('pk-signin-row').style.display=(mode==='signin'&&PASSKEY_SUPPORTED&&sb)?'':'none';
+q('btn-passkey').addEventListener('click',async function(){
+  if(busy||!sb)return;
+  busy=true;q('btn-passkey').disabled=true;setNote('auth-note','');
+  try{
+    var r=await sb.auth.signInWithPasskey();
+    if(r.error){setNote('auth-note',r.error.message||'Passkey sign-in failed.');return}
+    window.location.reload();
+  }catch(e){
+    setNote('auth-note','Passkey sign-in is not available right now.');
+  }finally{
+    busy=false;q('btn-passkey').disabled=false;
+  }
+});
 
 async function doSignOut(){if(!sb){window.location.reload();return}await sb.auth.signOut();window.location.reload();}
 
