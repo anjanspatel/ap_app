@@ -107,3 +107,17 @@
     --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
 }
+
+/* ── Print ────────────────────────────────────────
+   Shared floating UI injected by global-features.js
+   (disclaimer banner, cookie banner, back-to-top,
+   the SW update banner) has no place on a printed
+   page — hide it everywhere, not just per-tool. */
+@media print {
+  #eng-disclaimer,
+  #cookie-banner,
+  #back-to-top,
+  #sw-update-banner {
+    display: none !important;
+  }
+}

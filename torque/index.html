@@ -269,6 +269,26 @@ footer a:hover{text-decoration:underline}
   .r-value{font-size:22px}
   .page{padding:14px 10px 48px}
 }
+
+/* ── print ── */
+.print-watermark{display:none}
+.print-footer{display:none}
+@media print{
+  @page{size:letter portrait;margin:14mm}
+  html,body{background:#fff!important;color:#111!important;overflow:visible!important;height:auto!important}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .site-header,footer,.job-row .hint,.field-warn-msg,.copy-btn,input[type=range],.faq-section,.info-row{display:none!important}
+  .page{padding:0!important;max-width:none!important}
+  .title-row{margin-bottom:6px!important}
+  h1{color:#0B1F3A!important;font-size:16pt!important}
+  .card{background:#fff!important;border:1px solid #ccc!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid}
+  .calc-grid{gap:14mm!important}
+  select,input{background:#fff!important;color:#111!important;border-color:#999!important;-webkit-appearance:none;appearance:none}
+  .r-value,.r-value.em{color:#111!important}
+  .k-badge{background:#eee!important;color:#111!important;border-color:#999!important}
+  .print-watermark{display:block!important;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:44pt;font-weight:900;color:#000;opacity:.05;white-space:nowrap;pointer-events:none;z-index:9999;font-family:Arial,sans-serif;letter-spacing:.08em;text-align:center}
+  .print-footer{display:block!important;margin-top:8mm;font-size:8pt;color:#666;text-align:center}
+}
 </style>
 <link rel="stylesheet" href="/premium.css">
 </head>
@@ -292,9 +312,9 @@ footer a:hover{text-decoration:underline}
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         <span>Save Lookup</span>
       </button>
-      <button class="action-btn primary btn-shimmer" id="savePdfBtn" type="button">
+      <button class="action-btn primary btn-shimmer" id="savePdfBtn" type="button" title="Print this page — choose &quot;Save as PDF&quot; in the print dialog for a file">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        <span>Export PDF</span>
+        <span>Print</span>
       </button>
       <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -519,6 +539,9 @@ footer a:hover{text-decoration:underline}
       Not a substitute for stamped engineering drawings or authoritative standards.
     </div>
   </div>
+
+  <div class="print-watermark">REFERENCE ONLY<br><span style="font-size:0.45em;font-weight:700;letter-spacing:.15em">ANJAN PATEL · API 6A BOLT TORQUE · VERIFY BEFORE USE</span></div>
+  <div class="print-footer" id="printFooter"></div>
 
 </div><!-- /.page -->
 
@@ -803,9 +826,14 @@ $('saveConfirmBtn').addEventListener('click',function(){
   });
 });
 
-/* ── PDF export ── */
+/* ── Print ── */
 $('savePdfBtn').addEventListener('click',function(){
   window.print();
+});
+window.addEventListener('beforeprint',function(){
+  var job=($('jobNum').value||'').trim();
+  var dateStamp=new Date().toLocaleDateString('en-CA',{year:'numeric',month:'short',day:'2-digit'});
+  $('printFooter').textContent='Generated '+dateStamp+(job?' · Job '+job:'');
 });
 
 /* ── initial compute ── */
