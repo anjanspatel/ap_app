@@ -118,6 +118,7 @@ select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-nu
   });
 })();
 </script>
+<link rel="stylesheet" href="/premium.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
@@ -129,10 +130,10 @@ select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-nu
     </a>
     <div class="header-actions">
       <button class="action-btn" id="resetTool" type="button" title="Reset flange selections">↺ <span class="long">Reset</span></button>
-      <button class="action-btn primary" id="savePdf" type="button" title="Export the current flange selection as a PDF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span class="long">Export PDF</span></button>
+      <button class="action-btn primary btn-shimmer" id="savePdf" type="button" title="Export the current flange selection as a PDF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span class="long">Export PDF</span></button>
       <button class="action-btn" id="unitToggle" type="button" title="Toggle inch / metric (mm) display">in</button>
       <button class="action-btn" id="shareBtn" type="button" title="Copy shareable link to this flange selection"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
-      <button class="action-btn" id="saveLookupBtn" type="button" title="Save this lookup to your dashboard" onclick="openSaveModal()" style="gap:5px;display:flex;align-items:center;padding:0 12px;width:auto;font-size:13px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> <span class="long">Save</span></button>
+      <button class="action-btn btn-shimmer" id="saveLookupBtn" type="button" title="Save this lookup to your dashboard" onclick="openSaveModal()" style="gap:5px;display:flex;align-items:center;padding:0 12px;width:auto;font-size:13px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> <span class="long">Save</span></button>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light and dark theme"><span id="themeIcon" aria-hidden="true"></span></button>
     </div>
   </div>

@@ -264,8 +264,9 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 @media(max-width:400px){.metrics{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{transition-duration:1ms!important;animation-duration:1ms!important}}
 </style>
+<link rel="stylesheet" href="/premium.css">
 </head>
-<body>
+<body class="mesh-bg">
 
 <!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
@@ -346,6 +347,13 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
           <div class="metric-label">Saved Lookups</div>
           <div class="metric-value em" id="mSaved">—</div>
           <div class="metric-footer"><span class="status-dot dot-idle" id="mSavedDot"></span><span id="mSavedLbl">Loading…</span></div>
+          <div class="act-break" id="actBreak" style="display:none">
+            <div class="act-bar"><div class="act-fill" id="actFill"></div></div>
+            <div class="act-labels">
+              <span class="act-a" id="actLblA">Flange 0</span>
+              <span id="actLblB">Tubing 0</span>
+            </div>
+          </div>
         </div>
         <div class="metric">
           <div class="metric-label">Tools Online</div>
@@ -657,6 +665,14 @@ async function loadDashboard(){
     $('mLast').textContent=d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
     $('mLastDot').className='status-dot dot-ok';
     $('mLastLbl').textContent=relTime(rows[0].created_at);
+    /* breakdown bar */
+    var nF=rows.filter(function(r){return r.tool==='flange'}).length;
+    var nT=rows.filter(function(r){return r.tool==='tubing'}).length;
+    var pct=rows.length>0?Math.round((nF/rows.length)*100):0;
+    $('actLblA').textContent='Flange '+nF;
+    $('actLblB').textContent='Tubing '+nT;
+    $('actBreak').style.display='flex';
+    setTimeout(function(){$('actFill').style.width=pct+'%'},80);
   } else {
     $('mSavedDot').className='status-dot dot-idle';
     $('mSavedLbl').textContent='No lookups yet';
@@ -807,6 +823,18 @@ function closeDetail(){
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDetail()});
 
 init();
+</script>
+<script>
+/* ── Metric tile cursor glow ── */
+(function(){
+  document.querySelectorAll('.metric').forEach(function(tile){
+    tile.addEventListener('mousemove',function(e){
+      var r=tile.getBoundingClientRect();
+      tile.style.setProperty('--mx',(e.clientX-r.left)+'px');
+      tile.style.setProperty('--my',(e.clientY-r.top)+'px');
+    });
+  });
+})();
 </script>
 </body>
 </html>

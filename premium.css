@@ -1,0 +1,163 @@
+/* ════════════════════════════════════════════════
+   AP Workspace — premium.css  v1.0
+   Premium component layer — shared across all pages
+   Requires: /premium.css linked after page CSS
+════════════════════════════════════════════════ */
+
+/* ── 1. Glass topbar ────────────────────────────
+   Converts the sticky topbar from solid to frosted
+   glass. Works with all three theme states.
+────────────────────────────────────────────────── */
+.topbar {
+  background: rgba(11,15,25,0.80) !important;
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+}
+[data-theme="light"] .topbar {
+  background: rgba(255,255,255,0.85) !important;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .topbar {
+    background: rgba(255,255,255,0.85) !important;
+  }
+}
+
+/* ── 2. Shimmer button ──────────────────────────
+   Add class .btn-shimmer to any button or link.
+   A light sweep animates at a staggered interval.
+────────────────────────────────────────────────── */
+.btn-shimmer {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate;
+}
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.13) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: ap-shimmer 3.2s infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes ap-shimmer {
+  0%, 45%  { left: -130%; }
+  100%     { left: 210%;  }
+}
+.btn-shimmer:active { transform: scale(0.97); }
+
+/* ── 3. Spotlight ring ──────────────────────────
+   Wrap any card with <div class="sp-ring"> to get
+   a cursor-tracking indigo border glow.
+   JS sets --sx / --sy via mousemove on the wrapper.
+────────────────────────────────────────────────── */
+.sp-ring {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 18px;
+}
+.sp-ring .card { max-width: none; }
+.sp-ring::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: radial-gradient(
+    300px circle at var(--sx, 50%) var(--sy, -80px),
+    rgba(99,102,241,0.5) 0%,
+    rgba(99,102,241,0.1) 40%,
+    transparent 68%
+  );
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.sp-ring:hover::before { opacity: 1; }
+
+/* ── 4. Metric tile cursor glow ─────────────────
+   Dashboard metric tiles get a hover border glow.
+   JS also tracks mouse position for radial effect.
+────────────────────────────────────────────────── */
+.metric {
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    box-shadow 0.25s ease !important;
+}
+.metric:hover {
+  border-color: rgba(99,102,241,0.35) !important;
+  box-shadow:
+    0 0 0 1px rgba(99,102,241,0.15),
+    0 0 20px rgba(99,102,241,0.07);
+}
+
+/* ── 5. Mesh grid background ────────────────────
+   Add class .mesh-bg to body or any container.
+────────────────────────────────────────────────── */
+.mesh-bg {
+  background-image:
+    linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+[data-theme="light"] .mesh-bg {
+  background-image:
+    linear-gradient(rgba(79,70,229,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,70,229,0.05) 1px, transparent 1px);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .mesh-bg {
+    background-image:
+      linear-gradient(rgba(79,70,229,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,70,229,0.05) 1px, transparent 1px);
+  }
+}
+
+/* ── 6. Telemetry breakdown bar ─────────────────
+   Used in dashboard "Saved Lookups" metric tile.
+────────────────────────────────────────────────── */
+.act-break {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.act-bar {
+  height: 3px;
+  background: var(--border, #2d3748);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.act-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #818cf8 0%, rgba(99,102,241,0.35) 100%);
+  width: 0%;
+  transition: width 1s cubic-bezier(0.34,1.56,0.64,1);
+}
+.act-labels {
+  display: flex;
+  justify-content: space-between;
+  font: 400 9px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  color: var(--dim, #64748b);
+}
+.act-labels .act-a { color: var(--indigo-fg, #818cf8); }
+
+/* ── Focus ring upgrade ─────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgba(99,102,241,0.65);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
