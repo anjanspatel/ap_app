@@ -41,6 +41,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   background:var(--surface);border-right:1px solid var(--border);
   display:flex;flex-direction:column;z-index:300;
   transition:transform var(--ease),background .2s,border-color .2s;
+  padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
 }
 .sb-brand{
   display:flex;align-items:center;gap:10px;
@@ -87,8 +88,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 
 /* ═══ TOPBAR ═══ */
 .topbar{
-  height:var(--tb-h);background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 20px;gap:12px;
+  height:calc(var(--tb-h) + env(safe-area-inset-top));background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:env(safe-area-inset-top) 20px 0;gap:12px;
   position:sticky;top:0;z-index:200;
   transition:background .2s,border-color .2s;
 }
@@ -189,8 +190,9 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .td-mono{font-family:'JetBrains Mono',monospace;font-size:11px}
 .td-label{font-size:12px;color:var(--text);font-weight:500}
 .td-dim{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
-.table-wrap{overflow-x:auto;max-height:320px;overflow-y:auto}
-.btn-del{background:none;border:none;color:var(--border);cursor:pointer;width:22px;height:22px;border-radius:3px;display:grid;place-items:center;transition:background var(--ease),color var(--ease)}
+.table-wrap{overflow-x:auto;max-height:320px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.btn-del{background:none;border:none;color:var(--border);cursor:pointer;width:22px;height:22px;border-radius:3px;display:grid;place-items:center;transition:background var(--ease),color var(--ease);position:relative}
+.btn-del::before{content:'';position:absolute;inset:-11px;min-width:44px;min-height:44px}
 .btn-del:hover{background:rgba(239,68,68,.1);color:var(--error)}
 
 .det-bg{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -256,6 +258,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   .content{padding:14px}
   .metrics{grid-template-columns:1fr 1fr;gap:8px}
   .metric-value{font-size:20px}
+  .tb-search-input{font-size:16px;width:110px}
+  .tb-search-wrap{padding:0 8px}
 }
 @media(max-width:400px){.metrics{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{transition-duration:1ms!important;animation-duration:1ms!important}}

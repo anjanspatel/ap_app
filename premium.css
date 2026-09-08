@@ -139,6 +139,13 @@
   padding: 3px 7px;
   transition: color var(--motion-fast), border-color var(--motion-fast), background var(--motion-fast);
 }
+.copy-btn::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  min-width: 44px;
+  min-height: 44px;
+}
 .copy-btn:hover { color: var(--precision-cyan); border-color: var(--precision-cyan); }
 .copy-btn.copied { color: var(--status-safe); border-color: var(--status-safe); }
 
@@ -182,9 +189,9 @@
 .ap-modal-title { font: 600 14px var(--font-ui); color: var(--text-primary); margin-bottom: 8px; }
 .ap-modal-body  { font: 400 12px var(--font-ui); color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
 .ap-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-.ap-modal-cancel { background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-secondary); cursor: pointer; font: 500 12px var(--font-ui); padding: 8px 16px; transition: color var(--motion-fast), border-color var(--motion-fast); min-height: 36px; }
+.ap-modal-cancel { background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-secondary); cursor: pointer; font: 500 12px var(--font-ui); padding: 8px 16px; transition: color var(--motion-fast), border-color var(--motion-fast); min-height: 44px; }
 .ap-modal-cancel:hover { color: var(--text-primary); border-color: var(--text-muted); }
-.ap-modal-confirm { background: var(--status-danger); border: none; border-radius: var(--radius-md); color: #fff; cursor: pointer; font: 600 12px var(--font-ui); padding: 8px 16px; transition: opacity var(--motion-fast); min-height: 36px; }
+.ap-modal-confirm { background: var(--status-danger); border: none; border-radius: var(--radius-md); color: #fff; cursor: pointer; font: 600 12px var(--font-ui); padding: 8px 16px; transition: opacity var(--motion-fast); min-height: 44px; }
 .ap-modal-confirm:hover { opacity: 0.88; }
 
 @keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
@@ -201,6 +208,7 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px; font: 500 12px var(--font-ui); color: var(--text-primary);
   text-align: left; transition: background var(--motion-fast); gap: 10px;
+  min-height: 44px;
 }
 .faq-q:hover { background: rgba(25, 211, 230, 0.04); }
 .faq-q[aria-expanded="true"] { color: var(--precision-cyan); }

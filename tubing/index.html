@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow">
 <script>(function(){try{var t=localStorage.getItem('ap-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}}());</script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Safety Block Calculator — Anjan Patel</title>
 <meta name="description" content="Field calculator for tubing block and safety block safe working load. Enter BHN, width, and thickness to get SWL with step-by-step calculation.">
 <meta property="og:type" content="website">
@@ -38,12 +38,13 @@
 
 /* ── reset ── */
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden}
 body{
   background:var(--bg);color:var(--text);
   font-family:'Inter',Arial,sans-serif;
   -webkit-font-smoothing:antialiased;min-height:100vh;
   transition:background .2s,color .2s;
+  overflow-x:hidden;
 }
 
 /* ── header ── */
@@ -51,6 +52,7 @@ body{
   position:sticky;top:0;z-index:100;
   background:var(--bg-panel);
   border-bottom:1px solid var(--border-color);
+  padding-top:env(safe-area-inset-top);
 }
 .header-inner{
   max-width:1140px;margin:0 auto;padding:10px 20px;
@@ -71,11 +73,12 @@ body{
   display:flex;align-items:center;gap:4px;
   padding:5px 10px;border:1px solid var(--border);border-radius:7px;
   transition:color .15s,border-color .15s;
+  min-height:44px;
 }
 .hub-link:hover{color:var(--text);border-color:var(--muted)}
 .theme-btn{
   appearance:none;background:var(--surface-2,rgba(0,0,0,.04));border:1px solid var(--border);
-  border-radius:8px;width:36px;height:36px;cursor:pointer;
+  border-radius:8px;width:44px;height:44px;cursor:pointer;
   display:grid;place-items:center;color:var(--muted);font-size:14px;
   transition:background .15s,border-color .15s,color .15s;flex:0 0 auto;padding:0;
 }
@@ -109,7 +112,7 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
 .card{
   background:var(--surface);
   border:1px solid var(--border);
-  border-radius:16px;
+  border-radius:8px;
   padding:24px;
   box-shadow:var(--shadow);
 }
@@ -132,6 +135,7 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
   padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:.04em;
   border:none;background:none;cursor:pointer;color:var(--muted);border-radius:6px;
   transition:background .15s,color .15s;
+  min-height:44px;
 }
 .upill.active{background:var(--brand-orange);color:#fff}
 
@@ -148,10 +152,10 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
   border-radius:4px;padding:1px 7px;color:var(--muted);
 }
 input[type=number]{
-  width:100%;padding:10px 13px;
+  width:100%;padding:10px 13px;min-height:44px;
   font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;
   background:var(--surface-2);color:var(--text);
-  border:1.5px solid var(--border);border-radius:9px;
+  border:1.5px solid var(--border);border-radius:8px;
   outline:none;transition:border-color .15s,box-shadow .15s;
   -moz-appearance:textfield;appearance:textfield;
 }
@@ -164,7 +168,7 @@ input[type=number]:focus{
 .sf-display{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 13px;
-  background:var(--surface-2);border:1.5px solid var(--border);border-radius:9px;
+  background:var(--surface-2);border:1.5px solid var(--border);border-radius:8px;
   font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;
   color:var(--muted);
 }
@@ -172,7 +176,7 @@ input[type=number]:focus{
 
 /* ── SWL hero ── */
 .swl-hero{
-  border-radius:14px;padding:28px 22px 24px;
+  border-radius:8px;padding:28px 22px 24px;
   margin-bottom:20px;
   background:linear-gradient(140deg,var(--brand-navy) 0%,#151F2C 100%);
   text-align:center;position:relative;overflow:hidden;
@@ -222,9 +226,9 @@ input[type=number]:focus{
 
 /* ── PDF button ── */
 .btn-pdf{
-  width:100%;padding:12px 16px;
+  width:100%;padding:12px 16px;min-height:44px;
   background:var(--brand-orange);color:#fff;
-  border:none;border-radius:10px;cursor:pointer;
+  border:none;border-radius:8px;cursor:pointer;
   font-family:'Inter',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;
   display:flex;align-items:center;justify-content:center;gap:8px;
   transition:opacity .15s,transform .1s;
@@ -316,7 +320,7 @@ footer a:hover{color:var(--text)}
           BHN — Brinell Hardness
           <span class="unit-tag">HB</span>
         </div>
-        <input type="number" id="inBHN" min="1" max="900" step="1" placeholder="e.g. 250" oninput="calc()">
+        <input type="number" id="inBHN" min="1" max="900" step="1" placeholder="e.g. 250" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
       </div>
 
       <div class="input-group">
@@ -324,7 +328,7 @@ footer a:hover{color:var(--text)}
           Width
           <span class="unit-tag" id="lblW">in</span>
         </div>
-        <input type="number" id="inW" min="0.001" step="0.001" placeholder="e.g. 4.000" oninput="calc()">
+        <input type="number" id="inW" min="0.001" step="0.001" placeholder="e.g. 4.000" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
       </div>
 
       <div class="input-group">
@@ -332,7 +336,7 @@ footer a:hover{color:var(--text)}
           Thickness
           <span class="unit-tag" id="lblT">in</span>
         </div>
-        <input type="number" id="inT" min="0.001" step="0.001" placeholder="e.g. 2.500" oninput="calc()">
+        <input type="number" id="inT" min="0.001" step="0.001" placeholder="e.g. 2.500" oninput="calc()" inputmode="decimal" pattern="[0-9]*">
       </div>
 
       <div class="input-group">
@@ -565,27 +569,27 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload()});
 }
 </script>
-<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0B111A;color:#f8fafc;border:1px solid rgba(25,211,230,.45);border-radius:10px;padding:11px 16px;font-size:12.5px;font-family:'Inter',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
+<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--bg-elevated);color:var(--text-primary);border:1px solid rgba(25,211,230,.45);border-radius:8px;padding:11px 16px;font-size:12.5px;font-family:'Inter',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
   <span>Update available</span>
-  <button onclick="window.location.reload()" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Refresh</button>
+  <button onclick="window.location.reload()" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px">Refresh</button>
 </div>
 
 <style>
 #saveModal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;display:none;align-items:center;justify-content:center;padding:20px}
 #saveModal.open{display:flex}
-#saveModalBox{background:var(--surface,#fff);border:1px solid var(--line,#d6dde7);border-radius:14px;padding:26px 28px 22px;width:100%;max-width:380px;box-shadow:0 16px 48px rgba(0,0,0,.22)}
+#saveModalBox{background:var(--surface,#fff);border:1px solid var(--line,#d6dde7);border-radius:8px;padding:26px 28px 22px;width:100%;max-width:380px;box-shadow:0 16px 48px rgba(0,0,0,.22)}
 #saveModalBox h3{font-size:15px;font-weight:800;color:var(--text,#152033);margin:0 0 4px}
 #saveModalBox p{font-size:12px;color:var(--muted,#667085);margin:0 0 16px}
 #saveModalBox label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#667085);display:block;margin-bottom:5px}
-#saveModalBox input{width:100%;height:40px;border:1px solid var(--line,#d6dde7);border-radius:8px;background:var(--input-bg,var(--surface-2,#f8fafc));color:var(--text,#152033);font:600 14px inherit;padding:0 11px;outline:none;margin-bottom:14px}
+#saveModalBox input{width:100%;height:44px;border:1px solid var(--line,#d6dde7);border-radius:8px;background:var(--input-bg,var(--surface-2,#f8fafc));color:var(--text,#152033);font:600 16px inherit;padding:0 11px;outline:none;margin-bottom:14px}
 #saveModalBox input:focus{border-color:#19D3E6;box-shadow:0 0 0 3px rgba(25,211,230,.15)}
 #saveModalBox .modal-row{display:flex;gap:8px}
-#saveModalBox .modal-row button{flex:1;height:40px;border-radius:9px;font:700 13px inherit;cursor:pointer;border:none;transition:opacity .15s}
+#saveModalBox .modal-row button{flex:1;height:44px;border-radius:8px;font:700 13px inherit;cursor:pointer;border:none;transition:opacity .15s}
 #saveModalBox .modal-row .btn-cancel{background:var(--surface-2,#f8fafc);border:1px solid var(--line,#d6dde7);color:var(--text,#152033)}
 #saveModalBox .modal-row .btn-save{background:#19D3E6;color:#fff}
 #saveModalBox .modal-row button:hover{opacity:.88}
 #saveModalBox .modal-row button:disabled{opacity:.5;cursor:not-allowed}
-#saveToast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;font:700 13px inherit;padding:.6rem 1.2rem;border-radius:9px;box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
+#saveToast{position:fixed;bottom:calc(1.5rem + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--emerald);color:#fff;font:700 13px inherit;padding:.6rem 1.2rem;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
 #saveToast.show{opacity:1}
 </style>
 

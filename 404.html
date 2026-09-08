@@ -3,21 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0B111A">
 <title>404 — AP Workspace</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%;-webkit-font-smoothing:antialiased}
+html,body{min-height:100%;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 body{background:var(--bg-app);color:var(--text-primary);font-family:var(--font-ui);transition:background .2s,color .2s}
 ::selection{background:var(--precision-cyan);color:#fff}
-.page{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;gap:0}
+.page{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:calc(2rem + env(safe-area-inset-top)) 2rem calc(2rem + env(safe-area-inset-bottom));gap:0}
 .code{
   font-size:clamp(5rem,18vw,9rem);font-weight:900;letter-spacing:-.05em;line-height:1;
   color:var(--text-primary);opacity:.07;margin-bottom:-.4rem;user-select:none;
@@ -28,13 +29,13 @@ body{background:var(--bg-app);color:var(--text-primary);font-family:var(--font-u
 .sub{font-size:12px;color:var(--text-secondary);margin-bottom:2rem;font-family:var(--font-mono);letter-spacing:.03em}
 .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .btn{
-  display:inline-flex;align-items:center;gap:6px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
   background:var(--precision-cyan);color:#0B111A;
   border:none;border-radius:var(--radius-md);
   padding:.6rem 1.4rem;font:600 12px var(--font-ui);
   text-decoration:none;cursor:pointer;
   transition:filter var(--motion-fast),transform var(--motion-fast);
-  letter-spacing:.02em;min-height:36px;
+  letter-spacing:.02em;min-height:44px;min-width:44px;
 }
 .btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .btn-ghost{
@@ -59,5 +60,8 @@ body{background:var(--bg-app);color:var(--text-primary);font-family:var(--font-u
 
 <script src="/global-features.js"></script>
 <script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
+</script>
 </body>
 </html>

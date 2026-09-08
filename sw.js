@@ -2,15 +2,18 @@
    Caches design system assets + tool shells for offline use.
    Cache-first for static assets, network-first for API calls.
 */
-var CACHE = 'ap-v1';
+var CACHE = 'ap-v2';
 var STATIC = [
   '/',
   '/tokens.css',
   '/premium.css',
   '/global-features.js',
+  '/manifest.json',
   '/flange/',
   '/torque/',
   '/tubing/',
+  '/dashboard.html',
+  '/settings.html',
   '/404.html',
   '/favicon.svg',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap'
