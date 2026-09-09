@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ap-workspace-api
+    runtime: node
+    plan: starter
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      name: ap-workspace-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_ORIGIN
+        value: https://app.anjanpatel.ca
+      - key: DB_PATH
+        value: /data/data.sqlite
+      - key: RESET_EMAIL_FROM
+        value: AP Workspace <noreply@anjanpatel.ca>
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SUPABASE_DB_URL
+        sync: false

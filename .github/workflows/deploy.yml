@@ -27,10 +27,17 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Stage site (exclude backend source)
+        run: |
+          mkdir -p dist
+          rsync -a --exclude='server' --exclude='render.yaml' --exclude='DEPLOY.md' \
+            --exclude='.github' --exclude='.git' --exclude='dist' \
+            ./ dist/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: 'dist'
 
       - name: Deploy to GitHub Pages
         id: deploy
