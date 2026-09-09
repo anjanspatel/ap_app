@@ -318,7 +318,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     <div class="sb-section" id="nav-admin-section" style="display:none">Admin</div>
     <button class="nav-item" id="nav-users" style="display:none" onclick="showSection('users')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Users
+      Foreman
     </button>
     <div class="sb-section">System</div>
     <a class="nav-item" href="/settings.html">
@@ -548,6 +548,10 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     </section>
 
     <section class="section" id="sec-users">
+      <div class="page-hd">
+        <p class="page-eyebrow">Admin</p>
+        <h1 class="page-title">Foreman</h1>
+      </div>
       <div class="panel">
         <div class="panel-hd">
           <span class="panel-title">All Users</span>
@@ -690,7 +694,7 @@ function showSection(name){
   document.querySelectorAll('.nav-item[id^="nav-"]').forEach(function(el){el.classList.remove('active')});
   $('sec-'+name).classList.add('active');
   var navEl=$('nav-'+name);if(navEl)navEl.classList.add('active');
-  var titles={dashboard:'Dashboard',tools:'Calculators',logs:'Calc Logs',users:'User Management'};
+  var titles={dashboard:'Dashboard',tools:'Calculators',logs:'Calc Logs',users:'Foreman'};
   $('tbTitle').textContent=titles[name]||name;
   if(name==='logs')loadLogs();
   if(name==='users')loadUsers();
