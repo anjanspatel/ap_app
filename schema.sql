@@ -89,3 +89,44 @@ where email = 'info@anjanpatel.ca';
 
 delete from auth.refresh_tokens
 where user_id = (select id from auth.users where email = 'info@anjanpatel.ca');
+
+-- ═══════════════════════════════════════════════════
+-- ADMIN AUDIT LOG — every grant/revoke/ban/unban performed through the
+-- admin-users Edge Function (supabase/functions/admin-users) writes a
+-- row here. Only the service role can insert (the Edge Function's own
+-- key), so this table is trustworthy — a client can never fake an
+-- entry. Admins can read it to see who did what and when.
+-- ═══════════════════════════════════════════════════
+create table if not exists public.admin_audit_log (
+  id uuid primary key default gen_random_uuid(),
+  actor_id uuid not null references auth.users(id),
+  action text not null check (action in ('set_admin','revoke_admin','ban_user','unban_user')),
+  target_user_id uuid not null references auth.users(id),
+  details jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.admin_audit_log enable row level security;
+
+drop policy if exists "admins can read audit log" on public.admin_audit_log;
+create policy "admins can read audit log"
+  on public.admin_audit_log for select
+  using ((auth.jwt() -> 'app_metadata' ->> 'is_admin')::boolean is true);
+
+-- No insert/update/delete policy is defined on purpose — only the
+-- service role (which bypasses RLS entirely) can write to this table,
+-- so even a signed-in admin cannot edit or fabricate audit history
+-- through the client SDK.
+
+-- ═══════════════════════════════════════════════════
+-- DEPLOYING THE admin-users EDGE FUNCTION
+-- From the project root, with the Supabase CLI installed and logged in:
+--
+--   supabase functions deploy admin-users --project-ref <your-project-ref>
+--
+-- The function reads SUPABASE_URL, SUPABASE_ANON_KEY, and
+-- SUPABASE_SERVICE_ROLE_KEY — all three are already auto-injected by
+-- Supabase into every Edge Function's environment, so no manual secret
+-- setup is needed. Find <your-project-ref> in the dashboard URL:
+-- supabase.com/dashboard/project/<project-ref>.
+-- ═══════════════════════════════════════════════════

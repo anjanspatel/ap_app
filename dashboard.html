@@ -229,6 +229,16 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .empty-label{font-size:12px;color:var(--dim);font-family:'JetBrains Mono',monospace}
 
 .admin-badge{font-size:9px;font-weight:700;letter-spacing:.08em;padding:1px 7px;border-radius:3px;border:1px solid rgba(0,210,122,.3);background:rgba(0,210,122,.07);color:var(--emerald);margin-left:8px}
+.badge-role{font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:3px;border:1px solid rgba(0,210,122,.3);background:rgba(0,210,122,.07);color:var(--emerald)}
+.badge-role.plain{border-color:var(--border);background:transparent;color:var(--dim)}
+.badge-status{font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:3px;border:1px solid rgba(0,210,122,.3);background:rgba(0,210,122,.07);color:var(--emerald)}
+.badge-status.banned{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);color:var(--error)}
+.row-action{font-size:11px;font-weight:600;color:var(--indigo-fg);background:none;border:1px solid var(--border);border-radius:5px;padding:5px 10px;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color var(--ease),color var(--ease),background var(--ease)}
+.row-action:hover{border-color:var(--indigo-fg);background:rgba(25,211,230,.06)}
+.row-action.danger{color:var(--error)}
+.row-action.danger:hover{border-color:var(--error);background:rgba(239,68,68,.06)}
+.users-search{width:100%;max-width:280px;height:34px;border:1px solid var(--border);border-radius:6px;background:var(--elevated);color:var(--text);font:500 12px 'Inter',sans-serif;padding:0 12px;outline:none}
+.users-search:focus{border-color:var(--indigo-fg)}
 
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--elevated);border:1px solid var(--border);color:var(--text);font:500 12px 'JetBrains Mono',monospace;padding:8px 16px;border-radius:5px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;white-space:nowrap}
 .toast.show{opacity:1}
@@ -306,6 +316,11 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     <button class="nav-item" id="nav-logs" onclick="showSection('logs')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Calc Logs
+    </button>
+    <div class="sb-section" id="nav-admin-section" style="display:none">Admin</div>
+    <button class="nav-item" id="nav-users" style="display:none" onclick="showSection('users')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Users
     </button>
     <div class="sb-section">System</div>
     <a class="nav-item" href="/settings.html">
@@ -534,6 +549,22 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       </div>
     </section>
 
+    <section class="section" id="sec-users">
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-title">All Users</span>
+          <input class="users-search" id="usersSearch" type="search" placeholder="Search by email…" oninput="renderUsers()">
+          <span class="panel-count" id="usersCount">—</span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Email</th><th>Joined</th><th>Last sign-in</th><th>Role</th><th>Status</th><th></th></tr></thead>
+            <tbody id="usersRows"><tr><td colspan="6" class="empty"><span class="empty-label">Loading…</span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <div id="adminPanel" style="display:none;margin-top:16px">
       <div class="metrics" style="margin-bottom:16px">
         <div class="metric">
@@ -665,9 +696,10 @@ function showSection(name){
   document.querySelectorAll('.nav-item[id^="nav-"]').forEach(function(el){el.classList.remove('active')});
   $('sec-'+name).classList.add('active');
   var navEl=$('nav-'+name);if(navEl)navEl.classList.add('active');
-  var titles={dashboard:'Dashboard',tools:'Calculators',logs:'Calc Logs'};
+  var titles={dashboard:'Dashboard',tools:'Calculators',logs:'Calc Logs',users:'User Management'};
   $('tbTitle').textContent=titles[name]||name;
   if(name==='logs')loadLogs();
+  if(name==='users')loadUsers();
   closeSidebar();
 }
 
@@ -713,6 +745,8 @@ async function init(){
   if(meta.is_admin===true){
     $('sbRole').textContent='Admin';
     $('adminPanel').style.display='';
+    $('nav-admin-section').style.display='';
+    $('nav-users').style.display='';
     loadAdmin();
   }
   var hr=new Date().getHours();
@@ -910,6 +944,66 @@ function renderAdminStats(rows){
     $('aStatToolPct').textContent='No data';
   }
 }
+
+/* ── User Management ── */
+var allUsers=[];
+
+async function loadUsers(){
+  var tbody=$('usersRows');
+  tbody.innerHTML='<tr><td colspan="6" class="empty"><span class="empty-label">Loading…</span></td></tr>';
+  var r=await sb.functions.invoke('admin-users',{body:{action:'list'}});
+  if(r.error||!r.data||r.data.error){
+    tbody.innerHTML='<tr><td colspan="6" class="empty"><span class="empty-label">'+esc((r.data&&r.data.error)||'Could not load users.')+'</span></td></tr>';
+    return;
+  }
+  allUsers=r.data.users||[];
+  renderUsers();
+}
+
+function renderUsers(){
+  var q=($('usersSearch').value||'').toLowerCase().trim();
+  var rows=q?allUsers.filter(function(u){return (u.email||'').toLowerCase().indexOf(q)!==-1}):allUsers;
+  $('usersCount').textContent=rows.length+' of '+allUsers.length;
+  var tbody=$('usersRows');
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="6" class="empty"><span class="empty-label">No matching users.</span></td></tr>';return}
+  tbody.innerHTML=rows.map(function(u){
+    var joined=u.created_at?new Date(u.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'—';
+    var lastSeen=u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'Never';
+    var isBanned=!!u.banned_until;
+    var roleBadge=u.is_admin?'<span class="badge-role">Admin</span>':'<span class="badge-role plain">User</span>';
+    var statusBadge=isBanned?'<span class="badge-status banned">Banned</span>':'<span class="badge-status">Active</span>';
+    var adminBtn='<button class="row-action" data-act="admin" data-id="'+esc(u.id)+'" data-make="'+(!u.is_admin)+'" data-email="'+esc(u.email)+'">'+(u.is_admin?'Revoke admin':'Make admin')+'</button>';
+    var banBtn='<button class="row-action'+(isBanned?'':' danger')+'" data-act="ban" data-id="'+esc(u.id)+'" data-make="'+(!isBanned)+'" data-email="'+esc(u.email)+'">'+(isBanned?'Unban':'Ban')+'</button>';
+    return '<tr><td>'+esc(u.email||'—')+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
+      +'<td style="display:flex;gap:6px;justify-content:flex-end">'+adminBtn+banBtn+'</td></tr>';
+  }).join('');
+}
+
+async function toggleAdmin(userId,makeAdmin,email){
+  var verb=makeAdmin?'grant admin access to':'revoke admin access from';
+  if(!confirm('Are you sure you want to '+verb+' '+email+'?'))return;
+  var r=await sb.functions.invoke('admin-users',{body:{action:'set_admin',user_id:userId,is_admin:makeAdmin}});
+  if(r.error||!r.data||r.data.error){toast('Error: '+((r.data&&r.data.error)||'could not update role.'));return}
+  toast(makeAdmin?'Admin access granted.':'Admin access revoked.');
+  loadUsers();
+}
+
+async function toggleBan(userId,ban,email){
+  var verb=ban?'ban':'unban';
+  if(!confirm('Are you sure you want to '+verb+' '+email+'?'+(ban?' They will be signed out and unable to sign in again until unbanned.':'')))return;
+  var r=await sb.functions.invoke('admin-users',{body:{action:ban?'ban':'unban',user_id:userId}});
+  if(r.error||!r.data||r.data.error){toast('Error: '+((r.data&&r.data.error)||'could not update status.'));return}
+  toast(ban?'User banned.':'User unbanned.');
+  loadUsers();
+}
+
+$('usersRows').addEventListener('click',function(e){
+  var btn=e.target.closest('button[data-act]');
+  if(!btn)return;
+  var id=btn.dataset.id,make=btn.dataset.make==='true',email=btn.dataset.email;
+  if(btn.dataset.act==='admin')toggleAdmin(id,make,email);
+  else if(btn.dataset.act==='ban')toggleBan(id,make,email);
+});
 
 /* ── Detail panel ── */
 function openDetail(id){
