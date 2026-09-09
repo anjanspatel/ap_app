@@ -88,7 +88,7 @@ function requireAuth(req, res, next) {
   const user = getUserBySession(token);
   if (!user) return res.status(401).json({ error: 'Not signed in' });
   if (user.banned_until && new Date(user.banned_until) > new Date()) {
-    return res.status(403).json({ error: 'This account has been banned' });
+    return res.status(403).json({ error: 'This account has been blocked' });
   }
   req.user = user;
   next();

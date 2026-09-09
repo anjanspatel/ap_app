@@ -44,11 +44,24 @@ app.set('trust proxy', 1);
 // email doesn't already exist.
 if (process.env.BOOTSTRAP_ADMIN_EMAIL && process.env.BOOTSTRAP_ADMIN_PASSWORD) {
   const email = process.env.BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim();
-  const exists = db.prepare('select 1 from users where email = ?').get(email);
-  if (!exists) {
+  if (process.env.BOOTSTRAP_ADMIN_PASSWORD.length < 8) {
+    // Fail loudly instead of silently creating a login nobody can use — the
+    // sign-in page itself refuses to submit anything under 8 characters.
+    console.error(
+      `BOOTSTRAP_ADMIN_PASSWORD is only ${process.env.BOOTSTRAP_ADMIN_PASSWORD.length} characters — ` +
+        'it must be at least 8, or this account could never sign in. Not creating it.'
+    );
+  } else if (!db.prepare('select 1 from users where email = ?').get(email)) {
     db.prepare(
-      'insert into users (id, email, password_hash, is_admin, created_at) values (?,?,?,1,?)'
-    ).run(crypto.randomUUID(), email, hashPassword(process.env.BOOTSTRAP_ADMIN_PASSWORD), new Date().toISOString());
+      'insert into users (id, email, password_hash, first_name, last_name, is_admin, created_at) values (?,?,?,?,?,1,?)'
+    ).run(
+      crypto.randomUUID(),
+      email,
+      hashPassword(process.env.BOOTSTRAP_ADMIN_PASSWORD),
+      process.env.BOOTSTRAP_ADMIN_FIRST_NAME || null,
+      process.env.BOOTSTRAP_ADMIN_LAST_NAME || null,
+      new Date().toISOString()
+    );
     console.log(`Bootstrapped admin account for ${email}`);
   }
 }
@@ -113,7 +126,7 @@ app.post('/api/auth/signin', signinLimiter, (req, res) => {
   }
 
   if (user.banned_until && new Date(user.banned_until) > new Date()) {
-    return res.status(403).json({ error: 'This account has been banned' });
+    return res.status(403).json({ error: 'This account has been blocked' });
   }
 
   db.prepare(

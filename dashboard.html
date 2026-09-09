@@ -1022,9 +1022,9 @@ function renderUsers(){
     var lastSeen=u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'Never';
     var isBanned=!!u.banned_until;
     var roleBadge=u.is_admin?'<span class="badge-role">Admin</span>':'<span class="badge-role plain">User</span>';
-    var statusBadge=isBanned?'<span class="badge-status banned">Banned</span>':'<span class="badge-status">Active</span>';
+    var statusBadge=isBanned?'<span class="badge-status banned">Blocked</span>':'<span class="badge-status">Active</span>';
     var adminBtn='<button class="row-action" data-act="admin" data-id="'+esc(u.id)+'" data-make="'+(!u.is_admin)+'" data-email="'+esc(u.email)+'">'+(u.is_admin?'Revoke admin':'Make admin')+'</button>';
-    var banBtn='<button class="row-action'+(isBanned?'':' danger')+'" data-act="ban" data-id="'+esc(u.id)+'" data-make="'+(!isBanned)+'" data-email="'+esc(u.email)+'">'+(isBanned?'Unban':'Ban')+'</button>';
+    var banBtn='<button class="row-action'+(isBanned?'':' danger')+'" data-act="ban" data-id="'+esc(u.id)+'" data-make="'+(!isBanned)+'" data-email="'+esc(u.email)+'">'+(isBanned?'Unblock':'Block')+'</button>';
     var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'—';
     return '<tr><td>'+esc(name)+'</td><td>'+esc(u.email||'—')+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
       +'<td style="display:flex;gap:6px;justify-content:flex-end">'+adminBtn+banBtn+'</td></tr>';
@@ -1065,11 +1065,11 @@ async function toggleAdmin(userId,makeAdmin,email){
 }
 
 async function toggleBan(userId,ban,email){
-  var verb=ban?'ban':'unban';
-  if(!confirm('Are you sure you want to '+verb+' '+email+'?'+(ban?' They will be signed out and unable to sign in again until unbanned.':'')))return;
+  var verb=ban?'block':'unblock';
+  if(!confirm('Are you sure you want to '+verb+' '+email+'?'+(ban?' They will be signed out and unable to sign in again until unblocked.':'')))return;
   var r=ban?await api.adminBan(userId):await api.adminUnban(userId);
   if(r.error){toast('Error: '+(r.error||'could not update status.'));return}
-  toast(ban?'User banned.':'User unbanned.');
+  toast(ban?'User blocked.':'User unblocked.');
   loadUsers();
 }
 
