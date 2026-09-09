@@ -249,9 +249,13 @@
   })();
 
   /* ── 5. Skip to Content ──────────────────────
-     Accessibility: visible on keyboard focus.
+     Accessibility: visible on keyboard focus. Pages that already ship
+     their own skip-link (targeting whatever id their layout actually
+     uses) are left alone — this only fills the gap on pages without one.
   ──────────────────────────────────────────────── */
+  if (!document.querySelector('.skip-link') && document.getElementById('main-content')) {
   var skip = document.createElement('a');
+  skip.className = 'skip-link';
   skip.href = '#main-content';
   skip.textContent = 'Skip to main content';
   skip.style.cssText = [
@@ -264,6 +268,7 @@
   skip.addEventListener('focus', function() { skip.style.top = '0'; });
   skip.addEventListener('blur',  function() { skip.style.top = '-60px'; });
   document.body.insertBefore(skip, document.body.firstChild);
+  }
 
   /* ── 7. Last Updated Date ────────────────────
      Populates any .ap-last-updated span.

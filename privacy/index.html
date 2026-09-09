@@ -11,6 +11,7 @@
 <meta name="description" content="Privacy policy for AP Workspace — how your data is collected, used, and protected.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://app.anjanpatel.ca/privacy/">
+<link rel="canonical" href="https://app.anjanpatel.ca/privacy/">
 <meta property="og:title" content="Privacy Policy — AP Workspace">
 <meta property="og:description" content="Privacy policy for AP Workspace — how your data is collected, used, and protected.">
 <meta property="og:image" content="https://app.anjanpatel.ca/og.png">
@@ -89,11 +90,14 @@ a:hover{text-decoration:underline}
 .fmail{display:inline-flex;align-items:center;gap:4px;color:var(--dim);background:none;border:none;cursor:pointer;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0;transition:color var(--ease);min-height:44px}
 .fmail:hover{color:var(--muted)}
 @media(max-width:480px){.wrap{padding:32px 16px 60px}.tb-brand span:last-child{display:none}}
+.skip-link{position:absolute;top:-60px;left:0;background:var(--indigo,#19D3E6);color:#0B111A;padding:8px 16px;font:600 12px 'Inter',sans-serif;border-radius:0 0 4px 0;z-index:9999;text-decoration:none;transition:top 150ms ease}
+.skip-link:focus{top:0}
 </style>
 <script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 <link rel="stylesheet" href="/premium.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <header class="topbar">
   <a class="tb-brand" href="/">
@@ -108,7 +112,7 @@ a:hover{text-decoration:underline}
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap" id="main-content">
   <p class="eyebrow">Legal</p>
   <h1>Privacy Policy</h1>
   <p class="updated">Last updated: September 2026 &nbsp;·&nbsp; Jurisdiction: Alberta, Canada</p>
