@@ -63,7 +63,7 @@ body{
   background:var(--canvas);color:var(--text);
   font-family:var(--font-ui);-webkit-font-smoothing:antialiased;
   display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
+  align-items:center;
   position:relative;overflow-x:hidden;
   overscroll-behavior:none;
 }
@@ -111,8 +111,12 @@ body{
 .stage{
   position:relative;z-index:1;
   display:flex;flex-direction:column;align-items:center;
-  width:100%;
+  width:100%;flex:1;min-height:100dvh;
   padding:max(24px,env(safe-area-inset-top,24px)) 20px max(24px,env(safe-area-inset-bottom,24px));
+}
+.stage-center{
+  flex:1;width:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
 
 .hero{
@@ -171,28 +175,6 @@ body{
 .view{display:none}
 .view.active{display:block;animation:viewIn 220ms var(--anim-ease) both}
 @keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-.tabs{
-  position:relative;display:grid;grid-template-columns:1fr 1fr;
-  background:var(--tabs-bg);border:1px solid var(--border2);
-  border-radius:8px;padding:3px;margin-bottom:22px;
-}
-.tab-track{
-  position:absolute;top:3px;left:3px;
-  width:calc(50% - 3px);height:calc(100% - 6px);
-  background:var(--track-bg);border:1px solid var(--border);
-  border-radius:6px;transition:transform 200ms cubic-bezier(.22,1,.36,1);will-change:transform;
-}
-.tab{
-  position:relative;z-index:1;background:none;border:none;
-  font:500 12px var(--font-ui);color:var(--muted);
-  min-height:44px;padding:0;cursor:pointer;border-radius:5px;
-  transition:color var(--ease);
-  -webkit-tap-highlight-color:transparent;
-}
-.tab:hover{color:var(--text)}
-.tab[aria-selected="true"]{color:var(--text);font-weight:600}
-.tab:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 
 .field{margin-bottom:14px}
 .field-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
@@ -260,15 +242,6 @@ body{
 .cta-lbl{display:inline-block;transition:opacity var(--ease)}
 .cta-lbl.fade{opacity:0}
 
-.or{
-  display:flex;align-items:center;gap:10px;
-  margin:18px 0 14px;
-  font:600 9px var(--font-mono);color:var(--dim);letter-spacing:0.18em;
-}
-.or::before,.or::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
-
-.oauth{display:flex;flex-direction:column;gap:8px}
-.oauth-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ob{
   display:flex;align-items:center;justify-content:center;gap:8px;
   height:44px;background:var(--ob-bg);
@@ -362,8 +335,6 @@ body{
 [data-theme="light"] .bg-mark-text{-webkit-text-stroke:1px rgba(79,70,229,0.07)}
 [data-theme="light"] .orb-1{background:radial-gradient(circle,rgba(79,70,229,0.08) 0%,transparent 70%)}
 [data-theme="light"] .orb-2{background:radial-gradient(circle,rgba(0,168,90,0.06) 0%,transparent 70%)}
-[data-theme="light"] #btn-gh svg{fill:#0f172a}
-[data-theme="light"] .tabs{border-color:var(--border)}
 [data-theme="light"] .tab-track{box-shadow:0 1px 4px rgba(0,0,0,0.08)}
 [data-theme="light"] .or::before,[data-theme="light"] .or::after{background:linear-gradient(90deg,transparent,var(--border),transparent)}
 
@@ -401,6 +372,7 @@ body{
 
 <main class="stage">
 
+  <div class="stage-center">
   <div class="hero" aria-label="AP Workspace">
     <div class="hero-eyebrow">
       <div class="hero-mark" aria-hidden="true">
@@ -448,36 +420,6 @@ body{
         </button>
       </div>
 
-      <div class="or" aria-hidden="true">OR CONTINUE WITH</div>
-
-      <div class="oauth">
-        <div class="oauth-row">
-          <button type="button" class="ob btn-shimmer" id="btn-google" aria-label="Continue with Google">
-            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>
-              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>
-              <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>
-              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/>
-            </svg>
-            Google
-          </button>
-          <button type="button" class="ob btn-shimmer" id="btn-ms" aria-label="Continue with Microsoft">
-            <svg width="15" height="15" viewBox="0 0 21 21" aria-hidden="true">
-              <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-              <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-              <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-              <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-            </svg>
-            Microsoft
-          </button>
-        </div>
-        <button type="button" class="ob ob-full btn-shimmer" id="btn-gh" aria-label="Continue with GitHub">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="#f0f4f8" aria-hidden="true">
-            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-          </svg>
-          Continue with GitHub
-        </button>
-      </div>
 
       <p class="vsub" style="text-align:center;margin-top:16px">Access is by invitation only. <button type="button" class="link-btn" id="btn-request-access">Contact us</button> if you need an account.</p>
     </section>
@@ -518,7 +460,7 @@ body{
   </div>
 
   <!-- AP WORKSPACE Launcher (shown when authenticated) -->
-  <div id="view-launcher" style="display:none;width:100%;max-width:560px;animation:fadeUp 500ms var(--anim-ease) both">
+  <div id="view-launcher" style="display:none;width:100%;max-width:680px;animation:fadeUp 500ms var(--anim-ease) both">
     <div style="text-align:center;margin-bottom:24px">
       <p style="font:700 10px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--precision-cyan);margin-bottom:4px">AP WORKSPACE</p>
       <h1 style="font-size:clamp(20px,3vw,28px);font-weight:900;letter-spacing:-.03em;color:var(--text-primary);margin:0">Welcome back<span id="launcher-name"></span></h1>
@@ -550,6 +492,7 @@ body{
       <a href="/settings.html" style="font:500 11px var(--font-ui);color:var(--text-muted);text-decoration:none;padding:6px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);transition:color var(--motion-fast)" onmouseenter="this.style.color='var(--text-primary)'" onmouseleave="this.style.color='var(--text-muted)'">Settings</a>
       <button onclick="doSignOut()" style="font:500 11px var(--font-ui);color:var(--text-muted);background:none;border:1px solid var(--border-color);border-radius:var(--radius-md);cursor:pointer;padding:6px 12px;transition:color var(--motion-fast)" onmouseenter="this.style.color='var(--status-danger,#EF4444)'" onmouseleave="this.style.color='var(--text-muted)'">Sign out</button>
     </div>
+  </div>
   </div>
 
   <footer class="legal" role="contentinfo">
@@ -673,11 +616,6 @@ q('reset-form').addEventListener('submit',async function(e){
   setNote('rst-note','Password updated — signing in…','ok');
   setTimeout(function(){window.location.href='/dashboard.html'},1200);
 });
-function oauth(p){if(!sb){setNote('auth-note','Connection unavailable — check your network and reload.','err');return}sb.auth.signInWithOAuth({provider:p,options:{redirectTo:window.location.origin+'/dashboard.html'}})}
-q('btn-google').addEventListener('click',function(){oauth('google')});
-q('btn-ms').addEventListener('click',function(){oauth('azure')});
-q('btn-gh').addEventListener('click',function(){oauth('github')});
-
 q('btn-passkey').addEventListener('click',async function(){
   if(busy||!sb)return;
   busy=true;q('btn-passkey').disabled=true;setNote('auth-note','');
