@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <meta name="robots" content="noindex,nofollow">
@@ -289,32 +289,18 @@ footer a:hover{color:var(--text)}
   }
 }
 </style>
-<link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
-<link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://api.anjanpatel.ca">
+<link rel="dns-prefetch" href="https://api.anjanpatel.ca">
 <script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 <link rel="stylesheet" href="/premium.css">
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="/api.js"></script>
 <script>
-(function(){
-  var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-  var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-  try{
-    var _sb=supabase.createClient(SB_URL,SB_KEY);
-    window.__sb=_sb;
-    window.__sbReady=_sb.auth.getSession().then(function(r){
-      if(!r.data||!r.data.session){window.location.replace('/');return null;}
-      return r.data.session;
-    }).catch(function(){window.location.replace('/');return null;});
-  }catch(e){
-    window.__sb=null;
-    window.__sbReady=Promise.resolve(null);
-    window.location.replace('/');
-  }
-})();
+window.__sbReady=api.getSession().then(function(session){
+  if(!session){window.location.replace('/');return null;}
+  return session;
+});
 </script>
 
 <header class="site-header">
@@ -780,14 +766,13 @@ async function confirmSave(){
   try{
     var session=await window.__sbReady;
     if(!session){window.location.replace('/');return;}
-    var res=await window.__sb.from('saved_lookups').insert({
-      user_id:session.user.id,
+    var res=await api.saveLookup({
       tool:'tubing',
       label:label,
       params:params,
       result_summary:summary
     });
-    if(res.error)throw res.error;
+    if(res.error)throw new Error(res.error);
     closeSaveModal();
     document.getElementById('saveLabel').value='';
     var toast=document.getElementById('saveToast');

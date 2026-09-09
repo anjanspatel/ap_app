@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <meta name="robots" content="noindex,nofollow">
@@ -30,10 +30,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
-<link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
-<link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://api.anjanpatel.ca">
+<link rel="dns-prefetch" href="https://api.anjanpatel.ca">
 <style>
 /* tokens.css provides all design tokens */
 
@@ -275,24 +273,12 @@ footer a:hover{text-decoration:underline}
 <link rel="stylesheet" href="/premium.css">
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="/api.js"></script>
 <script>
-(function(){
-  var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-  var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-  try{
-    var _sb=supabase.createClient(SB_URL,SB_KEY);
-    window.__sb=_sb;
-    window.__sbReady=_sb.auth.getSession().then(function(r){
-      if(!r.data||!r.data.session){window.location.replace('/');return null;}
-      return r.data.session;
-    }).catch(function(){window.location.replace('/');return null;});
-  }catch(e){
-    window.__sb=null;
-    window.__sbReady=Promise.resolve(null);
-    window.location.replace('/');
-  }
-})();
+window.__sbReady=api.getSession().then(function(session){
+  if(!session){window.location.replace('/');return null;}
+  return session;
+});
 </script>
 
 <header class="site-header">
@@ -804,8 +790,7 @@ $('saveConfirmBtn').addEventListener('click',function(){
 
   window.__sbReady.then(function(sess){
     if(!sess){$('saveMsg').textContent='Not signed in.';$('saveMsg').className='modal-msg err';$('saveConfirmBtn').disabled=false;return;}
-    return window.__sb.from('saved_lookups').insert({
-      user_id:sess.user.id,
+    return api.saveLookup({
       tool:'torque',
       label:($('saveLabel').value||'').trim()||null,
       params:{
@@ -817,7 +802,7 @@ $('saveConfirmBtn').addEventListener('click',function(){
       result_summary:summary
     });
   }).then(function(res){
-    if(res&&res.error){throw res.error;}
+    if(res&&res.error){throw new Error(res.error);}
     $('saveMsg').textContent='Saved!';$('saveMsg').className='modal-msg ok';
     $('saveConfirmBtn').disabled=false;
     setTimeout(closeModal,1200);

@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
@@ -23,8 +23,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://api.anjanpatel.ca">
+<link rel="dns-prefetch" href="https://api.anjanpatel.ca">
 <style>
 /* Page-specific layout tokens */
 :root {
@@ -238,6 +238,15 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
         <div class="s-hd"><div class="s-hd-t">Change Password</div><div class="s-hd-s">Min 8 chars · applied immediately</div></div>
         <div class="s-body" style="padding:16px;gap:14px">
           <div class="inp-group">
+            <label class="inp-label" for="curPw">Current Password</label>
+            <div style="position:relative">
+              <input class="inp" type="password" id="curPw" placeholder="Enter current password" autocomplete="current-password" style="padding-right:40px">
+              <button type="button" onclick="togglePw('curPw','eye0')" aria-label="Toggle password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
+                <svg id="eye0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="inp-group">
             <label class="inp-label" for="newPw">New Password</label>
             <div style="position:relative">
               <input class="inp" type="password" id="newPw" placeholder="Enter new password" autocomplete="new-password" style="padding-right:40px">
@@ -257,15 +266,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
           </div>
           <div id="pwFb" class="fb"></div>
           <button class="btn btn-em" id="pwBtn" onclick="changePassword()">Update Password</button>
-        </div>
-      </div>
-
-      <div class="s-block" id="pkBlock" style="display:none">
-        <div class="s-hd"><div class="s-hd-t">Passkeys</div><div class="s-hd-s">Sign in on this device with Face ID, Touch ID, or a device PIN — no password to type</div></div>
-        <div class="s-body" style="padding:16px;gap:12px">
-          <div id="pkList"></div>
-          <div id="pkFb" class="fb"></div>
-          <button class="btn btn-em" id="pkAddBtn" onclick="addPasskey()">Add a passkey on this device</button>
         </div>
       </div>
 
@@ -309,15 +309,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 </div>
 
 <script src="/global-features.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="/api.js"></script>
 <script>
-var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=null;
-try{sb=supabase.createClient(SB_URL,SB_KEY,{auth:{experimental:{passkey:true}}});}catch(e){}
-var PASSKEY_SUPPORTED=typeof window.PublicKeyCredential!=='undefined';
-function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
-
 function $(id){return document.getElementById(id)}
 
 /* ── Footer (runs after DOM is ready) ── */
@@ -355,87 +348,39 @@ function setTheme(t){
 }
 
 async function init(){
-  if(!sb){window.location.href='/';return}
-  var r=await sb.auth.getSession();
-  if(!r.data||!r.data.session){window.location.href='/';return}
-  var u=r.data.session.user;
-  var email=u.email||'';
+  var session=await api.getSession();
+  if(!session){window.location.href='/';return}
+  var email=session.email||'';
   var ini=email.charAt(0).toUpperCase();
   $('sbEmail').textContent=email;
   $('sbAvatar').textContent=ini;
   $('tbAvatar').textContent=ini;
   $('fEmail').textContent=email;
-  $('fUid').textContent=u.id;
-  var meta=u.app_metadata||{};
-  if(meta.is_admin===true){$('fRole').textContent='Admin';$('sbRole').textContent='Admin'}
-  var prov=(u.app_metadata&&u.app_metadata.provider)||'email';
-  $('fProvider').textContent=prov.charAt(0).toUpperCase()+prov.slice(1);
+  $('fUid').textContent='—';
+  if(session.is_admin===true){$('fRole').textContent='Admin';$('sbRole').textContent='Admin'}
+  $('fProvider').textContent='Email';
   var t=document.documentElement.dataset.theme||'dark';
   var el=$('th-'+t);if(el)el.classList.add('active');
-  if(PASSKEY_SUPPORTED&&sb.auth.registerPasskey){$('pkBlock').style.display='';loadPasskeys();}
-}
-
-/* ── Passkeys ── */
-function pkFeedback(type,msg){var el=$('pkFb');el.textContent=msg;el.className='fb '+type;if(msg)setTimeout(function(){el.className='fb'},4000)}
-async function loadPasskeys(){
-  var list=$('pkList');
-  try{
-    var r=await sb.auth.passkey.list();
-    var rows=(r.data||[]);
-    if(!rows.length){list.innerHTML='<div class="row-sub">No passkeys registered on any device yet.</div>';return}
-    list.innerHTML=rows.map(function(p){
-      var name=escHtml(p.friendly_name||'Passkey');
-      var date=p.created_at?new Date(p.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'';
-      return '<div class="row-between" style="padding:10px 0;border-bottom:1px solid var(--border)">'+
-        '<div><div class="row-label">'+name+'</div><div class="row-sub">Added '+date+'</div></div>'+
-        '<button class="btn btn-danger" onclick="removePasskey(\''+p.id+'\')">Remove</button>'+
-        '</div>';
-    }).join('');
-  }catch(e){
-    list.innerHTML='';
-    pkFeedback('err','Could not load passkeys — this project may not have passkeys enabled yet.');
-  }
-}
-async function addPasskey(){
-  $('pkAddBtn').disabled=true;pkFeedback('','');
-  try{
-    var r=await sb.auth.registerPasskey();
-    if(r.error){pkFeedback('err',r.error.message||'Could not add passkey.');return}
-    pkFeedback('ok','Passkey added.');
-    loadPasskeys();
-  }catch(e){
-    pkFeedback('err','Passkeys are not available on this device or browser.');
-  }finally{
-    $('pkAddBtn').disabled=false;
-  }
-}
-async function removePasskey(id){
-  try{
-    var r=await sb.auth.passkey.delete({passkeyId:id});
-    if(r&&r.error){pkFeedback('err',r.error.message||'Could not remove passkey.');return}
-    loadPasskeys();
-  }catch(e){
-    pkFeedback('err','Could not remove passkey.');
-  }
 }
 
 async function changePassword(){
-  var p=$('newPw').value,c=$('confirmPw').value;
+  var cur=$('curPw').value,p=$('newPw').value,c=$('confirmPw').value;
+  if(!cur){fb('err','Enter your current password.');return}
   if(!p){fb('err','Enter a new password.');return}
   if(p.length<8){fb('err','Minimum 8 characters required.');return}
   if(p!==c){fb('err','Passwords do not match.');return}
   $('pwBtn').disabled=true;$('pwBtn').textContent='Updating…';
-  var r=await sb.auth.updateUser({password:p});
+  var r=await api.changePassword(cur,p);
   $('pwBtn').disabled=false;$('pwBtn').textContent='Update Password';
-  if(r.error){fb('err',r.error.message);return}
+  if(r.error){fb('err',r.error);return}
   fb('ok','Password updated.');
-  $('newPw').value='';$('confirmPw').value='';
+  $('curPw').value='';$('newPw').value='';$('confirmPw').value='';
 }
 function fb(type,msg){var el=$('pwFb');el.textContent=msg;el.className='fb '+type;setTimeout(function(){el.className='fb'},4000)}
 function signOut(){document.getElementById('signout-modal').classList.add('open')}
 function closeSignoutModal(){document.getElementById('signout-modal').classList.remove('open')}
-async function confirmSignOut(){closeSignoutModal();if(!sb){window.location.href='/';return}await sb.auth.signOut();window.location.href='/'}
-async function signOutAll(){closeSignoutModal();if(!sb){window.location.href='/';return}await sb.auth.signOut({scope:'global'});window.location.href='/'}
+async function confirmSignOut(){closeSignoutModal();await api.signOut();window.location.href='/'}
+async function signOutAll(){closeSignoutModal();await api.signOutAllDevices();window.location.href='/'}
 
 function togglePw(fieldId,iconId){
   var f=document.getElementById(fieldId);

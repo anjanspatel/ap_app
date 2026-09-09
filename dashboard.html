@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
@@ -23,10 +23,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
-<link rel="preconnect" href="https://uejlrooupfcrqimffgsn.supabase.co">
-<link rel="dns-prefetch" href="https://uejlrooupfcrqimffgsn.supabase.co">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://api.anjanpatel.ca">
+<link rel="dns-prefetch" href="https://api.anjanpatel.ca">
 <style>
 /* Page-specific layout tokens */
 :root {
@@ -639,7 +637,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   </button>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="/api.js"></script>
 <script>
 (function(){
   document.getElementById('legalYr').textContent=new Date().getFullYear();
@@ -647,10 +645,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   document.getElementById('footer-mail').addEventListener('click',function(){window.location.href='mailto:'+e});
 })();
 
-var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=null;
-try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
 var session=null;
 var allRows=[];
 
@@ -732,17 +726,15 @@ function fmtP(tool,p){
 
 /* ── Auth guard ── */
 async function init(){
-  if(!sb){window.location.href='/';return}
-  var r=await sb.auth.getSession();
-  if(!r.data||!r.data.session){window.location.href='/';return}
-  session=r.data.session;
-  var email=session.user.email||'';
+  var s=await api.getSession();
+  if(!s){window.location.href='/';return}
+  session=s;
+  var email=session.email||'';
   var init=email.charAt(0).toUpperCase();
   $('sbEmail').textContent=email;
   $('sbAvatar').textContent=init;
   $('tbAvatar').textContent=init;
-  var meta=session.user.app_metadata||{};
-  if(meta.is_admin===true){
+  if(session.is_admin===true){
     $('sbRole').textContent='Admin';
     $('adminPanel').style.display='';
     $('nav-admin-section').style.display='';
@@ -757,20 +749,19 @@ async function init(){
 }
 
 async function signOut(){
-  if(!sb){window.location.href='/';return}
-  await sb.auth.signOut();window.location.href='/';
+  await api.signOut();window.location.href='/';
 }
 
 /* ── Dashboard ── */
 async function loadDashboard(){
-  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
+  var r=await api.getLookups();
   if(r.error){
-    console.error('saved_lookups fetch error:',r.error.message,r.error.code,r.error.hint);
+    console.error('saved_lookups fetch error:',r.error);
     var wrap=$('recentWrap');
-    if(wrap)wrap.innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error.message||r.error.code)+'</span></div>';
+    if(wrap)wrap.innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error)+'</span></div>';
     return;
   }
-  var rows=r.data||[];
+  var rows=r.lookups||[];
   allRows=rows;
   $('mSaved').textContent=rows.length;
   if(rows.length>0){
@@ -820,13 +811,13 @@ function renderRecent(rows){
 /* ── Logs ── */
 async function loadLogs(){
   showSkeleton('logsWrap',5);
-  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
+  var r=await api.getLookups();
   if(r.error){
-    console.error('saved_lookups logs error:',r.error.message);
-    $('logsWrap').innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error.message||r.error.code)+'</span></div>';
+    console.error('saved_lookups logs error:',r.error);
+    $('logsWrap').innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error)+'</span></div>';
     return;
   }
-  var rows=r.data||[];
+  var rows=r.lookups||[];
   allRows=rows;
   var total=rows.length;
   $('logCount').textContent=total+' records';
@@ -892,7 +883,7 @@ document.addEventListener('keydown',function(e){
 });
 
 async function delLookup(id){
-  var r=await sb.from('saved_lookups').delete().eq('id',id).eq('user_id',session.user.id);
+  var r=await api.deleteLookup(id);
   if(r.error){toast('Error deleting.');return}
   toast('Lookup deleted.');
   loadDashboard();
@@ -901,8 +892,8 @@ async function delLookup(id){
 
 /* ── Admin ── */
 async function loadAdmin(){
-  var r=await sb.from('saved_lookups').select('id,user_id,tool,label,params,created_at').order('created_at',{ascending:false}).limit(200);
-  var rows=r.data||[];
+  var r=await api.adminAllLookups();
+  var rows=(r.lookups)||[];
   $('adminCount').textContent=rows.length+' total';
   renderAdminStats(rows);
   var tbody=$('adminRows');
@@ -951,12 +942,12 @@ var allUsers=[];
 async function loadUsers(){
   var tbody=$('usersRows');
   tbody.innerHTML='<tr><td colspan="6" class="empty"><span class="empty-label">Loading…</span></td></tr>';
-  var r=await sb.functions.invoke('admin-users',{body:{action:'list'}});
-  if(r.error||!r.data||r.data.error){
-    tbody.innerHTML='<tr><td colspan="6" class="empty"><span class="empty-label">'+esc((r.data&&r.data.error)||'Could not load users.')+'</span></td></tr>';
+  var r=await api.adminListUsers();
+  if(r.error){
+    tbody.innerHTML='<tr><td colspan="6" class="empty"><span class="empty-label">'+esc(r.error||'Could not load users.')+'</span></td></tr>';
     return;
   }
-  allUsers=r.data.users||[];
+  allUsers=r.users||[];
   renderUsers();
 }
 
@@ -982,8 +973,8 @@ function renderUsers(){
 async function toggleAdmin(userId,makeAdmin,email){
   var verb=makeAdmin?'grant admin access to':'revoke admin access from';
   if(!confirm('Are you sure you want to '+verb+' '+email+'?'))return;
-  var r=await sb.functions.invoke('admin-users',{body:{action:'set_admin',user_id:userId,is_admin:makeAdmin}});
-  if(r.error||!r.data||r.data.error){toast('Error: '+((r.data&&r.data.error)||'could not update role.'));return}
+  var r=await api.adminSetAdmin(userId,makeAdmin);
+  if(r.error){toast('Error: '+(r.error||'could not update role.'));return}
   toast(makeAdmin?'Admin access granted.':'Admin access revoked.');
   loadUsers();
 }
@@ -991,8 +982,8 @@ async function toggleAdmin(userId,makeAdmin,email){
 async function toggleBan(userId,ban,email){
   var verb=ban?'ban':'unban';
   if(!confirm('Are you sure you want to '+verb+' '+email+'?'+(ban?' They will be signed out and unable to sign in again until unbanned.':'')))return;
-  var r=await sb.functions.invoke('admin-users',{body:{action:ban?'ban':'unban',user_id:userId}});
-  if(r.error||!r.data||r.data.error){toast('Error: '+((r.data&&r.data.error)||'could not update status.'));return}
+  var r=ban?await api.adminBan(userId):await api.adminUnban(userId);
+  if(r.error){toast('Error: '+(r.error||'could not update status.'));return}
   toast(ban?'User banned.':'User unbanned.');
   loadUsers();
 }
