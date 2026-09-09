@@ -1,6 +1,9 @@
-// AP Workspace — self-hosted backend (replaces Supabase)
+// AP Workspace — self-hosted backend (replaces Supabase) AND static site host.
+// One process serves both the JSON API and the site's HTML/CSS/JS, so the
+// whole app is one deployment at one URL instead of split across two hosts.
 require('dotenv').config();
 
+const path = require('path');
 const crypto = require('crypto');
 const express = require('express');
 const helmet = require('helmet');
@@ -34,7 +37,11 @@ const PORT = process.env.PORT || 3001;
 // outright (express-rate-limit refuses to start without it in prod).
 app.set('trust proxy', 1);
 
-app.use(helmet());
+// contentSecurityPolicy is off here because every HTML page declares its own
+// CSP via a <meta> tag, tuned per-page (fonts, analytics, the flange PDF
+// lib); helmet's stricter default would fight that policy instead of
+// complementing it. Its other headers (HSTS, nosniff, frame options) stay on.
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: ORIGIN, credentials: true }));
@@ -261,6 +268,29 @@ app.post('/api/admin/users/:id/unban', requireAdmin, requireCsrf, (req, res) => 
 });
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
+
+// ── Static site ──────────────────────────────────────
+// Serves the HTML/CSS/JS pages from the repo root so the whole app — API and
+// site — is one deployment. This directory also holds server/ itself,
+// render.yaml, etc., so block those explicitly rather than publish the
+// backend's source alongside the pages.
+const SITE_ROOT = path.join(__dirname, '..');
+const BLOCKED_PREFIXES = ['/server', '/.git', '/.github', '/test', '/.dev'];
+const BLOCKED_FILES = ['/render.yaml', '/DEPLOY.md', '/.gitignore'];
+
+app.use((req, res, next) => {
+  const p = req.path;
+  if (BLOCKED_FILES.includes(p) || BLOCKED_PREFIXES.some((bp) => p === bp || p.startsWith(bp + '/'))) {
+    return res.status(404).sendFile(path.join(SITE_ROOT, '404.html'));
+  }
+  next();
+});
+
+app.use(express.static(SITE_ROOT));
+
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(SITE_ROOT, '404.html'));
+});
 
 if (require.main === module) {
   app.listen(PORT, () => console.log(`AP Workspace API listening on :${PORT}`));

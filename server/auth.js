@@ -64,7 +64,10 @@ function setSessionCookies(res, session) {
   const cookieOpts = {
     httpOnly: true,
     secure: isProd,
-    sameSite: 'none',
+    // 'lax' because the API and the pages it serves share one origin now —
+    // 'none' is for cross-site cookies and requires Secure, which breaks
+    // the cookie entirely on plain http (e.g. local dev without TLS).
+    sameSite: 'lax',
     expires: session.expires,
     path: '/',
   };

@@ -5,9 +5,14 @@
    supabase.createClient). This is the single place that talks to the
    self-hosted backend instead, so auth/session/lookup logic isn't
    duplicated six times across the site.
+
+   The backend serves these pages itself (same origin), so requests are
+   relative by default — no cross-site cookie/CORS setup needed.
+   window.__API_BASE__ is an escape hatch for pointing a local static
+   checkout at a separately-running backend during development.
 */
 (function () {
-  var API_BASE = window.__API_BASE__ || 'https://api.anjanpatel.ca';
+  var API_BASE = window.__API_BASE__ || '';
 
   function getCookie(name) {
     var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
