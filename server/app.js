@@ -37,6 +37,22 @@ const PORT = process.env.PORT || 3001;
 // outright (express-rate-limit refuses to start without it in prod).
 app.set('trust proxy', 1);
 
+// Creates the very first admin account from plain environment variables,
+// so a small deployment never needs shell/terminal access at all — just
+// type an email and password into the host's dashboard once. Runs on every
+// boot but is a no-op after the first, since it only inserts when that
+// email doesn't already exist.
+if (process.env.BOOTSTRAP_ADMIN_EMAIL && process.env.BOOTSTRAP_ADMIN_PASSWORD) {
+  const email = process.env.BOOTSTRAP_ADMIN_EMAIL.toLowerCase().trim();
+  const exists = db.prepare('select 1 from users where email = ?').get(email);
+  if (!exists) {
+    db.prepare(
+      'insert into users (id, email, password_hash, is_admin, created_at) values (?,?,?,1,?)'
+    ).run(crypto.randomUUID(), email, hashPassword(process.env.BOOTSTRAP_ADMIN_PASSWORD), new Date().toISOString());
+    console.log(`Bootstrapped admin account for ${email}`);
+  }
+}
+
 // contentSecurityPolicy is off here because every HTML page declares its own
 // CSP via a <meta> tag, tuned per-page (fonts, analytics, the flange PDF
 // lib); helmet's stricter default would fight that policy instead of
@@ -221,7 +237,9 @@ app.get('/api/admin/lookups', requireAdmin, (req, res) => {
 
 app.get('/api/admin/users', requireAdmin, (req, res) => {
   const rows = db
-    .prepare('select id, email, is_admin, banned_until, created_at, last_sign_in_at from users order by created_at desc')
+    .prepare(
+      'select id, email, first_name, last_name, is_admin, banned_until, created_at, last_sign_in_at from users order by created_at desc'
+    )
     .all();
   res.json({ users: rows.map((u) => ({ ...u, is_admin: !!u.is_admin })) });
 });
@@ -231,6 +249,35 @@ function logAdminAction(actorId, action, targetUserId, details) {
     'insert into admin_audit_log (id, actor_id, action, target_user_id, details, created_at) values (?,?,?,?,?,?)'
   ).run(crypto.randomUUID(), actorId, action, targetUserId, JSON.stringify(details || {}), new Date().toISOString());
 }
+
+// Lets an admin create a user directly from the Admin Console — no shell,
+// no environment variables, no signup page. This is the only way accounts
+// get created day-to-day; migration and the bootstrap env vars just seed
+// the very first one.
+app.post('/api/admin/users', requireAdmin, requireCsrf, (req, res) => {
+  const { first_name, last_name, email, password, is_admin } = req.body || {};
+  if (!email || !EMAIL_RE.test(email)) return res.status(400).json({ error: 'Enter a valid email' });
+  if (!password || password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
+
+  const normalizedEmail = String(email).toLowerCase().trim();
+  const existing = db.prepare('select 1 from users where email = ?').get(normalizedEmail);
+  if (existing) return res.status(409).json({ error: 'A user with that email already exists' });
+
+  const id = crypto.randomUUID();
+  db.prepare(
+    'insert into users (id, email, password_hash, first_name, last_name, is_admin, created_at) values (?,?,?,?,?,?,?)'
+  ).run(
+    id,
+    normalizedEmail,
+    hashPassword(password),
+    first_name || null,
+    last_name || null,
+    is_admin === true ? 1 : 0,
+    new Date().toISOString()
+  );
+  logAdminAction(req.user.id, 'create_user', id, { email: normalizedEmail, is_admin: is_admin === true });
+  res.json({ id });
+});
 
 app.post('/api/admin/users/:id/set-admin', requireAdmin, requireCsrf, (req, res) => {
   const targetId = req.params.id;

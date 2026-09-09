@@ -83,6 +83,9 @@
     adminListUsers: function () {
       return request('/api/admin/users');
     },
+    adminCreateUser: function (user) {
+      return request('/api/admin/users', { method: 'POST', body: user });
+    },
     adminAllLookups: function () {
       return request('/api/admin/lookups');
     },

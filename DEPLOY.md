@@ -5,6 +5,9 @@ the site's HTML/CSS/JS — one deployment, one URL, no separate frontend
 host. It needs a persistent disk (SQLite lives in one file), so it can't
 run on Render's free tier — use the Starter plan or above.
 
+No shell or terminal access is needed anywhere in this — everything below
+is filling in text boxes in Render's dashboard or your DNS provider's.
+
 ## 1. Create the Render service
 
 1. Sign in at **dashboard.render.com** with **"Sign up with GitHub"** — no
@@ -13,20 +16,23 @@ run on Render's free tier — use the Starter plan or above.
 2. **New +** → **Blueprint** → select `anjanspatel/ap_app`. Render detects
    `render.yaml` at the repo root and proposes the `ap-workspace` service
    with a 1GB persistent disk mounted at `/data`.
-3. Before deploying, fill in the two secrets it prompts for (marked
+3. Before deploying, fill in the values it prompts for (marked
    `sync: false` in `render.yaml`, so Render asks rather than storing them
    in the file):
+   - `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD` — pick any email
+     and password. The server creates this as your first admin account the
+     moment it starts up — this is how you get your own login, with no
+     migration and no shell command needed.
    - `RESEND_API_KEY` — from resend.com, used only for password-reset
      emails. Leave blank for now if you don't have one — the server falls
      back to logging reset links to its own console, fine for a first
      deploy but real users can't reset their password by email until this
      is set.
-   - `SUPABASE_DB_URL` — from the Supabase dashboard → Settings → Database
-     → Connection string (URI). Only needed once, for the migration in
-     step 3. Safe to leave set afterward.
+   - `SUPABASE_DB_URL` — only fill this in if you have existing Supabase
+     accounts to carry over (see step 4). Leave blank otherwise.
 4. Confirm the **Starter** plan (needed for the persistent disk) and
-   deploy. Once live, visit `https://<your-service>.onrender.com/` — you
-   should see the actual AP Workspace site, served by this one service.
+   deploy. Once live, visit `https://<your-service>.onrender.com/` and
+   sign in with the email/password from step 3 — that's the whole setup.
 
 ## 2. Point app.anjanpatel.ca at it
 
@@ -45,54 +51,51 @@ There's no `api.anjanpatel.ca` to set up — the API lives at the same
 origin as the site (`/api/...` paths), so there's only ever one domain to
 manage.
 
-## 3. Migrate existing users and lookups
+## 3. Add the rest of your users
 
-Only run this once, after `SUPABASE_DB_URL` is set (step 1.3):
+Sign in with the admin account from step 1, open the **Admin Console**,
+and click **+ Add User**. Fill in their name, email, and a password, tick
+"Grant admin access" if they need it, and they can sign in immediately —
+no email verification step, no signup page, nothing else to configure.
+Repeat for anyone else who needs access. This is the normal, day-to-day
+way accounts get created — the bootstrap step above only ever creates the
+first one.
 
-1. Open the Render service → **Shell**.
-2. Run:
+## 4. (Optional) Migrate existing Supabase accounts
+
+Only relevant if people already have accounts on the old Supabase-based
+version of the site and you want them to keep their existing password
+instead of you creating fresh logins for them in step 3.
+
+1. Set `SUPABASE_DB_URL` on the Render service (Environment tab) if you
+   skipped it in step 1 — from the Supabase dashboard → Settings →
+   Database → Connection string (URI).
+2. Open the Render service → **Shell** (the one place this does need a
+   command) → run:
    ```
    npm run migrate
    ```
-3. It prints row counts for users and saved lookups it copied over. Spot-
-   check by signing in with 2-3 real existing accounts (their Supabase
-   bcrypt password hashes carry over directly, so existing passwords keep
-   working with no reset — and if your account was flagged admin in
-   Supabase, it stays admin here too).
-4. The script uses `insert or ignore`, so it's safe to re-run — it won't
-   duplicate anything already migrated.
+3. It prints row counts for users and saved lookups it copied over.
+   Supabase bcrypt password hashes carry over directly, so existing
+   passwords keep working with no reset — and an account already flagged
+   admin in Supabase stays admin here too.
+4. Safe to re-run (`insert or ignore`) — running it again after adding
+   more Supabase users won't duplicate anything already migrated.
 
-## 4. Verify before calling it done
+## 5. Verify before calling it done
 
-With DNS live and the migration run:
-
-- Visit `https://app.anjanpatel.ca/` and sign in with a migrated account.
+- Visit `https://app.anjanpatel.ca/` and sign in.
 - Save a lookup on the flange/torque/tubing pages and confirm it shows up
   on the dashboard.
 - Change your password from Settings → Security (requires entering the
   current password first).
 - Sign in from two browsers, then use "Sign out all" in one — confirm the
   other is signed out too.
-- As an admin account, open the Admin Console and confirm it lists users,
-  and that ban/unban and grant/revoke admin work.
-- As an admin, create a brand-new user directly (no Supabase history) via
-  Render's Shell — see below — and confirm they can sign in.
+- In the Admin Console, confirm the user list is correct and that
+  ban/unban and grant/revoke admin work.
 
-### Adding a user who was never in Supabase
+## 6. After it's been running for a few real days (only if you migrated)
 
-From the Render Shell:
-```
-node -e "require('./auth').hashPassword; const {hashPassword}=require('./auth'); const db=require('./db'); const crypto=require('crypto'); const id=crypto.randomUUID(); db.prepare('insert into users (id,email,password_hash,is_admin,created_at) values (?,?,?,?,?)').run(id,'someone@example.com'.toLowerCase(),hashPassword('theirTempPassword'),0,new Date().toISOString()); console.log('created', id);"
-```
-Change the email, password, and the `0`/`1` admin flag as needed. They can
-change their own password afterward from Settings → Security.
-
-## 5. After it's been running for a few real days
-
-Once you're confident the new backend is stable in production:
-
-- Pause or delete the Supabase project (Settings → General, in the
-  Supabase dashboard). Nothing in this repo calls it anymore.
-- Nothing else to clean up in the codebase — the Supabase SDK, schema, and
-  Edge Function, and the separate GitHub Pages deployment, have already
-  been removed.
+If you migrated from Supabase and are confident the new backend is
+stable: pause or delete the Supabase project (Settings → General, in the
+Supabase dashboard). Nothing in this repo calls it anymore.

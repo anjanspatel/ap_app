@@ -17,6 +17,8 @@ db.exec(`
     id text primary key,
     email text unique not null,
     password_hash text not null,
+    first_name text,
+    last_name text,
     is_admin integer not null default 0,
     banned_until text,
     created_at text not null,
@@ -45,7 +47,7 @@ db.exec(`
   create table if not exists admin_audit_log (
     id text primary key,
     actor_id text not null references users(id),
-    action text not null check (action in ('set_admin','revoke_admin','ban_user','unban_user')),
+    action text not null check (action in ('create_user','set_admin','revoke_admin','ban_user','unban_user')),
     target_user_id text not null references users(id),
     details text,
     created_at text not null
