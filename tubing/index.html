@@ -70,7 +70,11 @@ body{
   box-shadow:var(--shadow-sm);
 }
 .logo-wrap img{width:34px;height:31px;display:block}
-.brand-name{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--text)}
+.brand-name{font-size:14px;font-weight:800;letter-spacing:.08em;color:var(--text);white-space:nowrap}
+.brand-copy{display:flex;flex-direction:column;line-height:1.05}
+.hub-back{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.03em;white-space:nowrap;
+  text-decoration:none;display:block;opacity:.65;transition:opacity .15s}
+.hub-back:hover{opacity:1;color:var(--orange-fg)}
 .header-right{display:flex;align-items:center;gap:10px}
 .hub-link{
   font-size:11px;color:var(--muted);text-decoration:none;
@@ -268,7 +272,7 @@ footer a:hover{color:var(--text)}
   @page{margin:14mm}
   html,body{background:#fff!important;color:#111!important}
   body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .site-header,.btn-pdf,.unit-row,.about-wrap,footer{display:none!important}
+  .site-header,.btn-pdf,.unit-row,.about-wrap,footer,#eng-disclaimer,#cookie-banner,#back-to-top,#sw-update-banner{display:none!important}
   main{padding:0!important;max-width:100%!important}
   .calc-layout{grid-template-columns:1fr!important;gap:16px!important}
   .card,.step,.swl-hero{break-inside:avoid}
@@ -314,12 +318,11 @@ footer a:hover{color:var(--text)}
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="/dashboard.html">
+    <a class="brand" href="/dashboard.html" aria-label="Anjan Patel Engineering — Dashboard">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
-      <span class="brand-name">ANJAN PATEL</span>
+      <span class="brand-copy"><span class="brand-name">ANJAN PATEL</span><span class="hub-back">&#8592; Dashboard</span></span>
     </a>
     <div class="header-right">
-      <a class="hub-link" href="/dashboard.html">&#8592; Dashboard</a>
       <button class="theme-btn" id="shareBtn" type="button" title="Copy shareable link to this calculation" style="position:relative"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
       <button class="theme-btn" id="saveLookupBtn" type="button" title="Save this lookup to your dashboard" onclick="openSaveModal()" style="gap:6px;display:flex;align-items:center;padding:0 12px;width:auto;font-size:13px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
       <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle colour theme"><span id="themeIcon" aria-hidden="true"></span></button>

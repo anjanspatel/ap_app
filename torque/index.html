@@ -277,7 +277,7 @@ footer a:hover{text-decoration:underline}
   @page{size:letter portrait;margin:14mm}
   html,body{background:#fff!important;color:#111!important;overflow:visible!important;height:auto!important}
   body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .site-header,footer,.job-row .hint,.field-warn-msg,.copy-btn,input[type=range],.faq-section,.info-row{display:none!important}
+  .site-header,footer,.job-row .hint,.field-warn-msg,.copy-btn,input[type=range],.faq-section,.info-row,#eng-disclaimer,#cookie-banner,#back-to-top,#sw-update-banner{display:none!important}
   .page{padding:0!important;max-width:none!important}
   .title-row{margin-bottom:6px!important}
   h1{color:#0B1F3A!important;font-size:16pt!important}
@@ -296,15 +296,9 @@ footer a:hover{text-decoration:underline}
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="/dashboard.html">
-      <div class="brand-logo-wrap">
-        <img class="brand-logo" src="/favicon.svg" alt="AP logo" width="41" height="41">
-      </div>
-      <div class="brand-copy">
-        <span class="brand-name">AP Workspace</span>
-        <span class="brand-sub">Bolt Torque Calculator</span>
-        <a class="hub-back" href="/dashboard.html">← Dashboard</a>
-      </div>
+    <a class="brand" href="/dashboard.html" aria-label="Anjan Patel Engineering — Dashboard">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
+      <span class="brand-copy"><span class="brand-name">ANJAN PATEL</span><span class="hub-back">&#8592; Dashboard</span></span>
     </a>
     <div class="header-actions">
       <button class="action-btn" id="shareBtn" type="button" title="Copy shareable link to this torque setup"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
