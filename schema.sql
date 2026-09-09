@@ -75,3 +75,17 @@ alter table public.saved_lookups add constraint saved_lookups_tool_check
 update auth.users
 set raw_app_meta_data = raw_app_meta_data || '{"is_admin": true}'::jsonb
 where email = 'you@example.com';
+
+-- ═══════════════════════════════════════════════════
+-- BAN AN ACCOUNT — sets banned_until far in the future so GoTrue
+-- rejects sign-in attempts. Reversible (set banned_until = null to
+-- unban) and non-destructive — their row and any saved_lookups stay
+-- intact, unlike deleting the user outright. Also revokes any
+-- outstanding refresh tokens so an already-open session is cut too.
+-- ═══════════════════════════════════════════════════
+update auth.users
+set banned_until = '2099-01-01T00:00:00Z'
+where email = 'info@anjanpatel.ca';
+
+delete from auth.refresh_tokens
+where user_id = (select id from auth.users where email = 'info@anjanpatel.ca');
