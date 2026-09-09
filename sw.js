@@ -46,9 +46,11 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   var url = new URL(e.request.url);
-  /* Skip non-GET, Supabase API calls, and cross-origin auth */
+  /* Skip non-GET and API calls — these must always hit the network, never
+     the cache, or a cached /api/auth/session could show someone as signed
+     in (or out, or as the wrong user) after their real session changed. */
   if (e.request.method !== 'GET') return;
-  if (url.hostname.includes('supabase.co')) return;
+  if (url.pathname.startsWith('/api/')) return;
   if (url.hostname.includes('googleapis.com') && !url.pathname.includes('/css2')) return;
 
   var isNav = e.request.mode === 'navigate';

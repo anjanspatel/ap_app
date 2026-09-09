@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
@@ -126,7 +126,7 @@ a:hover{text-decoration:underline}
   <h2>What we collect</h2>
   <p>We collect only what is necessary to provide the service:</p>
   <ul>
-    <li><strong>Email address</strong> — provided when you create an account or sign in via Supabase Auth.</li>
+    <li><strong>Email address</strong> — accounts on this service are created by an administrator on your behalf, not through public sign-up; your email identifies your account when you sign in.</li>
     <li><strong>Saved lookups</strong> — the inputs and outputs you explicitly choose to save using the Save button inside a calculator (tool name, parameters, optional label, result summary, timestamp).</li>
     <li><strong>Session data</strong> — a session token stored in a browser cookie to keep you signed in. This cookie is strictly necessary and expires with your session or on sign-out.</li>
   </ul>
@@ -140,12 +140,12 @@ a:hover{text-decoration:underline}
   </ul>
 
   <h2>Third-party services</h2>
-  <p>We use <strong>Supabase</strong> (supabase.com) for authentication and database storage. Your email address and saved lookup data are stored on Supabase infrastructure. Supabase is SOC 2 Type II certified. Review their privacy policy at <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a>.</p>
+  <p>We do not use a third-party authentication or database provider. Your email address and saved lookup data are stored in a database we run ourselves, on server infrastructure we control.</p>
   <p>We use <strong>Plausible Analytics</strong> (plausible.io) for aggregate page-view statistics on public pages. Plausible is cookieless and collects no personal data — no IP addresses, no device fingerprints, no cross-site tracking. Data is not shared with third parties. Review their data policy at <a href="https://plausible.io/privacy" target="_blank" rel="noopener">plausible.io/privacy</a>.</p>
   <p>No other third-party services receive your personal data. We do not use advertising networks, social tracking pixels, or analytics services that share data with third parties.</p>
 
   <h2>Cookies</h2>
-  <p>We use one cookie: a session token set by Supabase Auth when you sign in. It is strictly necessary for the service to function — without it you cannot remain authenticated. We do not use tracking, advertising, or analytics cookies.</p>
+  <p>We use one cookie: a session token our server sets when you sign in. It is strictly necessary for the service to function — without it you cannot remain authenticated. We do not use tracking, advertising, or analytics cookies.</p>
 
   <h2>Data retention</h2>
   <p>Your data is retained for as long as your account exists. You can delete individual saved lookups from your dashboard at any time. To delete your account and all associated data, contact us using the address below.</p>
@@ -161,7 +161,7 @@ a:hover{text-decoration:underline}
   <p>To exercise any of these rights, contact us at the address below. We will respond within 30 days.</p>
 
   <h2>Security</h2>
-  <p>Data in transit is encrypted via TLS. Data at rest is encrypted by Supabase. Access to your data is enforced by row-level security policies — your saved lookups are only accessible by your authenticated account. The site is served exclusively over HTTPS.</p>
+  <p>Data in transit is encrypted via TLS; the site is served exclusively over HTTPS. Passwords are hashed (never stored in plain text) and account access is enforced server-side — your saved lookups are only accessible by your authenticated account.</p>
 
   <h2>Changes to this policy</h2>
   <p>If we make material changes we will update the "Last updated" date above. Continued use of the service after changes constitutes acceptance of the updated policy.</p>
