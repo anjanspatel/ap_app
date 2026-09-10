@@ -146,7 +146,7 @@
 
     banner.innerHTML = [
       '<span style="flex:1;min-width:200px">',
-        'AP WORKSPACE uses essential session cookies for authentication. No tracking or advertising.',
+        'AP Workspace uses essential session cookies for authentication. No tracking or advertising.',
       '</span>',
       '<button id="cookie-ok" style="',
         'background:var(--precision-cyan,#19D3E6);color:#0B111A;',
