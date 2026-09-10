@@ -83,7 +83,7 @@ select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-nu
 .supp-val.dim-active{background:rgba(25,211,230,.12);border-color:var(--orange-fg)}
 .print-watermark{display:none}@media print{.print-watermark{display:block;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:52pt;font-weight:900;color:#000;opacity:.055;white-space:nowrap;pointer-events:none;z-index:9999;font-family:Arial,sans-serif;letter-spacing:.08em;text-align:center;line-height:1.3}}
 </style>
-<style>.skip-link{position:absolute;top:-44px;left:0;background:var(--orange);color:#fff;padding:9px 16px;z-index:10000;font-weight:700;font-size:13px;border-radius:0 0 8px 0;transition:top .18s;text-decoration:none}.skip-link:focus,.skip-link:focus-visible{top:0;outline:3px solid var(--orange);outline-offset:2px}.hub-back{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.03em;white-space:nowrap;text-decoration:none;display:block;opacity:.65;transition:opacity .15s}.hub-back:hover{opacity:1;color:var(--orange-fg)}@media print{.hub-back{display:none!important}}.pdf-exporting .hub-back{display:none!important}</style>
+<style>.skip-link{position:absolute;top:-44px;left:0;background:var(--orange);color:#fff;padding:9px 16px;z-index:10000;font-weight:700;font-size:13px;border-radius:0 0 8px 0;transition:top .18s;text-decoration:none}.skip-link:focus,.skip-link:focus-visible{top:0;outline:3px solid var(--orange);outline-offset:2px}.hub-back{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.03em;white-space:nowrap;text-decoration:none;display:block;opacity:.65;transition:opacity .15s}.hub-back:hover{opacity:1;color:var(--orange-fg)}@media print{.hub-back{display:none!important}}.pdf-exporting .hub-back{display:none!important}.pdf-exporting .faq-section{display:none!important}</style>
 <style>body,button,select,input{font-family:'Inter',system-ui,sans-serif!important}</style>
 <style>
 /* Share button — icon-only, hidden on mobile (URL still syncs silently) */
@@ -251,7 +251,7 @@ window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:nul
  function systemDark(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches}
  function effectiveTheme(){return root.dataset.theme||(systemDark()?'dark':'light')}
  function updateToggle(){const dark=effectiveTheme()==='dark';const icon=document.getElementById('themeIcon');if(icon)icon.textContent=dark?'☀':'☾';toggle.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');toggle.setAttribute('aria-pressed',dark?'true':'false');if(themeMeta)themeMeta.content=dark?'#0B111A':'#f0f4f8'}
- try{const saved=localStorage.getItem('ap-theme');root.dataset.theme=(saved==='dark')?'dark':'light'}catch(e){root.dataset.theme='light'}
+ try{const saved=localStorage.getItem('ap-theme');root.dataset.theme=(saved==='light')?'light':'dark'}catch(e){root.dataset.theme='dark'}
  updateToggle();toggle.addEventListener('click',()=>{const next=effectiveTheme()==='dark'?'light':'dark';root.dataset.theme=next;try{localStorage.setItem('ap-theme',next)}catch(e){}updateToggle()});
  if(window.matchMedia){const mq=window.matchMedia('(prefers-color-scheme: dark)');if(mq.addEventListener)mq.addEventListener('change',()=>{if(!root.dataset.theme)updateToggle()})}
  function fitCanvas(){const available=shell.clientWidth||BASE_W,scale=Math.min(1,available/BASE_W);if(!window.matchMedia('print').matches){canvas.style.transform='scale('+scale+')';shell.style.height=(BASE_H*scale)+'px'}}
