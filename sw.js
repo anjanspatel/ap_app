@@ -2,7 +2,7 @@
    Caches design system assets + tool shells for offline use.
    Stale-while-revalidate for static assets, network-first for navigation.
 */
-var CACHE = 'ap-v14';
+var CACHE = 'ap-v15';
 var STATIC = [
   '/',
   '/tokens.css',
@@ -56,9 +56,14 @@ self.addEventListener('fetch', function(e) {
   var isNav = e.request.mode === 'navigate';
 
   if (isNav) {
-    /* Network-first for navigation, falling back to cache, then offline shell */
+    /* Network-first for navigation, falling back to cache, then offline shell.
+       cache:'no-store' matters here: without it, fetch() is still allowed to
+       satisfy this from the browser's own HTTP cache instead of actually
+       reaching the origin server, which is exactly how a page can look
+       "network-first" in the code while still showing stale deployed HTML
+       (e.g. an old build's __LAST_UPDATED__ placeholder) on a real device. */
     e.respondWith(
-      fetch(e.request).then(function(res) {
+      fetch(e.request, { cache: 'no-store' }).then(function(res) {
         if (res && res.status === 200) {
           var clone = res.clone();
           caches.open(CACHE).then(function(c) { c.put(e.request, clone); });
