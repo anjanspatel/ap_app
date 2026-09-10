@@ -8,7 +8,8 @@
 //
 // Actions (POST body: {action, ...}):
 //   list                                                        -> { users: [...] }
-//   create          {email,first_name,last_name,is_admin}        -> { id }
+//   create          {email,first_name,last_name,password,
+//                    is_admin,verified_by_id}                    -> { id }
 //   update_profile  {user_id,email,first_name,last_name}         -> { ok: true }
 //   set_admin       {user_id,is_admin}                           -> { ok: true }
 //   ban             {user_id}                                    -> { ok: true }
@@ -76,6 +77,7 @@ Deno.serve(async (req: Request) => {
         last_sign_in_at: u.last_sign_in_at,
         is_admin: u.app_metadata?.is_admin === true,
         banned_until: u.banned_until && u.banned_until !== 'none' ? u.banned_until : null,
+        verified_by_name: u.user_metadata?.verified_by_name || null,
       }));
       return json({ users });
     }
@@ -85,37 +87,56 @@ Deno.serve(async (req: Request) => {
       const firstName = typeof body?.first_name === 'string' ? body.first_name.trim() : '';
       const lastName = typeof body?.last_name === 'string' ? body.last_name.trim() : '';
       const makeAdmin = body?.is_admin === true;
+      const password = typeof body?.password === 'string' ? body.password : '';
+      const verifiedById =
+        typeof body?.verified_by_id === 'string' && body.verified_by_id ? body.verified_by_id : null;
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Enter a valid email' }, 400);
+      if (password.length < 8) return json({ error: 'Password must be at least 8 characters' }, 400);
 
-      // No password is set here — inviteUserByEmail creates the account and
-      // sends them a real email with a link to choose their own password.
-      // Nobody but the new user ever knows it, unlike an admin picking one
-      // and relaying it out of band.
-      const { data: invited, error } = await admin.auth.admin.inviteUserByEmail(email, {
-        data: { first_name: firstName || undefined, last_name: lastName || undefined },
-        redirectTo: 'https://app.anjanpatel.ca/',
-      });
-      if (error) {
-        // Supabase's own message for this case is reasonably clear already;
-        // surface it as-is rather than guessing at a status code mapping.
-        return json({ error: error.message }, error.status === 422 ? 409 : 500);
+      // "Verified By" records which admin vouched for this account — look the
+      // caller-supplied id up server-side rather than trusting a client-sent
+      // name, and reject it outright if it doesn't actually belong to an admin.
+      let verifiedByName: string | null = null;
+      if (verifiedById) {
+        const { data: v, error: vErr } = await admin.auth.admin.getUserById(verifiedById);
+        if (vErr || !v?.user || v.user.app_metadata?.is_admin !== true) {
+          return json({ error: 'Verified By must be an existing admin' }, 400);
+        }
+        const vName = [v.user.user_metadata?.first_name, v.user.user_metadata?.last_name]
+          .filter(Boolean)
+          .join(' ');
+        verifiedByName = vName || v.user.email || null;
       }
 
-      // inviteUserByEmail has no app_metadata param — set admin access, if
-      // requested, as a separate update right after creating the account.
-      if (makeAdmin) {
-        await admin.auth.admin.updateUserById(invited.user.id, { app_metadata: { is_admin: true } });
+      // Admin sets the password directly here (by explicit choice — see
+      // schema.sql for the tradeoff this reverses from the invite-email flow
+      // used elsewhere). email_confirm is set so they can sign in right away
+      // without a confirmation email that will never be sent.
+      const { data: created, error } = await admin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          first_name: firstName || undefined,
+          last_name: lastName || undefined,
+          verified_by_id: verifiedById || undefined,
+          verified_by_name: verifiedByName || undefined,
+        },
+        app_metadata: { is_admin: makeAdmin },
+      });
+      if (error) {
+        return json({ error: error.message }, error.status === 422 ? 409 : 500);
       }
 
       await admin.from('admin_audit_log').insert({
         actor_id: caller.id,
         action: 'create_user',
-        target_user_id: invited.user.id,
-        details: { email, is_admin: makeAdmin },
+        target_user_id: created.user.id,
+        details: { email, is_admin: makeAdmin, verified_by_id: verifiedById },
       });
 
-      return json({ id: invited.user.id });
+      return json({ id: created.user.id });
     }
 
     if (action === 'update_profile') {
