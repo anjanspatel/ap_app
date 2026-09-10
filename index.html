@@ -148,10 +148,13 @@ body{
 }
 .hero-title em{
   font-style:normal;
-  background:linear-gradient(100deg,var(--emerald) 0%,#00c4ff 100%);
+  background:linear-gradient(100deg,var(--emerald) 0%,#00c4ff 45%,var(--emerald) 90%);
+  background-size:220% auto;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   background-clip:text;
+  animation:heroShimmer 4.5s ease-in-out infinite;
 }
+@keyframes heroShimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .hero-sub{
   font-size:12px;color:var(--dim);
   letter-spacing:0.06em;text-transform:uppercase;
