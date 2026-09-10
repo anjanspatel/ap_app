@@ -77,29 +77,29 @@ body{
   font-family:var(--font-ui);font-weight:900;
   font-size:clamp(260px,44vw,580px);
   color:transparent;
-  -webkit-text-stroke:1px rgba(25,211,230,0.06);
+  -webkit-text-stroke:1px rgba(25,211,230,0.045);
   letter-spacing:-0.06em;line-height:1;
   user-select:none;white-space:nowrap;
-  animation:bgPulse 8s ease-in-out infinite;
+  animation:bgPulse 14s ease-in-out infinite;
 }
-@keyframes bgPulse{0%,100%{opacity:1}50%{opacity:0.6}}
+@keyframes bgPulse{0%,100%{opacity:1}50%{opacity:0.75}}
 
 .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
 .orb-1{
   width:600px;height:600px;
-  background:radial-gradient(circle,rgba(25,211,230,0.11) 0%,transparent 70%);
+  background:radial-gradient(circle,rgba(25,211,230,0.07) 0%,transparent 70%);
   top:-150px;right:-150px;
-  animation:drift1 12s ease-in-out infinite;
+  animation:drift1 18s ease-in-out infinite;
 }
 .orb-2{
   width:450px;height:450px;
-  background:radial-gradient(circle,rgba(0,210,122,0.07) 0%,transparent 70%);
+  background:radial-gradient(circle,rgba(0,210,122,0.045) 0%,transparent 70%);
   bottom:-100px;left:-100px;
-  animation:drift2 15s ease-in-out infinite;
+  animation:drift2 22s ease-in-out infinite;
 }
 .orb-3{
   width:350px;height:350px;
-  background:radial-gradient(circle,rgba(25,211,230,0.05) 0%,transparent 70%);
+  background:radial-gradient(circle,rgba(25,211,230,0.03) 0%,transparent 70%);
   top:50%;left:50%;transform:translate(-50%,-50%);
 }
 @keyframes drift1{0%,100%{transform:translate(0,0)}33%{transform:translate(-40px,30px)}66%{transform:translate(20px,-20px)}}
@@ -329,9 +329,9 @@ body{
   box-shadow:0 0 16px rgba(25,211,230,0.12),0 0 0 1px rgba(25,211,230,0.06) inset;
 }
 [data-theme="light"] .hero-mark-text{color:#0f172a}
-[data-theme="light"] .bg-mark-text{-webkit-text-stroke:1px rgba(25,211,230,0.07)}
-[data-theme="light"] .orb-1{background:radial-gradient(circle,rgba(25,211,230,0.08) 0%,transparent 70%)}
-[data-theme="light"] .orb-2{background:radial-gradient(circle,rgba(0,168,90,0.06) 0%,transparent 70%)}
+[data-theme="light"] .bg-mark-text{-webkit-text-stroke:1px rgba(25,211,230,0.05)}
+[data-theme="light"] .orb-1{background:radial-gradient(circle,rgba(25,211,230,0.05) 0%,transparent 70%)}
+[data-theme="light"] .orb-2{background:radial-gradient(circle,rgba(0,168,90,0.035) 0%,transparent 70%)}
 [data-theme="light"] .tab-track{box-shadow:0 1px 4px rgba(0,0,0,0.08)}
 [data-theme="light"] .or::before,[data-theme="light"] .or::after{background:linear-gradient(90deg,transparent,var(--border),transparent)}
 
@@ -377,7 +377,8 @@ body{
       </div>
       <span class="hero-name">AP Workspace</span>
     </div>
-    <h1 class="hero-title">Engineering<br><em>Intelligence.</em></h1>
+    <h1 class="hero-title">Engineering<br><em>Field Reference.</em></h1>
+    <p class="hero-sub">API 6A · Flange / Torque / Tubing</p>
   </div>
 
   <div class="card">
@@ -538,10 +539,10 @@ try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
   function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
   resize();window.addEventListener('resize',resize);
   var COLS=['rgba(25,211,230,','rgba(0,210,122,','rgba(160,180,220,'];
-  for(var i=0;i<75;i++){
-    pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.5+0.3,vx:(Math.random()-0.5)*0.22,vy:(Math.random()-0.5)*0.22,a:Math.random()*0.2+0.04,c:COLS[Math.floor(Math.random()*COLS.length)]});
+  for(var i=0;i<40;i++){
+    pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.3+0.3,vx:(Math.random()-0.5)*0.16,vy:(Math.random()-0.5)*0.16,a:Math.random()*0.14+0.03,c:COLS[Math.floor(Math.random()*COLS.length)]});
   }
-  var raf=null;
+  var raf=null,stopped=false;
   function frame(){
     ctx.clearRect(0,0,W,H);
     pts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.c+p.a+')';ctx.fill()});
@@ -551,9 +552,18 @@ try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
   // Pause the loop when the tab isn't visible — pure battery/CPU waste
   // otherwise, since nothing on screen is being seen.
   document.addEventListener('visibilitychange',function(){
+    if(stopped)return;
     if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=null;}
     else if(!raf){frame();}
   });
+  // Signed-in users land on the tool launcher, not a landing page — once
+  // there's nothing left to make a first impression on, the decorative
+  // motion is pure battery/CPU cost with no one left to impress.
+  window.__stopBgMotion=function(){
+    stopped=true;
+    if(raf)cancelAnimationFrame(raf);raf=null;
+    ctx.clearRect(0,0,W,H);
+  };
 })();
 
 var busy=false;
@@ -641,6 +651,8 @@ async function doSignOut(){if(!sb){window.location.reload();return}await sb.auth
     document.querySelector('.hero').style.display='none';
     document.querySelector('.card').style.display='none';
     document.getElementById('view-launcher').style.display='block';
+    document.querySelectorAll('.orb,.bg-mark').forEach(function(el){el.style.display='none'});
+    if(window.__stopBgMotion)window.__stopBgMotion();
     return;
   }
   showView('auth');
