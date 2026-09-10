@@ -668,7 +668,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 <div class="adduser-overlay" id="adduserOverlay">
   <div class="adduser-modal" role="dialog" aria-modal="true" aria-labelledby="adduser-title">
     <div class="adduser-title" id="adduser-title">Add User</div>
-    <div class="adduser-sub">They can sign in immediately with this email and password.</div>
+    <div class="adduser-sub">They'll get an email to set their own password — nobody else ever sees it.</div>
     <div class="adduser-fb" id="adduserFb"></div>
     <div class="adduser-row">
       <div class="adduser-field">
@@ -684,17 +684,13 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       <label class="adduser-label" for="auEmail">Email</label>
       <input class="adduser-input" id="auEmail" type="email" placeholder="name@company.com">
     </div>
-    <div class="adduser-field">
-      <label class="adduser-label" for="auPassword">Password</label>
-      <input class="adduser-input" id="auPassword" type="password" placeholder="Min 8 characters" autocomplete="new-password">
-    </div>
     <label class="adduser-check">
       <input type="checkbox" id="auAdmin">
       Grant admin access
     </label>
     <div class="adduser-actions">
       <button class="btn-add-user" style="background:none;color:var(--muted);border-color:var(--border)" onclick="closeAddUserModal()">Cancel</button>
-      <button class="btn-add-user" id="auSubmit" onclick="submitAddUser()">Create User</button>
+      <button class="btn-add-user" id="auSubmit" onclick="submitAddUser()">Send Invite</button>
     </div>
   </div>
 </div>
@@ -1042,7 +1038,7 @@ function renderUsers(){
 }
 
 function openAddUserModal(){
-  $('auFirst').value='';$('auLast').value='';$('auEmail').value='';$('auPassword').value='';$('auAdmin').checked=false;
+  $('auFirst').value='';$('auLast').value='';$('auEmail').value='';$('auAdmin').checked=false;
   $('adduserFb').style.display='none';
   $('adduserOverlay').classList.add('open');
   $('auFirst').focus();
@@ -1052,16 +1048,15 @@ function adduserFb(msg){var el=$('adduserFb');el.textContent=msg;el.style.displa
 
 async function submitAddUser(){
   var first=$('auFirst').value.trim(),last=$('auLast').value.trim();
-  var email=$('auEmail').value.trim(),pw=$('auPassword').value;
+  var email=$('auEmail').value.trim();
   var isAdmin=$('auAdmin').checked;
   if(!email){adduserFb('Enter an email address.');return}
-  if(!pw||pw.length<8){adduserFb('Password must be at least 8 characters.');return}
-  $('auSubmit').disabled=true;$('auSubmit').textContent='Creating…';
-  var r=await sb.functions.invoke('admin-users',{body:{action:'create',first_name:first||null,last_name:last||null,email:email,password:pw,is_admin:isAdmin}});
-  $('auSubmit').disabled=false;$('auSubmit').textContent='Create User';
-  if(r.error||!r.data||r.data.error){adduserFb((r.data&&r.data.error)||'Could not create user.');return}
+  $('auSubmit').disabled=true;$('auSubmit').textContent='Sending…';
+  var r=await sb.functions.invoke('admin-users',{body:{action:'create',first_name:first||null,last_name:last||null,email:email,is_admin:isAdmin}});
+  $('auSubmit').disabled=false;$('auSubmit').textContent='Send Invite';
+  if(r.error||!r.data||r.data.error){adduserFb((r.data&&r.data.error)||'Could not send invite.');return}
   closeAddUserModal();
-  toast('User created — they can sign in now.');
+  toast('Invite sent — they\'ll get an email to set their password.');
   loadUsers();
 }
 

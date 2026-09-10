@@ -81,20 +81,19 @@ Deno.serve(async (req: Request) => {
 
     if (action === 'create') {
       const email = typeof body?.email === 'string' ? body.email.toLowerCase().trim() : '';
-      const password = typeof body?.password === 'string' ? body.password : '';
       const firstName = typeof body?.first_name === 'string' ? body.first_name.trim() : '';
       const lastName = typeof body?.last_name === 'string' ? body.last_name.trim() : '';
       const makeAdmin = body?.is_admin === true;
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Enter a valid email' }, 400);
-      if (password.length < 8) return json({ error: 'Password must be at least 8 characters' }, 400);
 
-      const { data: created, error } = await admin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true, // admin-created accounts don't need to click a confirmation link
-        user_metadata: { first_name: firstName || undefined, last_name: lastName || undefined },
-        app_metadata: { is_admin: makeAdmin },
+      // No password is set here — inviteUserByEmail creates the account and
+      // sends them a real email with a link to choose their own password.
+      // Nobody but the new user ever knows it, unlike an admin picking one
+      // and relaying it out of band.
+      const { data: invited, error } = await admin.auth.admin.inviteUserByEmail(email, {
+        data: { first_name: firstName || undefined, last_name: lastName || undefined },
+        redirectTo: 'https://app.anjanpatel.ca/',
       });
       if (error) {
         // Supabase's own message for this case is reasonably clear already;
@@ -102,14 +101,20 @@ Deno.serve(async (req: Request) => {
         return json({ error: error.message }, error.status === 422 ? 409 : 500);
       }
 
+      // inviteUserByEmail has no app_metadata param — set admin access, if
+      // requested, as a separate update right after creating the account.
+      if (makeAdmin) {
+        await admin.auth.admin.updateUserById(invited.user.id, { app_metadata: { is_admin: true } });
+      }
+
       await admin.from('admin_audit_log').insert({
         actor_id: caller.id,
         action: 'create_user',
-        target_user_id: created.user.id,
+        target_user_id: invited.user.id,
         details: { email, is_admin: makeAdmin },
       });
 
-      return json({ id: created.user.id });
+      return json({ id: invited.user.id });
     }
 
     if (action === 'set_admin' || action === 'ban' || action === 'unban') {

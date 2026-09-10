@@ -608,7 +608,7 @@ async function doSignOut(){if(!sb){window.location.reload();return}await sb.auth
 
 (async function boot(){
   var hash=window.location.hash||'';
-  if(hash.includes('type=recovery')){
+  if(hash.includes('type=recovery')||hash.includes('type=invite')){
     var p=new URLSearchParams(hash.slice(1));
     var t=p.get('access_token');
     if(t){
