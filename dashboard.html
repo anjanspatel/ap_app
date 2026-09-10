@@ -375,7 +375,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     <span class="tb-title" id="tbTitle">Dashboard</span>
     <div class="tb-search-wrap" role="search" aria-label="Search saved lookups">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="search" id="tbSearch" class="tb-search-input" placeholder="Search lookups… (⌘K)" autocomplete="off" aria-label="Search saved lookups" oninput="filterLookups(this.value)">
+      <input type="search" id="tbSearch" class="tb-search-input" placeholder="Search lookups… (⌘K)" autocomplete="off" aria-label="Search saved lookups" onfocus="jumpToSearchableSection()" oninput="filterLookups(this.value)">
     </div>
     <div class="tb-right">
       <span class="tb-clock" id="tbClock"></span>
@@ -1280,7 +1280,18 @@ init();
 </script>
 <script src="/global-features.js"></script>
 <script>
-/* ── Site search: filter saved-lookup rows ── */
+/* ── Site search: filter saved-lookup rows ──
+   The search box lives in the topbar, visible from every section, but it
+   only ever filters the Calc Logs table — which isn't rendered into the DOM
+   until that section has actually been visited. Without this, clicking the
+   box from Dashboard or Admin Console and typing does nothing visible: the
+   query runs, finds zero [data-lookup-row] elements because the table was
+   never mounted, and the user sees no feedback at all. Jumping to Calc Logs
+   on focus (not on every keystroke — that would refetch on every letter)
+   guarantees the table exists before the user starts typing. */
+function jumpToSearchableSection() {
+  if (!$('sec-logs').classList.contains('active')) showSection('logs');
+}
 function filterLookups(q) {
   q = (q || '').toLowerCase().trim();
   var rows = document.querySelectorAll('[data-lookup-row]');
