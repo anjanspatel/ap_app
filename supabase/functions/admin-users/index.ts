@@ -7,11 +7,12 @@
 // or from this function itself, never from client-side code (see schema.sql).
 //
 // Actions (POST body: {action, ...}):
-//   list                                                     -> { users: [...] }
-//   create     {email,password,first_name,last_name,is_admin} -> { id }
-//   set_admin  {user_id,is_admin}                             -> { ok: true }
-//   ban        {user_id}                                      -> { ok: true }
-//   unban      {user_id}                                      -> { ok: true }
+//   list                                                        -> { users: [...] }
+//   create          {email,first_name,last_name,is_admin}        -> { id }
+//   update_profile  {user_id,email,first_name,last_name}         -> { ok: true }
+//   set_admin       {user_id,is_admin}                           -> { ok: true }
+//   ban             {user_id}                                    -> { ok: true }
+//   unban           {user_id}                                    -> { ok: true }
 //
 // Every mutating action is written to admin_audit_log.
 
@@ -115,6 +116,34 @@ Deno.serve(async (req: Request) => {
       });
 
       return json({ id: invited.user.id });
+    }
+
+    if (action === 'update_profile') {
+      const targetId = body?.user_id;
+      if (!targetId || typeof targetId !== 'string') return json({ error: 'user_id required' }, 400);
+
+      const email = typeof body?.email === 'string' ? body.email.toLowerCase().trim() : '';
+      const firstName = typeof body?.first_name === 'string' ? body.first_name.trim() : '';
+      const lastName = typeof body?.last_name === 'string' ? body.last_name.trim() : '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Enter a valid email' }, 400);
+
+      const { data: existing, error: getErr } = await admin.auth.admin.getUserById(targetId);
+      if (getErr || !existing?.user) return json({ error: getErr?.message || 'User not found' }, 404);
+
+      const mergedMeta = { ...(existing.user.user_metadata || {}), first_name: firstName || undefined, last_name: lastName || undefined };
+      const { error } = await admin.auth.admin.updateUserById(targetId, { email, user_metadata: mergedMeta });
+      if (error) {
+        return json({ error: error.message }, error.status === 422 ? 409 : 500);
+      }
+
+      await admin.from('admin_audit_log').insert({
+        actor_id: caller.id,
+        action: 'update_profile',
+        target_user_id: targetId,
+        details: { email, first_name: firstName, last_name: lastName },
+      });
+
+      return json({ ok: true });
     }
 
     if (action === 'set_admin' || action === 'ban' || action === 'unban') {

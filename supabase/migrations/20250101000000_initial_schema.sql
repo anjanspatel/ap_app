@@ -65,7 +65,7 @@ create policy "anyone can insert" on public.error_logs
 create table if not exists public.admin_audit_log (
   id uuid primary key default gen_random_uuid(),
   actor_id uuid not null references auth.users(id),
-  action text not null check (action in ('create_user','set_admin','revoke_admin','ban_user','unban_user')),
+  action text not null check (action in ('create_user','update_profile','set_admin','revoke_admin','ban_user','unban_user')),
   target_user_id uuid not null references auth.users(id),
   details jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()

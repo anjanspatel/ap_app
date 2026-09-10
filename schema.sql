@@ -75,7 +75,7 @@ alter table public.saved_lookups add constraint saved_lookups_tool_check
 -- Admin Console's "+ Add User" feature (which logs a 'create_user' action):
 alter table public.admin_audit_log drop constraint if exists admin_audit_log_action_check;
 alter table public.admin_audit_log add constraint admin_audit_log_action_check
-  check (action in ('create_user','set_admin','revoke_admin','ban_user','unban_user'));
+  check (action in ('create_user','update_profile','set_admin','revoke_admin','ban_user','unban_user'));
 
 -- And for an existing saved_lookups table that predates the
 -- admins_select_all policy above — CREATE POLICY has no IF NOT EXISTS,
@@ -122,7 +122,7 @@ where user_id = (select id from auth.users where email = 'info@anjanpatel.ca');
 create table if not exists public.admin_audit_log (
   id uuid primary key default gen_random_uuid(),
   actor_id uuid not null references auth.users(id),
-  action text not null check (action in ('create_user','set_admin','revoke_admin','ban_user','unban_user')),
+  action text not null check (action in ('create_user','update_profile','set_admin','revoke_admin','ban_user','unban_user')),
   target_user_id uuid not null references auth.users(id),
   details jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
