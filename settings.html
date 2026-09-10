@@ -316,7 +316,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
 var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
 var sb=null;
-try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
+try{sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.sessionStorage,persistSession:true,autoRefreshToken:true}});}catch(e){}
 var session=null;
 function $(id){return document.getElementById(id)}
 
