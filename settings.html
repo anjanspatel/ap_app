@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
@@ -23,6 +23,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <style>
 /* Page-specific layout tokens */
 :root {
@@ -307,8 +309,13 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 </div>
 
 <script src="/global-features.js"></script>
-<script src="/api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
 <script>
+var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
+var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
+var sb=null;
+try{sb=supabase.createClient(SB_URL,SB_KEY);}catch(e){}
+var session=null;
 function $(id){return document.getElementById(id)}
 
 /* ── Footer (runs after DOM is ready) ── */
@@ -346,8 +353,11 @@ function setTheme(t){
 }
 
 async function init(){
-  var session=await api.getSession();
-  if(!session){window.location.href='/';return}
+  if(!sb){window.location.href='/';return}
+  var r=await sb.auth.getSession();
+  var s=r.data&&r.data.session;
+  if(!s){window.location.href='/';return}
+  session={email:s.user.email,is_admin:s.user.app_metadata&&s.user.app_metadata.is_admin===true};
   var email=session.email||'';
   var ini=email.charAt(0).toUpperCase();
   $('sbEmail').textContent=email;
@@ -368,17 +378,25 @@ async function changePassword(){
   if(p.length<8){fb('err','Minimum 8 characters required.');return}
   if(p!==c){fb('err','Passwords do not match.');return}
   $('pwBtn').disabled=true;$('pwBtn').textContent='Updating…';
-  var r=await api.changePassword(cur,p);
+  // Supabase's updateUser doesn't check the current password on its own —
+  // re-authenticating first is what actually enforces "must know the
+  // current password to change it" (protects a hijacked/left-open session).
+  var check=await sb.auth.signInWithPassword({email:session.email,password:cur});
+  if(check.error){
+    $('pwBtn').disabled=false;$('pwBtn').textContent='Update Password';
+    fb('err','Current password is incorrect.');return;
+  }
+  var r=await sb.auth.updateUser({password:p});
   $('pwBtn').disabled=false;$('pwBtn').textContent='Update Password';
-  if(r.error){fb('err',r.error);return}
+  if(r.error){fb('err',r.error.message);return}
   fb('ok','Password updated.');
   $('curPw').value='';$('newPw').value='';$('confirmPw').value='';
 }
 function fb(type,msg){var el=$('pwFb');el.textContent=msg;el.className='fb '+type;setTimeout(function(){el.className='fb'},4000)}
 function signOut(){document.getElementById('signout-modal').classList.add('open')}
 function closeSignoutModal(){document.getElementById('signout-modal').classList.remove('open')}
-async function confirmSignOut(){closeSignoutModal();await api.signOut();window.location.href='/'}
-async function signOutAll(){closeSignoutModal();await api.signOutAllDevices();window.location.href='/'}
+async function confirmSignOut(){closeSignoutModal();if(!sb){window.location.href='/';return}await sb.auth.signOut();window.location.href='/'}
+async function signOutAll(){closeSignoutModal();if(!sb){window.location.href='/';return}await sb.auth.signOut({scope:'global'});window.location.href='/'}
 
 function togglePw(fieldId,iconId){
   var f=document.getElementById(fieldId);
