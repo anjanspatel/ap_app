@@ -37,7 +37,17 @@ jobs:
       - name: Stamp last-updated date
         run: |
           STAMP=$(date -u +"%B %-d, %Y")
-          grep -rl '__LAST_UPDATED__' dist/ | xargs -r sed -i "s/__LAST_UPDATED__/$STAMP/g"
+          echo "Stamp value: $STAMP"
+          MATCHES=$(grep -rl '__LAST_UPDATED__' dist/ || true)
+          if [ -z "$MATCHES" ]; then
+            echo "No files contain __LAST_UPDATED__ — nothing to stamp. This is unexpected if the placeholder should still be in the source."
+          else
+            echo "Files to stamp:"
+            echo "$MATCHES"
+            echo "$MATCHES" | xargs sed -i "s/__LAST_UPDATED__/$STAMP/g"
+            echo "Done. Remaining unstamped occurrences (should be none):"
+            grep -rl '__LAST_UPDATED__' dist/ || echo "(none)"
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
