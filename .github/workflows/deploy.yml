@@ -34,6 +34,11 @@ jobs:
             --exclude='.github' --exclude='.git' --exclude='dist' \
             ./ dist/
 
+      - name: Stamp last-updated date
+        run: |
+          STAMP=$(date -u +"%B %-d, %Y")
+          grep -rl '__LAST_UPDATED__' dist/ | xargs -r sed -i "s/__LAST_UPDATED__/$STAMP/g"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
