@@ -592,8 +592,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
         </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Last sign-in</th><th>Role</th><th>Status</th><th></th></tr></thead>
-            <tbody id="usersRows"><tr><td colspan="7" class="empty"><span class="empty-label">Loading…</span></td></tr></tbody>
+            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Joined</th><th>Last sign-in</th><th>Role</th><th>Status</th><th></th></tr></thead>
+            <tbody id="usersRows"><tr><td colspan="8" class="empty"><span class="empty-label">Loading…</span></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1057,10 +1057,10 @@ var allUsers=[];
 
 async function loadUsers(){
   var tbody=$('usersRows');
-  tbody.innerHTML='<tr><td colspan="7" class="empty"><span class="empty-label">Loading…</span></td></tr>';
+  tbody.innerHTML='<tr><td colspan="8" class="empty"><span class="empty-label">Loading…</span></td></tr>';
   var r=await sb.functions.invoke('admin-users',{body:{action:'list'}});
   if(r.error||!r.data||r.data.error){
-    tbody.innerHTML='<tr><td colspan="7" class="empty"><span class="empty-label">'+esc((r.data&&r.data.error)||'Could not load users.')+'</span></td></tr>';
+    tbody.innerHTML='<tr><td colspan="8" class="empty"><span class="empty-label">'+esc((r.data&&r.data.error)||'Could not load users.')+'</span></td></tr>';
     return;
   }
   allUsers=r.data.users||[];
@@ -1072,7 +1072,7 @@ function renderUsers(){
   var rows=q?allUsers.filter(function(u){return (u.email||'').toLowerCase().indexOf(q)!==-1}):allUsers;
   $('usersCount').textContent=rows.length+' of '+allUsers.length;
   var tbody=$('usersRows');
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="7" class="empty"><span class="empty-label">No matching users.</span></td></tr>';return}
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="8" class="empty"><span class="empty-label">No matching users.</span></td></tr>';return}
   tbody.innerHTML=rows.map(function(u){
     var joined=u.created_at?new Date(u.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'—';
     var lastSeen=u.last_sign_in_at?new Date(u.last_sign_in_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'Never';
@@ -1083,7 +1083,8 @@ function renderUsers(){
     var adminBtn='<button class="row-action" data-act="admin" data-id="'+esc(u.id)+'" data-make="'+(!u.is_admin)+'" data-email="'+esc(u.email)+'">'+(u.is_admin?'Revoke admin':'Make admin')+'</button>';
     var banBtn='<button class="row-action'+(isBanned?'':' danger')+'" data-act="ban" data-id="'+esc(u.id)+'" data-make="'+(!isBanned)+'" data-email="'+esc(u.email)+'">'+(isBanned?'Unblock':'Block')+'</button>';
     var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'—';
-    return '<tr><td>'+esc(name)+'</td><td>'+esc(u.email||'—')+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
+    var acctNum=u.account_number?esc(u.account_number):'—';
+    return '<tr><td class="td-mono">'+acctNum+'</td><td>'+esc(name)+'</td><td>'+esc(u.email||'—')+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
       +'<td style="display:flex;gap:6px;justify-content:flex-end">'+editBtn+adminBtn+banBtn+'</td></tr>';
   }).join('');
 }
@@ -1130,7 +1131,7 @@ async function submitAddUser(){
   $('auSubmit').disabled=false;$('auSubmit').textContent='Create User';
   if(r.error||!r.data||r.data.error){adduserFb((r.data&&r.data.error)||'Could not create user.');return}
   closeAddUserModal();
-  toast('User created.');
+  toast('User created — '+(r.data.account_number||'')+'.');
   loadUsers();
 }
 
@@ -1169,7 +1170,7 @@ function openEditUserModal(userId){
   $('euLast').value=u.last_name||'';
   $('euEmail').value=u.email||'';
   var added=u.created_at?new Date(u.created_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'—';
-  $('euMeta').textContent='Added: '+added+' · Verified by: '+(u.verified_by_name||'—');
+  $('euMeta').textContent=(u.account_number||'—')+' · Added: '+added+' · Verified by: '+(u.verified_by_name||'—');
   $('edituserFb').style.display='none';
   $('edituserOverlay').classList.add('open');
   $('euFirst').focus();

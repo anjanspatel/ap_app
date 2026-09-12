@@ -9,7 +9,7 @@
 // Actions (POST body: {action, ...}):
 //   list                                                        -> { users: [...] }
 //   create          {email,first_name,last_name,password,
-//                    is_admin,verified_by_id}                    -> { id }
+//                    is_admin,verified_by_id}                    -> { id, account_number }
 //   update_profile  {user_id,email,first_name,last_name}         -> { ok: true }
 //   set_admin       {user_id,is_admin}                           -> { ok: true }
 //   ban             {user_id}                                    -> { ok: true }
@@ -78,6 +78,7 @@ Deno.serve(async (req: Request) => {
         is_admin: u.app_metadata?.is_admin === true,
         banned_until: u.banned_until && u.banned_until !== 'none' ? u.banned_until : null,
         verified_by_name: u.user_metadata?.verified_by_name || null,
+        account_number: u.user_metadata?.account_number || null,
       }));
       return json({ users });
     }
@@ -109,6 +110,17 @@ Deno.serve(async (req: Request) => {
         verifiedByName = vName || v.user.email || null;
       }
 
+      // Account number: a short human-friendly id (AP-0001, AP-0002, ...)
+      // alongside the UUID every account already has. Counting existing
+      // accounts at creation time is enough at this scale — no separate
+      // sequence table needed for a handful of admin-invited users.
+      const { data: existingUsers, error: countErr } = await admin.auth.admin.listUsers({
+        page: 1,
+        perPage: 200,
+      });
+      if (countErr) return json({ error: countErr.message }, 500);
+      const accountNumber = 'AP-' + String(existingUsers.users.length + 1).padStart(4, '0');
+
       // Admin sets the password directly here (by explicit choice — see
       // schema.sql for the tradeoff this reverses from the invite-email flow
       // used elsewhere). email_confirm is set so they can sign in right away
@@ -122,6 +134,7 @@ Deno.serve(async (req: Request) => {
           last_name: lastName || undefined,
           verified_by_id: verifiedById || undefined,
           verified_by_name: verifiedByName || undefined,
+          account_number: accountNumber,
         },
         app_metadata: { is_admin: makeAdmin },
       });
@@ -133,10 +146,10 @@ Deno.serve(async (req: Request) => {
         actor_id: caller.id,
         action: 'create_user',
         target_user_id: created.user.id,
-        details: { email, is_admin: makeAdmin, verified_by_id: verifiedById },
+        details: { email, is_admin: makeAdmin, verified_by_id: verifiedById, account_number: accountNumber },
       });
 
-      return json({ id: created.user.id });
+      return json({ id: created.user.id, account_number: accountNumber });
     }
 
     if (action === 'update_profile') {
