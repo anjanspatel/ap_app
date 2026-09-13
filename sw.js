@@ -61,7 +61,7 @@ self.addEventListener('fetch', function(e) {
        satisfy this from the browser's own HTTP cache instead of actually
        reaching the origin server, which is exactly how a page can look
        "network-first" in the code while still showing stale deployed HTML
-       (e.g. an old build's __LAST_UPDATED__ placeholder) on a real device. */
+       on a real device. */
     e.respondWith(
       fetch(e.request, { cache: 'no-store' }).then(function(res) {
         if (res && res.status === 200) {
