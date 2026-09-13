@@ -1,9 +1,11 @@
 User-agent: *
+Disallow: /$
+Disallow: /index.html
+Disallow: /404.html
 Disallow: /dashboard.html
 Disallow: /settings.html
 Disallow: /flange/
 Disallow: /torque/
 Disallow: /tubing/
-Allow: /
 
 Sitemap: https://app.anjanpatel.ca/sitemap.xml
