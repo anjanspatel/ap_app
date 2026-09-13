@@ -88,6 +88,10 @@ a:hover{text-decoration:underline}
 @media(max-width:480px){.wrap{padding:32px 16px 60px}.tb-brand span:last-child{display:none}}
 .skip-link{position:absolute;top:-60px;left:0;background:var(--indigo,#19D3E6);color:#0B111A;padding:8px 16px;font:600 12px 'Inter',sans-serif;border-radius:0 0 4px 0;z-index:9999;text-decoration:none;transition:top 150ms ease}
 .skip-link:focus{top:0}
+.legal-tabs{display:flex;gap:18px;border-bottom:1px solid var(--border);margin-bottom:32px}
+.legal-tab{font-size:12px;font-weight:600;color:var(--dim);text-decoration:none;padding:0 0 10px;border-bottom:2px solid transparent;transition:color var(--ease),border-color var(--ease)}
+.legal-tab:hover{color:var(--text);text-decoration:none}
+.legal-tab.active{color:var(--text);border-bottom-color:var(--indigo-fg)}
 </style>
 <script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 <link rel="stylesheet" href="/premium.css">
@@ -109,6 +113,11 @@ a:hover{text-decoration:underline}
 </header>
 
 <main class="wrap" id="main-content">
+  <nav class="legal-tabs" aria-label="Legal pages">
+    <a href="/terms/" class="legal-tab active">Terms of Use</a>
+    <a href="/privacy/" class="legal-tab">Privacy Policy</a>
+    <a href="/disclaimer/" class="legal-tab">Disclaimer</a>
+  </nav>
   <p class="eyebrow">Legal</p>
   <h1>Terms of Use</h1>
   <p class="updated">Last updated: September 2026 &nbsp;·&nbsp; Governing law: Alberta, Canada</p>
