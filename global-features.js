@@ -6,10 +6,9 @@
    Include before </body> on every page.
 ════════════════════════════════════════════════ */
 /* ── 0. Error Monitoring ────────────────────────
-   Lightweight client-side error capture — console-only for now. There is
-   no server-side error log to send these to since the self-hosted
-   backend replaced Supabase; add a POST /api/errors endpoint if that's
-   ever needed rather than reintroducing a client-held DB credential.
+   Lightweight client-side error capture — console-only for now. A Supabase
+   table (error_logs) already exists with an insert-only policy for this
+   exact purpose; wiring this up to actually POST there is still open.
 ──────────────────────────────────────────────── */
 (function () {
   'use strict';
