@@ -2,12 +2,13 @@
    Caches design system assets + tool shells for offline use.
    Stale-while-revalidate for static assets, network-first for navigation.
 */
-var CACHE = 'ap-v15';
+var CACHE = 'ap-v16';
 var STATIC = [
   '/',
   '/tokens.css',
   '/premium.css',
   '/global-features.js',
+  '/api.js',
   '/manifest.json',
   '/flange/',
   '/torque/',
