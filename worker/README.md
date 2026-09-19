@@ -37,6 +37,20 @@ tables this section needs without touching existing rows.
 
 ## 4. Create the Worker
 
+**Faster alternative to steps 4-6 below, if you'd rather not click through
+bindings and routes by hand:** Workers & Pages → Create → **Import a
+repository** → connect this GitHub repo → set the project's root
+directory to `worker/`. Cloudflare reads `wrangler.toml` (already in this
+folder, pointed at the real production database) and configures the D1
+binding and the `api.anjanpatel.ca` route automatically as part of the
+import — skip straight to step 7. Every future `git push` to `main` then
+redeploys the Worker automatically too, the same way GitHub Pages already
+auto-deploys the frontend.
+
+Prefer to click through it by hand, or the Git-import option isn't
+available on your plan? Continue with the manual steps below — they
+produce the exact same result.
+
 1. Go to **Workers & Pages → Create → Workers → Create Worker**.
 2. Name it `ap-workspace-api`. Deploy the default starter (you'll
    replace its code next).

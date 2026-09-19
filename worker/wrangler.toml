@@ -1,0 +1,32 @@
+# AP Workspace API — Cloudflare Worker configuration.
+#
+# This file is NOT required for the dashboard Quick Edit deploy path in
+# README.md (steps 4-6) — that method needs nothing but pasted code and a
+# couple of dashboard clicks, by design.
+#
+# It exists for two other paths, either of which is a shortcut over manual
+# Quick Edit if you ever want it:
+#
+#   1. Cloudflare dashboard -> Workers & Pages -> Create -> "Import a
+#      repository" (Git integration) -> select this GitHub repo -> set the
+#      root directory to `worker/`. Cloudflare reads this file and
+#      auto-configures the D1 binding and the api.anjanpatel.ca route for
+#      you — no manual binding/route setup afterward.
+#   2. If you ever do install Node + Wrangler locally, `wrangler deploy`
+#      from this folder does the same thing from a terminal.
+#
+# The database_id below is the real, already-created "ap-workspace" D1
+# database backing production — not a placeholder.
+
+name = "ap-workspace-api"
+main = "src/index.js"
+compatibility_date = "2026-09-19"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ap-workspace"
+database_id = "379bb02c-4579-4e16-b3c4-c90e1df14673"
+
+[[routes]]
+pattern = "api.anjanpatel.ca"
+custom_domain = true
