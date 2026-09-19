@@ -13,8 +13,14 @@ name: Deploy preview to Cloudflare Pages
 #                            template covers Pages too.
 #   CLOUDFLARE_ACCOUNT_ID  — dash.cloudflare.com → right sidebar of any
 #                            account page.
-# Until both secrets exist, this workflow will fail — that's expected and
-# harmless; the GitHub Pages deploy is unaffected.
+# Manual trigger ONLY (Actions tab → this workflow → Run workflow) — it
+# does NOT run on every push. It used to run automatically on every push
+# to main, which meant a failed run (and a failure email) on every single
+# commit for as long as the two secrets below aren't configured, since
+# there's no way for a workflow to skip itself before secrets are checked
+# without still showing as a run. Since this preview is opt-in and most
+# pushes have nothing to do with it, opt-in triggering is the actual fix,
+# not just a quieter failure.
 #
 # Uses cloudflare/wrangler-action (not cloudflare/pages-action, which
 # Cloudflare has removed from the Marketplace — using it now fails
@@ -24,8 +30,6 @@ name: Deploy preview to Cloudflare Pages
 # locally with the CLI.
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -37,6 +41,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Check secrets are configured
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID repo secrets aren't set. Add them under Settings -> Secrets and variables -> Actions, then re-run this workflow. See this file's header comment for where to get each value."
+            exit 1
+          fi
 
       - name: Stage site
         run: |
