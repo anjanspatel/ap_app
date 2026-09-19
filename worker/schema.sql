@@ -39,7 +39,7 @@ create table if not exists saved_lookups (
   user_id        text not null references users(id) on delete cascade,
   tool           text not null check (tool in ('flange','torque','tubing')),
   label          text,
-  params         text not null,     -- JSON-encoded, same shape as the Supabase jsonb column
+  params         text not null,     -- JSON-encoded calculator input parameters
   result_summary text,
   created_at     text not null
 );

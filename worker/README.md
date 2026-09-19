@@ -112,6 +112,23 @@ Nothing to do here — the site's pages already call
   calls `requireAdmin()`, which re-checks the session and the caller's
   `is_admin` flag on every single request — hiding the Admin Console nav
   item from a non-admin's browser is a UX nicety, not the enforcement.
+- **Last-admin lockout is structurally impossible, not just checked for.**
+  An admin can never target their own account through `/set-admin`,
+  `/ban`, or delete (each has an explicit self-action guard). Since only
+  *another* admin can revoke, disable, or delete an admin, and the sole
+  remaining admin has no other admin to do that to them, the system can
+  never reach zero admins through these APIs.
+- **Bootstrap from Cloudflare secrets** (preferred over manually running
+  `seed-users.sql`): set two Worker secrets, `BOOTSTRAP_ADMIN_USERNAME`
+  and `BOOTSTRAP_ADMIN_PASSWORD` (Worker → Settings → Variables and
+  Secrets — never as a repo file). The first request to any `/api/auth/*`
+  route checks whether an admin already exists; if not, it hashes the
+  secret password and creates exactly one admin from it, with
+  `must_change_password` set. Running it again — or leaving the secrets
+  configured indefinitely — is safe: it's a no-op once an admin exists.
+  Once you've confirmed you can sign in, delete both secrets; after
+  that the check is a single unset-env-var read per auth request, with
+  no database query at all. See `.env.example` for the exact names.
 
 ## What this app can and can't do without a third-party service
 

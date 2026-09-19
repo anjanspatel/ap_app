@@ -229,12 +229,54 @@ async function clearLoginAttempts(env, identifier) {
   await env.DB.prepare(`delete from login_attempts where identifier = ?`).bind(identifier).run();
 }
 
+// ── Secret-driven admin bootstrap ────────────────────────────────────
+// Reads BOOTSTRAP_ADMIN_USERNAME / BOOTSTRAP_ADMIN_PASSWORD from Cloudflare
+// Worker secrets (Settings → Variables and Secrets on the Worker — never
+// from source, never from a request body). Workers has no "run once at
+// deploy" hook, so this runs inline on every /api/auth/* request instead —
+// but it costs nothing beyond one env-var read once the operator deletes
+// the two secrets after bootstrapping (the guard below returns before
+// touching D1 at all when they're unset), and it costs one cheap COUNT
+// query per request in the window before that, which is deliberately
+// bounded to just the auth routes rather than every request.
+//
+// Idempotent: does nothing if an admin already exists, so leaving the
+// secrets configured after the first successful run is safe, not just
+// tolerated — it will never create a second admin from them.
+async function maybeBootstrapAdmin(env) {
+  const bootstrapUsername = env.BOOTSTRAP_ADMIN_USERNAME;
+  const bootstrapPassword = env.BOOTSTRAP_ADMIN_PASSWORD;
+  if (!bootstrapUsername || !bootstrapPassword) return; // not configured (or already removed post-bootstrap) — zero DB cost
+
+  const { c } = await env.DB.prepare(`select count(*) as c from users where is_admin = 1`).first();
+  if (c > 0) return; // an admin already exists — never create a second one from secrets
+
+  const username = String(bootstrapUsername).trim();
+  const password = String(bootstrapPassword);
+  if (username.length < 3 || password.length < 8) return; // refuse to bootstrap from malformed secrets, silently — never echoes why
+
+  const id = crypto.randomUUID();
+  const hash = await hashPassword(password);
+  // email is NOT NULL/unique in this schema; bootstrap accounts get a
+  // placeholder that can't collide with a real address, since they sign in
+  // by username, not email.
+  const placeholderEmail = `${username.toLowerCase()}@bootstrap.local`;
+  await env.DB.prepare(
+    `insert into users (id, email, username, password_hash, is_admin, account_number, must_change_password, created_at)
+     values (?,?,?,?,1,'AP-0001',1,?)`
+  )
+    .bind(id, placeholderEmail, username, hash, nowIso())
+    .run();
+  // Audit the fact that bootstrap ran, never the credentials themselves.
+  await logAudit(env, id, 'USER_CREATED', id, { bootstrap: true, username });
+}
+
 // Named exports alongside the default — purely additive, so this is still
 // a valid Cloudflare Workers ES-module entrypoint (only `fetch` on the
 // default export matters to the runtime). This just makes the
 // dependency-free crypto/validation logic unit-testable with plain
 // `node --test`, without needing a D1 mock or a Workers runtime.
-export { hashPassword, verifyPassword, isValidEmail };
+export { hashPassword, verifyPassword, isValidEmail, maybeBootstrapAdmin };
 
 export default {
   async fetch(request, env) {
@@ -244,6 +286,10 @@ export default {
     const path = url.pathname;
 
     try {
+      if (path.startsWith('/api/auth/')) {
+        await maybeBootstrapAdmin(env);
+      }
+
       // ── Auth ──────────────────────────────────────────────
       if (path === '/api/auth/signin' && request.method === 'POST') {
         const body = await request.json().catch(() => ({}));

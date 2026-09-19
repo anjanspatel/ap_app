@@ -18,12 +18,12 @@ test('hashPassword produces the documented pbkdf2$iterations$salt$hash format', 
 });
 
 test('verifyPassword accepts the correct password', async () => {
-  const hash = await hashPassword('ChangeMe2026');
-  assert.equal(await verifyPassword('ChangeMe2026', hash), true);
+  const hash = await hashPassword('TestPassw0rd!');
+  assert.equal(await verifyPassword('TestPassw0rd!', hash), true);
 });
 
 test('verifyPassword rejects an incorrect password', async () => {
-  const hash = await hashPassword('ChangeMe2026');
+  const hash = await hashPassword('TestPassw0rd!');
   assert.equal(await verifyPassword('wrong-password', hash), false);
 });
 

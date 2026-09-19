@@ -6,9 +6,13 @@
    Include before </body> on every page.
 ════════════════════════════════════════════════ */
 /* ── 0. Error Monitoring ────────────────────────
-   Lightweight client-side error capture — console-only for now. A Supabase
-   table (error_logs) already exists with an insert-only policy for this
-   exact purpose; wiring this up to actually POST there is still open.
+   Lightweight client-side error capture — console-only. There's no
+   endpoint to send these to: the Worker deliberately doesn't accept
+   arbitrary client-reported data (that would be an unauthenticated
+   write surface with no real validation possible on the payload), and
+   there's no third-party error-tracking service in use. This exists so
+   errors are still visible in the browser console for anyone debugging
+   in the field, not to collect telemetry.
 ──────────────────────────────────────────────── */
 (function () {
   'use strict';

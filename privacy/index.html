@@ -146,12 +146,12 @@ a:hover{text-decoration:underline}
   </ul>
 
   <h2>Third-party services</h2>
-  <p>We use <strong>Supabase</strong> (supabase.com) to run authentication and store account and saved-lookup data. Supabase hosts the database and enforces that each account can only ever access its own saved lookups; administrators of this service access user data only through the built-in Admin Console, never directly. Review Supabase's own privacy policy at <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a>.</p>
+  <p>Authentication and all account and saved-lookup data run entirely on <strong>Cloudflare</strong> infrastructure that we control directly — a Cloudflare Worker and a Cloudflare D1 database, both inside our own Cloudflare account. Cloudflare is our hosting infrastructure, not a party with its own access to your account data: it never sees your password (only a salted, hashed value we compute is ever stored), and every request is authorized so an account can only ever access its own saved lookups. Administrators access user data only through the built-in Admin Console, never by querying the database directly. Review Cloudflare's privacy policy at <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a>.</p>
   <p>We use <strong>Plausible Analytics</strong> (plausible.io) for aggregate page-view statistics on public pages. Plausible is cookieless and collects no personal data — no IP addresses, no device fingerprints, no cross-site tracking. Data is not shared with third parties. Review their data policy at <a href="https://plausible.io/privacy" target="_blank" rel="noopener">plausible.io/privacy</a>.</p>
   <p>No other third-party services receive your personal data. We do not use advertising networks, social tracking pixels, or analytics services that share data with third parties.</p>
 
   <h2>Cookies &amp; browser storage</h2>
-  <p>We do not use tracking, advertising, or analytics cookies. To keep you signed in, your session token is kept in your browser's storage (not a persistent tracking cookie) for as long as your browser stays open — closing the browser ends the session and you'll need to sign in again next time.</p>
+  <p>We do not use tracking, advertising, or analytics cookies. To keep you signed in, an httpOnly session cookie is set that JavaScript on this site (or any site) cannot read — it is never copied into browser storage. It is a session cookie, not a persistent one: closing your browser ends the session and you'll need to sign in again next time.</p>
 
   <h2>Data retention</h2>
   <p>Your data is retained for as long as your account exists. You can delete individual saved lookups from your dashboard at any time. To delete your account and all associated data, contact us using the address below.</p>

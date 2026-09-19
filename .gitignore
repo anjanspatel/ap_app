@@ -1,0 +1,17 @@
+# Secrets and local environment config — this project has none checked in
+# today (all secrets live in Cloudflare's dashboard, never as local files),
+# but this guards against ever accidentally committing one later.
+.env
+.env.*
+!.env.example
+*.secret
+*credentials*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Local build/test output
+node_modules/
+dist/
+coverage/
