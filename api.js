@@ -27,8 +27,9 @@
 
   window.api = {
     auth: {
-      signIn: function (email, password) {
-        return call('/api/auth/signin', { method: 'POST', body: { email: email, password: password } });
+      signIn: function (identifier, password) {
+        // identifier may be an email or a username (e.g. the bootstrap admin).
+        return call('/api/auth/signin', { method: 'POST', body: { identifier: identifier, password: password } });
       },
       signOut: function (global) {
         return call('/api/auth/signout', { method: 'POST', body: { scope: global ? 'global' : undefined } });
@@ -75,6 +76,12 @@
       },
       resetPassword: function (userId, newPassword) {
         return call('/api/admin/users/' + encodeURIComponent(userId) + '/reset-password', { method: 'POST', body: { new_password: newPassword } });
+      },
+      revokeSessions: function (userId) {
+        return call('/api/admin/users/' + encodeURIComponent(userId) + '/revoke-sessions', { method: 'POST' });
+      },
+      delete: function (userId) {
+        return call('/api/admin/users/' + encodeURIComponent(userId), { method: 'DELETE' });
       },
     },
   };

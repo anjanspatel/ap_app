@@ -354,7 +354,7 @@ async function init(){
   var r=await api.auth.getSession();
   if(!r.user){window.location.href='/';return}
   session={email:r.user.email,is_admin:r.user.is_admin===true};
-  var email=session.email||'';
+  var email=session.email||r.user.username||'';
   var ini=email.charAt(0).toUpperCase();
   $('sbEmail').textContent=email;
   $('sbAvatar').textContent=ini;
@@ -365,6 +365,20 @@ async function init(){
   $('fProvider').textContent='Email';
   var t=document.documentElement.dataset.theme||'dark';
   var el=$('th-'+t);if(el)el.classList.add('active');
+
+  // An admin (or the bootstrap seed) set this password directly, so it must
+  // be changed before it's used for anything else — jump straight to the
+  // Security tab and explain why, rather than silently letting them wander
+  // off to Dashboard first.
+  if(r.user.must_change_password){
+    showTab('security',1);
+    var banner=document.createElement('div');
+    banner.setAttribute('role','alert');
+    banner.style.cssText='background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:6px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--text);line-height:1.5';
+    banner.innerHTML='<strong style="color:var(--warn)">Password change required.</strong> This account has a password that was set for you — choose a new one below before continuing.';
+    var content=$('main-content')||document.querySelector('.content');
+    if(content)content.insertBefore(banner,content.firstChild);
+  }
 }
 
 async function changePassword(){

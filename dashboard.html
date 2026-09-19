@@ -1109,10 +1109,11 @@ function renderUsers(){
     var resetBtn='<button class="row-action" data-act="reset" data-id="'+esc(u.id)+'" data-email="'+esc(u.email)+'">Reset password</button>';
     var adminBtn='<button class="row-action" data-act="admin" data-id="'+esc(u.id)+'" data-make="'+(!u.is_admin)+'" data-email="'+esc(u.email)+'">'+(u.is_admin?'Revoke admin':'Make admin')+'</button>';
     var banBtn='<button class="row-action'+(isBanned?'':' danger')+'" data-act="ban" data-id="'+esc(u.id)+'" data-make="'+(!isBanned)+'" data-email="'+esc(u.email)+'">'+(isBanned?'Unblock':'Block')+'</button>';
+    var deleteBtn='<button class="row-action danger" data-act="delete" data-id="'+esc(u.id)+'" data-email="'+esc(u.email)+'">Delete</button>';
     var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'—';
     var acctNum=u.account_number?esc(u.account_number):'—';
     return '<tr><td class="td-mono">'+acctNum+'</td><td>'+esc(name)+'</td><td>'+esc(u.email||'—')+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
-      +'<td style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">'+editBtn+resetBtn+adminBtn+banBtn+'</td></tr>';
+      +'<td style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">'+editBtn+resetBtn+adminBtn+banBtn+deleteBtn+'</td></tr>';
   }).join('');
 }
 
@@ -1187,6 +1188,15 @@ async function toggleBan(userId,ban,email){
   loadUsers();
 }
 
+async function deleteUser(userId,email){
+  if(!confirm('Permanently delete '+email+'? This removes their account and all saved lookups. This cannot be undone.'))return;
+  try{
+    await api.admin.delete(userId);
+  }catch(err){toast('Error: '+(err.message||'could not delete user.'));return}
+  toast('User deleted.');
+  loadUsers();
+}
+
 async function resetUserPassword(userId,email){
   // The only "forgot password" path this app has — there's no email
   // provider wired up to send a self-service reset link, so an admin
@@ -1208,6 +1218,7 @@ $('usersRows').addEventListener('click',function(e){
   else if(btn.dataset.act==='ban')toggleBan(id,make,email);
   else if(btn.dataset.act==='reset')resetUserPassword(id,email);
   else if(btn.dataset.act==='edit')openEditUserModal(id);
+  else if(btn.dataset.act==='delete')deleteUser(id,email);
 });
 
 function openEditUserModal(userId){

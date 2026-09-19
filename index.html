@@ -295,8 +295,8 @@ body{
 
       <form id="auth-form" novalidate>
         <div class="field">
-          <div class="field-row"><label for="inp-email">Email</label></div>
-          <input type="email" id="inp-email" placeholder="name@company.com" autocomplete="email" inputmode="email">
+          <div class="field-row"><label for="inp-email">Email or username</label></div>
+          <input type="text" id="inp-email" placeholder="name@company.com" autocomplete="username">
           <p class="err-txt" id="err-email" role="alert" aria-live="polite"></p>
         </div>
         <div class="field">
@@ -414,6 +414,9 @@ body{
 
 var busy=false;
 var ERE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+// A login identifier is either a full email, or a plain username (e.g. the
+// bootstrap admin account) — letters, numbers, dot, underscore, hyphen.
+var IDRE=/^[A-Za-z0-9._\-]{2,64}$/;
 /* Deep-link return path (e.g. /torque/ redirected here to sign in first).
    Only ever a same-site path — reject protocol-relative ("//evil.com")
    or absolute URLs so this can't be turned into an open redirect. */
@@ -437,19 +440,26 @@ q('inp-pw').addEventListener('input',function(){setErr('inp-pw','err-pw','');set
 q('auth-form').addEventListener('submit',async function(e){
   e.preventDefault();if(busy)return;
   var em=q('inp-email').value.trim(),pw=q('inp-pw').value,ok=true;
-  if(!em){setErr('inp-email','err-email','Email required');ok=false}
-  else if(!ERE.test(em)){setErr('inp-email','err-email','Enter valid email');ok=false}
+  if(!em){setErr('inp-email','err-email','Email or username required');ok=false}
+  else if(!ERE.test(em)&&!IDRE.test(em)){setErr('inp-email','err-email','Enter a valid email or username');ok=false}
   if(!pw){setErr('inp-pw','err-pw','Password required');ok=false}
   else if(pw.length<8){setErr('inp-pw','err-pw','Min 8 characters');ok=false}
   if(!ok)return;
   busy=true;q('auth-submit').disabled=true;setNote('auth-note','');
   swapLbl('auth-lbl',COPY.work);
+  var signInResult;
   try{
-    await api.auth.signIn(em,pw);
+    signInResult=await api.auth.signIn(em,pw);
   }catch(err){
     swapLbl('auth-lbl',COPY.idle);setNote('auth-note',err.message);q('auth-submit').disabled=false;busy=false;return;
   }
   swapLbl('auth-lbl',COPY.done);
+  // A password an admin just set (bootstrap or reset) must be changed
+  // before anything else — skip the normal deep-link destination entirely.
+  if(signInResult&&signInResult.user&&signInResult.user.must_change_password){
+    setTimeout(function(){window.location.href='/settings.html?forcePasswordChange=1';},700);
+    return;
+  }
   var dest=safeNextPath();
   setTimeout(function(){window.location.href=dest||window.location.pathname;},700);
 });

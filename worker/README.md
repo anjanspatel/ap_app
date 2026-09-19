@@ -26,8 +26,14 @@ enough for this.
    needs an account) — leave the `password_hash` values exactly as
    they are.
 2. Paste the edited SQL into the same D1 Console and click **Execute**.
-3. Everyone signs in the first time with the password `ChangeMe123!`,
-   then changes it immediately from Settings → Change Password.
+3. Everyone signs in the first time with the password `ChangeMe123!` —
+   the app forces a password change immediately after that first sign-in
+   (`must_change_password` on the row), before anything else is usable.
+
+If you're running this against an **existing** database (one that already
+has accounts and data on it), don't re-run `schema.sql` — run
+`migrations/0001_auth_hardening.sql` once instead. It adds the columns/
+tables this section needs without touching existing rows.
 
 ## 4. Create the Worker
 
@@ -63,6 +69,49 @@ you through pointing your domain's nameservers at Cloudflare first.)
 Nothing to do here — the site's pages already call
 `https://api.anjanpatel.ca` (see `/api.js` at the repo root). Once step
 6 finishes, sign-in works.
+
+## Authentication architecture (2026-09-19 hardening pass)
+
+- **Login by email or username.** The `identifier` field on sign-in is
+  checked against `email` if it looks like one, otherwise `username`.
+  Most accounts only need an email; `username` is there for cases like a
+  bootstrap admin account that shouldn't need a real mailbox.
+- **Password hashing: PBKDF2-SHA256, 210,000 iterations**, via the
+  Workers runtime's native `crypto.subtle` — zero dependencies. Argon2id
+  was considered first (it's the generally preferred choice today) but
+  has no native implementation on Workers; using it would require a WASM
+  package, which breaks this Worker's one deliberate constraint: a single
+  file with zero dependencies that can be pasted straight into the
+  dashboard's Quick Edit box. PBKDF2-SHA256 at this iteration count is
+  OWASP's current minimum-acceptable recommendation for the algorithm.
+- **Forced password change.** Every account created or reset by an admin
+  (including the bootstrap seed) gets `must_change_password = 1`. The
+  frontend checks this on sign-in and routes straight to Settings →
+  Security with an explanatory banner before anything else — the account
+  works for that one screen only until the password is changed.
+- **Brute-force protection.** `login_attempts` tracks failed sign-ins by
+  the identifier typed in (not by IP — Workers doesn't reliably expose a
+  stable client IP behind Cloudflare's edge, and keying by identifier
+  stops credential-stuffing against one account regardless of source
+  IP). After 10 failures inside a 15-minute window, that identifier is
+  locked out for 15 minutes; a successful sign-in clears it.
+- **This is application-level rate limiting, not edge-level.** It stops
+  one account from being brute-forced but doesn't stop a flood of
+  requests generally. Pair it with a Cloudflare dashboard rate-limiting
+  rule on `POST /api/auth/signin` (Security → WAF → Rate limiting rules,
+  free plan includes a small number) for defense in depth at the edge —
+  that's a dashboard toggle, not something this Worker can configure for
+  itself.
+- **Audit log.** Every account and session-affecting action writes a row
+  to `audit_logs`: `LOGIN_SUCCESS`, `LOGIN_FAILURE`, `LOGOUT`,
+  `PASSWORD_CHANGED`, `PASSWORD_RESET_BY_ADMIN`, `USER_CREATED`,
+  `USER_UPDATED`, `USER_DELETED`, `USER_DISABLED`, `USER_ENABLED`,
+  `ROLE_CHANGED`, `SESSION_REVOKED`. Never a password or hash — `details`
+  is always a small, specific object.
+- **Authorization is server-side, always.** Every `/api/admin/*` route
+  calls `requireAdmin()`, which re-checks the session and the caller's
+  `is_admin` flag on every single request — hiding the Admin Console nav
+  item from a non-admin's browser is a UX nicety, not the enforcement.
 
 ## What this app can and can't do without a third-party service
 

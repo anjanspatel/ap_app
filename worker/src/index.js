@@ -12,18 +12,33 @@
 // the app" requirement the site already had under Supabase.
 //
 // Passwords: PBKDF2-SHA256 via the native Web Crypto API (crypto.subtle) —
-// no bcrypt library needed. There is no self-service "forgot password" —
-// that would need an email provider, which is a third-party service this
-// app deliberately doesn't use. Instead an admin resets a user's password
-// directly from the Admin Console (POST /api/admin/users/:id/reset-password),
-// the same way an admin already sets the initial password when creating an
-// account.
+// no bcrypt library needed. Argon2id was considered (it's the generally
+// preferred choice today) but has no native implementation in the Workers
+// runtime — using it would require a WASM package, which breaks the
+// deliberate zero-dependency, paste-into-the-dashboard design this Worker
+// is built around. PBKDF2-SHA256 at 210,000 iterations is OWASP's current
+// minimum-acceptable recommendation for that algorithm, and native to the
+// runtime with no dependency at all.
+//
+// There is no self-service "forgot password" — that would need an email
+// provider, which is a third-party service this app deliberately doesn't
+// use. Instead an admin resets a user's password directly from the Admin
+// Console (POST /api/admin/users/:id/reset-password), the same way an
+// admin already sets the initial password when creating an account.
 //
 // CSRF: app.anjanpatel.ca and api.anjanpatel.ca share the registrable
 // domain anjanpatel.ca, so browsers treat them as the same "site". A
 // SameSite=Lax cookie is therefore sent on requests between them but
 // withheld on genuinely cross-site requests (e.g. from evil.com), which is
 // exactly the CSRF protection this needs — no separate CSRF token required.
+//
+// Brute-force protection: login_attempts tracks failed sign-ins by the
+// identifier (email or username) someone typed in, not by IP — Workers
+// doesn't reliably expose a stable client IP behind Cloudflare's edge, and
+// keying by identifier stops credential-stuffing against one account
+// regardless of which IP it comes from. After MAX_LOGIN_ATTEMPTS failures
+// within the tracking window, that identifier is locked out for
+// LOCKOUT_MINUTES. A successful login clears its row.
 
 const ALLOWED_ORIGIN = 'https://app.anjanpatel.ca';
 const COOKIE_NAME = 'ap_sess';
@@ -31,6 +46,9 @@ const SESSION_MAX_AGE_S = 60 * 60 * 24; // 24h absolute server-side cap, checked
 const PBKDF2_ITERATIONS = 210000; // OWASP's current minimum for PBKDF2-HMAC-SHA256
 const PBKDF2_HASH = 'SHA-256';
 const PBKDF2_KEYLEN_BITS = 256;
+const MAX_LOGIN_ATTEMPTS = 10;
+const LOCKOUT_MINUTES = 15;
+const ATTEMPT_WINDOW_MINUTES = 15;
 
 function corsHeaders() {
   return {
@@ -44,12 +62,16 @@ function corsHeaders() {
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders(), ...extraHeaders },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...corsHeaders(), ...extraHeaders },
   });
 }
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function minutesFromNow(mins) {
+  return new Date(Date.now() + mins * 60 * 1000).toISOString();
 }
 
 function randomToken() {
@@ -125,12 +147,14 @@ function publicUser(u) {
   return {
     id: u.id,
     email: u.email,
+    username: u.username || null,
     first_name: u.first_name || null,
     last_name: u.last_name || null,
     is_admin: !!u.is_admin,
     banned_until: u.banned_until || null,
     account_number: u.account_number || null,
     verified_by_name: u.verified_by_name || null,
+    must_change_password: !!u.must_change_password,
     created_at: u.created_at,
     last_sign_in_at: u.last_sign_in_at || null,
   };
@@ -147,6 +171,7 @@ async function getSessionUser(request, env) {
   if (!row) return null;
   if (new Date(row.expires_at).getTime() < Date.now()) return null;
   if (row.banned_until && new Date(row.banned_until).getTime() > Date.now()) return null;
+  await env.DB.prepare(`update sessions set last_used_at = ? where token = ?`).bind(nowIso(), token).run();
   return row;
 }
 
@@ -163,13 +188,53 @@ async function requireAdmin(request, env) {
   return { user };
 }
 
+// Never logs passwords or password hashes — `details` is always a small,
+// specific JSON object describing what changed, not raw request bodies.
 async function logAudit(env, actorId, action, targetUserId, details) {
   await env.DB.prepare(
-    `insert into admin_audit_log (id, actor_id, action, target_user_id, details, created_at) values (?,?,?,?,?,?)`
+    `insert into audit_logs (id, actor_id, action, target_user_id, details, created_at) values (?,?,?,?,?,?)`
   )
     .bind(crypto.randomUUID(), actorId, action, targetUserId, JSON.stringify(details || {}), nowIso())
     .run();
 }
+
+// ── Login rate limiting ──────────────────────────────────────────────
+async function checkLoginLockout(env, identifier) {
+  const row = await env.DB.prepare(`select * from login_attempts where identifier = ?`).bind(identifier).first();
+  if (!row) return { locked: false };
+  if (row.locked_until && new Date(row.locked_until).getTime() > Date.now()) return { locked: true };
+  return { locked: false };
+}
+
+async function recordFailedLogin(env, identifier) {
+  const row = await env.DB.prepare(`select * from login_attempts where identifier = ?`).bind(identifier).first();
+  const windowExpired = row && Date.now() - new Date(row.first_attempt_at).getTime() > ATTEMPT_WINDOW_MINUTES * 60 * 1000;
+  if (!row || windowExpired) {
+    await env.DB.prepare(
+      `insert into login_attempts (identifier, attempt_count, first_attempt_at, locked_until) values (?, 1, ?, null)
+       on conflict(identifier) do update set attempt_count = 1, first_attempt_at = excluded.first_attempt_at, locked_until = null`
+    )
+      .bind(identifier, nowIso())
+      .run();
+    return;
+  }
+  const nextCount = row.attempt_count + 1;
+  const lockedUntil = nextCount >= MAX_LOGIN_ATTEMPTS ? minutesFromNow(LOCKOUT_MINUTES) : null;
+  await env.DB.prepare(`update login_attempts set attempt_count = ?, locked_until = ? where identifier = ?`)
+    .bind(nextCount, lockedUntil, identifier)
+    .run();
+}
+
+async function clearLoginAttempts(env, identifier) {
+  await env.DB.prepare(`delete from login_attempts where identifier = ?`).bind(identifier).run();
+}
+
+// Named exports alongside the default — purely additive, so this is still
+// a valid Cloudflare Workers ES-module entrypoint (only `fetch` on the
+// default export matters to the runtime). This just makes the
+// dependency-free crypto/validation logic unit-testable with plain
+// `node --test`, without needing a D1 mock or a Workers runtime.
+export { hashPassword, verifyPassword, isValidEmail };
 
 export default {
   async fetch(request, env) {
@@ -182,33 +247,59 @@ export default {
       // ── Auth ──────────────────────────────────────────────
       if (path === '/api/auth/signin' && request.method === 'POST') {
         const body = await request.json().catch(() => ({}));
-        const email = String(body.email || '').toLowerCase().trim();
+        // Accepts either field name — the login form sends one "identifier"
+        // that can be an email or a username (e.g. the bootstrap admin).
+        const identifierRaw = String(body.identifier || body.email || body.username || '').trim();
+        const identifier = identifierRaw.toLowerCase();
         const password = String(body.password || '');
-        const user = await env.DB.prepare(`select * from users where email = ?`).bind(email).first();
+
+        if (!identifier || !password) return json({ error: 'Invalid email or password' }, 401);
+
+        const { locked } = await checkLoginLockout(env, identifier);
+        if (locked) {
+          return json({ error: 'Too many failed attempts. Try again in a few minutes.' }, 429);
+        }
+
+        const user = isValidEmail(identifierRaw)
+          ? await env.DB.prepare(`select * from users where email = ?`).bind(identifier).first()
+          : await env.DB.prepare(`select * from users where username = ?`).bind(identifierRaw).first();
+
+        // Deliberately identical error for "no such account" and "wrong
+        // password" — never confirms whether an identifier exists.
         if (!user || !(await verifyPassword(password, user.password_hash))) {
+          await recordFailedLogin(env, identifier);
+          await logAudit(env, user ? user.id : null, 'LOGIN_FAILURE', user ? user.id : null, { identifier });
           return json({ error: 'Invalid email or password' }, 401);
         }
         if (user.banned_until && new Date(user.banned_until).getTime() > Date.now()) {
+          await logAudit(env, user.id, 'LOGIN_FAILURE', user.id, { reason: 'disabled' });
           return json({ error: 'This account has been disabled' }, 403);
         }
+
+        await clearLoginAttempts(env, identifier);
         const token = randomToken();
         const expires = new Date(Date.now() + SESSION_MAX_AGE_S * 1000).toISOString();
-        await env.DB.prepare(`insert into sessions (token, user_id, created_at, expires_at) values (?,?,?,?)`)
-          .bind(token, user.id, nowIso(), expires)
+        await env.DB.prepare(`insert into sessions (token, user_id, created_at, expires_at, last_used_at) values (?,?,?,?,?)`)
+          .bind(token, user.id, nowIso(), expires, nowIso())
           .run();
         await env.DB.prepare(`update users set last_sign_in_at = ? where id = ?`).bind(nowIso(), user.id).run();
-        return json({ user: publicUser(user) }, 200, { 'Set-Cookie': sessionCookieHeader(token) });
+        await logAudit(env, user.id, 'LOGIN_SUCCESS', user.id, {});
+        return json({ user: publicUser({ ...user, last_sign_in_at: nowIso() }) }, 200, { 'Set-Cookie': sessionCookieHeader(token) });
       }
 
       if (path === '/api/auth/signout' && request.method === 'POST') {
         const body = await request.json().catch(() => ({}));
         const token = getCookie(request, COOKIE_NAME);
         if (token) {
-          if (body.scope === 'global') {
-            const row = await env.DB.prepare(`select user_id from sessions where token = ?`).bind(token).first();
-            if (row) await env.DB.prepare(`delete from sessions where user_id = ?`).bind(row.user_id).run();
-          } else {
-            await env.DB.prepare(`delete from sessions where token = ?`).bind(token).run();
+          const row = await env.DB.prepare(`select user_id from sessions where token = ?`).bind(token).first();
+          if (row) {
+            if (body.scope === 'global') {
+              await env.DB.prepare(`delete from sessions where user_id = ?`).bind(row.user_id).run();
+              await logAudit(env, row.user_id, 'SESSION_REVOKED', row.user_id, { scope: 'all_devices' });
+            } else {
+              await env.DB.prepare(`delete from sessions where token = ?`).bind(token).run();
+              await logAudit(env, row.user_id, 'LOGOUT', row.user_id, {});
+            }
           }
         }
         return json({ ok: true }, 200, { 'Set-Cookie': clearCookieHeader() });
@@ -229,7 +320,12 @@ export default {
         if (!(await verifyPassword(current, user.password_hash))) return json({ error: 'Current password is incorrect' }, 400);
         if (next.length < 8) return json({ error: 'New password must be at least 8 characters' }, 400);
         const hash = await hashPassword(next);
-        await env.DB.prepare(`update users set password_hash = ? where id = ?`).bind(hash, user.id).run();
+        await env.DB.prepare(
+          `update users set password_hash = ?, must_change_password = 0, password_changed_at = ? where id = ?`
+        )
+          .bind(hash, nowIso(), user.id)
+          .run();
+        await logAudit(env, user.id, 'PASSWORD_CHANGED', user.id, { self_service: true });
         return json({ ok: true });
       }
 
@@ -282,6 +378,7 @@ export default {
         if (error) return error;
         const body = await request.json().catch(() => ({}));
         const email = String(body.email || '').toLowerCase().trim();
+        const username = body.username ? String(body.username).trim() : null;
         const firstName = String(body.first_name || '').trim();
         const lastName = String(body.last_name || '').trim();
         const makeAdmin = body.is_admin === true;
@@ -293,6 +390,10 @@ export default {
 
         const existing = await env.DB.prepare(`select id from users where email = ?`).bind(email).first();
         if (existing) return json({ error: 'An account with this email already exists' }, 409);
+        if (username) {
+          const usernameTaken = await env.DB.prepare(`select id from users where username = ?`).bind(username).first();
+          if (usernameTaken) return json({ error: 'That username is already taken' }, 409);
+        }
 
         let verifiedByName = null;
         if (verifiedById) {
@@ -307,13 +408,13 @@ export default {
         const id = crypto.randomUUID();
         const hash = await hashPassword(password);
         await env.DB.prepare(
-          `insert into users (id, email, password_hash, first_name, last_name, is_admin, verified_by_id, verified_by_name, account_number, created_at)
-           values (?,?,?,?,?,?,?,?,?,?)`
+          `insert into users (id, email, username, password_hash, first_name, last_name, is_admin, verified_by_id, verified_by_name, account_number, must_change_password, created_at)
+           values (?,?,?,?,?,?,?,?,?,?,1,?)`
         )
-          .bind(id, email, hash, firstName || null, lastName || null, makeAdmin ? 1 : 0, verifiedById, verifiedByName, accountNumber, nowIso())
+          .bind(id, email, username, hash, firstName || null, lastName || null, makeAdmin ? 1 : 0, verifiedById, verifiedByName, accountNumber, nowIso())
           .run();
 
-        await logAudit(env, caller.id, 'create_user', id, { email, is_admin: makeAdmin, verified_by_id: verifiedById, account_number: accountNumber });
+        await logAudit(env, caller.id, 'USER_CREATED', id, { email, is_admin: makeAdmin, verified_by_id: verifiedById, account_number: accountNumber });
         return json({ id, account_number: accountNumber });
       }
 
@@ -337,7 +438,18 @@ export default {
           await env.DB.prepare(`update users set email = ?, first_name = ?, last_name = ? where id = ?`)
             .bind(email, firstName || null, lastName || null, targetId)
             .run();
-          await logAudit(env, caller.id, 'update_profile', targetId, { email, first_name: firstName, last_name: lastName });
+          await logAudit(env, caller.id, 'USER_UPDATED', targetId, { email, first_name: firstName, last_name: lastName });
+          return json({ ok: true });
+        }
+
+        if (sub === '' && request.method === 'DELETE') {
+          if (targetId === caller.id) return json({ error: "You can't delete your own account" }, 400);
+          const target = await env.DB.prepare(`select id, email from users where id = ?`).bind(targetId).first();
+          if (!target) return json({ error: 'User not found' }, 404);
+          await env.DB.prepare(`delete from saved_lookups where user_id = ?`).bind(targetId).run();
+          await env.DB.prepare(`delete from sessions where user_id = ?`).bind(targetId).run();
+          await env.DB.prepare(`delete from users where id = ?`).bind(targetId).run();
+          await logAudit(env, caller.id, 'USER_DELETED', null, { deleted_user_id: targetId, email: target.email });
           return json({ ok: true });
         }
 
@@ -352,9 +464,20 @@ export default {
           const newPassword = String(body.new_password || '');
           if (newPassword.length < 8) return json({ error: 'Password must be at least 8 characters' }, 400);
           const hash = await hashPassword(newPassword);
-          await env.DB.prepare(`update users set password_hash = ? where id = ?`).bind(hash, targetId).run();
+          await env.DB.prepare(
+            `update users set password_hash = ?, must_change_password = 1 where id = ?`
+          )
+            .bind(hash, targetId)
+            .run();
           await env.DB.prepare(`delete from sessions where user_id = ?`).bind(targetId).run();
-          await logAudit(env, caller.id, 'reset_password', targetId, {});
+          await logAudit(env, caller.id, 'PASSWORD_RESET_BY_ADMIN', targetId, {});
+          await logAudit(env, caller.id, 'SESSION_REVOKED', targetId, { reason: 'password_reset' });
+          return json({ ok: true });
+        }
+
+        if (sub === '/revoke-sessions' && request.method === 'POST') {
+          await env.DB.prepare(`delete from sessions where user_id = ?`).bind(targetId).run();
+          await logAudit(env, caller.id, 'SESSION_REVOKED', targetId, { reason: 'admin_action' });
           return json({ ok: true });
         }
 
@@ -364,7 +487,7 @@ export default {
           const body = await request.json().catch(() => ({}));
           const makeAdmin = body.is_admin === true;
           await env.DB.prepare(`update users set is_admin = ? where id = ?`).bind(makeAdmin ? 1 : 0, targetId).run();
-          await logAudit(env, caller.id, makeAdmin ? 'set_admin' : 'revoke_admin', targetId, { is_admin: makeAdmin });
+          await logAudit(env, caller.id, 'ROLE_CHANGED', targetId, { is_admin: makeAdmin });
           return json({ ok: true });
         }
 
@@ -372,20 +495,24 @@ export default {
           const farFuture = new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString();
           await env.DB.prepare(`update users set banned_until = ? where id = ?`).bind(farFuture, targetId).run();
           await env.DB.prepare(`delete from sessions where user_id = ?`).bind(targetId).run();
-          await logAudit(env, caller.id, 'ban_user', targetId, {});
+          await logAudit(env, caller.id, 'USER_DISABLED', targetId, {});
           return json({ ok: true });
         }
 
         if (sub === '/unban' && request.method === 'POST') {
           await env.DB.prepare(`update users set banned_until = null where id = ?`).bind(targetId).run();
-          await logAudit(env, caller.id, 'unban_user', targetId, {});
+          await logAudit(env, caller.id, 'USER_ENABLED', targetId, {});
           return json({ ok: true });
         }
       }
 
       return json({ error: 'Not found' }, 404);
     } catch (e) {
-      return json({ error: e instanceof Error ? e.message : String(e) }, 500);
+      // Never leak stack traces, internal paths, or the raw error message
+      // (which for a D1 error can include schema/column detail) to the
+      // client — log the real error server-side only.
+      console.error('[AP Workspace API error]', e);
+      return json({ error: 'Something went wrong. Please try again.' }, 500);
     }
   },
 };
