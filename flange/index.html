@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <meta name="robots" content="noindex,nofollow">
@@ -71,6 +72,8 @@ select{position:absolute;font-family:'Inter',system-ui,sans-serif;font-size:15px
 select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-numeric:tabular-nums}.pdf-only{display:none}footer a{color:var(--text);font-weight:700;text-decoration:none}footer a:hover{text-decoration:underline}.pdf-exporting .pdf-only{display:inline}.pdf-exporting .header-actions{display:none!important}.pdf-exporting .brand-sub{display:none!important}.pdf-exporting .info-row{display:none!important}.pdf-exporting.pdf-exporting .title-row{display:none!important}.pdf-exporting .pdf-exporting .footer-legal{display:none!important}.pdf-exporting .footer-dot{display:none!important}.pdf-exporting .footer-link{display:none!important}.pdf-exporting .site-header{box-shadow:none!important}.pdf-exporting .page{width:1040px!important;max-width:1040px!important;padding-top:10px!important}.pdf-exporting .header-inner{width:1040px!important;max-width:1040px!important}.pdf-exporting .title-row{margin-bottom:8px!important}.pdf-exporting .tool-card{box-shadow:none!important;width:860px!important;padding:0!important;margin:0 auto!important}.pdf-exporting .canvas-shell{width:860px!important;height:754px!important;margin:0!important}.pdf-exporting .canvas{transform:scale(.92)!important;transform-origin:top left!important}.pdf-exporting footer{margin-top:8px!important;color:#4b5563!important}.pdf-exporting body,.pdf-exporting{background:#fff!important;color:#111827!important}
 @media(max-width:700px){.header-inner{padding:9px 10px;align-items:flex-start;flex-wrap:wrap}.brand-sub{display:none}.brand-logo-wrap{width:38px;height:38px}.brand-logo{width:35px;height:35px}.header-actions{width:100%;gap:7px;display:flex;flex-wrap:wrap}.action-btn,.theme-toggle{flex:1 1 auto;min-width:88px;min-height:44px;padding:9px 8px;font-size:11px}.page{padding:12px 7px 24px}.title-row{align-items:flex-start;flex-direction:column;gap:5px}.selection-note{text-align:left;white-space:normal}.tool-card{padding:4px;border-radius:8px}.info-row{grid-template-columns:1fr}.val{font-size:11px}footer{padding:0 6px;font-size:9.5px}.footer-sep{display:none}.mobile-controls{display:flex}#mobileCards{display:grid}.mobile-fullscreen-btn{display:block}}.mobile-cards{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding:0 2px}.mc-card{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;display:flex;flex-direction:column;gap:3px;min-height:52px;cursor:pointer;transition:background .12s,border-color .12s;-webkit-tap-highlight-color:transparent}.mc-card:active{background:var(--control)}.mc-card.mc-active{border-color:var(--orange-fg);background:rgba(25,211,230,.1)}html[data-theme="dark"] .mc-card.mc-active{background:rgba(25,211,230,.18)}@media(prefers-color-scheme:dark){html:not([data-theme="light"]) .mc-card.mc-active{background:rgba(25,211,230,.18)}}.mc-lbl{font-size:9.5px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;line-height:1}.mc-val{font-size:14px;font-weight:800;color:var(--text);line-height:1.2;letter-spacing:-.02em}.mc-card.ring-card{grid-column:1 / -1}.mobile-fullscreen-btn{display:none;position:absolute;top:6px;right:6px;z-index:10;background:rgba(11,31,58,.85);color:#fff;border:none;border-radius:7px;padding:7px 11px;font-size:11px;font-weight:700;cursor:pointer;min-height:44px;min-width:44px}.mobile-fullscreen-btn:active{background:rgba(11,31,58,.95)}.mobile-controls{display:none;flex-direction:column;gap:8px;margin-bottom:10px}.mobile-controls select{width:100%;height:44px;font-size:15px;font-weight:800;border:1.75px solid var(--tool-line);background:var(--control);color:var(--text);border-radius:8px;padding:0 10px}.mobile-size-label,.mobile-rating-label{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}.mobile-sel-wrap{display:flex;flex-direction:column;gap:4px}.drawing-fullscreen{position:fixed!important;inset:0!important;z-index:9100!important;width:100vw!important;height:100vh!important;overflow:auto!important;background:var(--bg)!important;padding:0!important;display:flex!important;align-items:flex-start!important}.drawing-fullscreen .canvas{position:relative!important;transform:none!important}.drawing-fullscreen .mobile-fullscreen-btn{top:10px;right:10px}.fs-close-btn{position:fixed;top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));z-index:9200;background:rgba(11,31,58,.92);color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;min-height:44px;min-width:44px}@media(max-width:430px){.brand-name{font-size:12px}.action-btn span.long{display:inline}.action-btn,.theme-toggle{min-width:80px;padding:8px 6px}.theme-toggle{flex-basis:100%}}
 
+.unverified-banner{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:9px 12px;background:rgba(239,68,68,.09);border:1px solid var(--error);border-radius:8px;color:var(--error);font-size:12px;font-weight:700;line-height:1.4}
+.unverified-banner::before{content:"⚠";font-size:15px;flex:0 0 auto}
 .job-row{display:flex;align-items:center;gap:9px;margin:0 0 10px;padding:9px 11px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px}.job-row label{font-size:11px;font-weight:800;color:var(--text);white-space:nowrap}.job-row input{flex:1;min-width:0;height:44px;border:1px solid var(--line);border-radius:7px;background:var(--control);color:var(--text);font:600 13px 'Inter',system-ui,sans-serif;padding:7px 10px;outline:none}.job-row input:focus{border-color:var(--orange-fg);box-shadow:0 0 0 3px rgba(25,211,230,.15)}.job-row .hint{font-size:10px;color:var(--muted);white-space:nowrap}.val{cursor:pointer}.val:focus-visible{outline:3px solid var(--orange);outline-offset:2px;z-index:6!important}.val.dim-active{z-index:5!important;border-color:var(--orange-fg)!important;background:rgba(25,211,230,.1)!important;color:#0A6880!important;box-shadow:0 0 0 3px rgba(25,211,230,.25),0 3px 12px rgba(25,211,230,.24)}html[data-theme="dark"] .val.dim-active{background:rgba(25,211,230,.18)!important;color:#5EEAF5!important}@media(prefers-color-scheme:dark){html:not([data-theme="light"]) .val.dim-active{background:rgba(25,211,230,.18)!important;color:#5EEAF5!important}}.dim-status{position:absolute;right:18px;top:18px;z-index:6;display:none;max-width:250px;padding:6px 9px;border-radius:7px;background:rgba(11,31,58,.92);color:#fff;font:700 11px 'Inter',system-ui,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.18);pointer-events:none}.dim-status.show{display:block}.offline-badge{display:inline-flex;align-items:center;gap:5px}.offline-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);display:inline-block}.offline-badge.offline .offline-dot{background:var(--orange)}.pdf-exporting .job-row{width:935px!important;margin:0 auto 7px!important;background:#fff!important;border-color:#d6dde7!important;color:#111827!important}.pdf-exporting .job-row label,.pdf-exporting .job-row input{color:#111827!important}.pdf-exporting .job-row input{background:#fff!important;border-color:#9aa3b0!important}.pdf-exporting .job-row .hint{display:none!important}.pdf-exporting .dim-status{display:none!important}
 @media(max-width:700px){.job-row{align-items:stretch;flex-direction:column;gap:6px}.job-row label{white-space:normal}.job-row input{width:100%;font-size:16px}.job-row .hint{white-space:normal}.dim-status{right:8px;top:8px;max-width:190px;font-size:10px}}
 @media print{@page{size:landscape;margin:4mm}html,body{background:#fff!important;color:#000!important;overflow:visible!important;height:auto!important;width:100%!important}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.site-header,.header-actions,.info-row,.faq-section,#eng-disclaimer,#cookie-banner,#back-to-top,#sw-update-banner{display:none!important}.page{max-width:none!important;width:100%!important;padding:0!important;margin:0!important}.main{width:100%!important}.title-row{display:flex!important;width:193mm!important;margin:0 auto 2mm!important;align-items:end!important;flex-direction:row!important}.title-accent{display:none!important}h1{font-size:10.5pt!important;color:#0B1F3A!important}.selection-note{font-size:7.5pt!important;color:#444!important}.job-row{width:193mm!important;margin:0 auto 3mm!important;padding:1.5mm 2.5mm!important;background:#fff!important;border-color:#ccc!important}.job-row label{font-size:7.5pt!important;color:#111!important}.job-row input{height:auto!important;padding:1.2mm 2mm!important;font-size:8pt!important;background:#fff!important;color:#111!important;border-color:#999!important}.job-row .hint{display:none!important}.tool-card{width:193mm!important;margin:0 auto!important;border:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important;background:#fff!important;break-inside:avoid;page-break-inside:avoid}.canvas-shell{width:193mm!important;height:169mm!important;overflow:hidden!important;margin:0 auto!important}.canvas{transform:scale(.78)!important;transform-origin:top left!important;background:#fff!important}.canvas img{filter:contrast(1.10)!important}select,.ro,.val{background:#fff!important;color:#111!important;border-color:#738091!important}.ro{color:#c93d31!important}.val{font-size:12px!important}footer{width:193mm!important;max-width:none!important;margin:2mm auto 0!important;display:block!important;text-align:center!important;font-size:6pt!important;color:#888!important}.footer-legal,.footer-dot,.footer-link{display:none!important}.pdf-only{display:inline!important;font-size:6pt!important;color:#888!important}}
@@ -105,7 +108,7 @@ select{min-width:0;text-overflow:clip;padding-right:24px}#rating{font-variant-nu
 <script src="/api.js"></script>
 <script>
 window.__sbReady=api.auth.getSession().then(function(r){
-  if(!r.user){window.location.replace('/');return null;}
+  if(!r.user){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return null;}
   return {user:r.user};
 });
 </script>
@@ -134,6 +137,7 @@ window.__sbReady=api.auth.getSession().then(function(r){
       <div><h1>FLANGE SLIDE RULE — API 6A</h1><div class="title-accent"></div></div>
       <div class="selection-note" id="selectionNote">Select flange size and pressure rating</div>
     </div>
+    <div class="unverified-banner" id="unverifiedBanner" role="alert" style="display:none"></div>
     <div class="job-row" id="jobRow">
       <label for="jobNote">Job / Equipment note</label>
       <input id="jobNote" type="text" maxlength="80" autocomplete="off" placeholder="Optional — e.g. Rig 12 · Wellhead A · WO 4587">
@@ -294,7 +298,12 @@ function toFracDec(dec){
 }
 function toMM(dec){
   if (dec === undefined) return '–';
-  return (dec * 25.4).toFixed(1);
+  // toFixed alone mis-rounds cases like 9.75in -> 247.65mm, since that
+  // multiplication lands on 247.64999999999998 in floating point and
+  // toFixed(1) rounds down instead of to 247.7. Nudging by Number.EPSILON
+  // before rounding corrects that without changing any value meaningfully.
+  const mm = dec * 25.4;
+  return (Math.round((mm + Number.EPSILON) * 10) / 10).toFixed(1);
 }
 
 let metricMode = false;
@@ -355,7 +364,10 @@ const data = {
     "10000": {bore:11.03,od:30.00, rf:21.00,hub:20.00,bc:25.25, n:16, boltDia:2.375, boltHole:2.500, studLen:20.00, chamfer:0.25, hubMin:16.13,ring:"BX-157"},
     "15000": {bore:11.03,od:38.75, rf:26.00,hub:26.50,bc:32.25, n:12, boltDia:3.500, boltHole:3.625, studLen:29.75, chamfer:0.25, hubMin:22.25,ring:"BX-157"},
   },
-  // Note: verify 13 5/8" and 16 3/4" dimensions vs. API Spec 6A Table 6
+  // 13 5/8" and 16 3/4" below are flagged unverified in the UI (see the
+  // UNVERIFIED set near render()) — do not treat these as re-keyed just
+  // because they're still here; they haven't been confirmed against a
+  // stamped API Spec 6A table.
   "13 5/8": {
     "3000":  {bore:13.63,od:26.75, rf:20.75,hub:18.75,bc:23.50, n:16, boltDia:1.625, boltHole:1.750, studLen:10.50, chamfer:0.25, hubMin:8.00, ring:57},
     "5000":  {bore:13.63,od:27.75, rf:21.25,hub:19.25,bc:23.75, n:16, boltDia:1.875, boltHole:2.000, studLen:13.50, chamfer:0.25, hubMin:10.50,ring:58}
@@ -425,11 +437,33 @@ function refreshRatings(){
   });
 }
 
+/* Entries not yet re-keyed from a stamped API Spec 6A table — flagged in
+   the 2026-09-18 QA pass. 13 5/8" and 16 3/4" @ 3000 disagree with
+   secondary sources (WERMAC/Tesco) on OD/BC/bolt count, and both sizes
+   @ 5000 are very likely 6BX (pressure-energized BX gasket), not 6B —
+   they're built here on 6B/R-ring dimensions, which would be the wrong
+   gasket entirely if that's confirmed. Don't silently "correct" these
+   from an unverified secondary source — that just swaps one unverified
+   number for another. Show them, but make it unmistakable they're not
+   field-safe until someone re-keys them from the stamped standard. */
+const UNVERIFIED = new Set(['13 5/8|3000', '13 5/8|5000', '16 3/4|3000', '16 3/4|5000']);
+
 function render(){
   const s = sizeSel.value;
   const r = ratingSel.value;
   const d = data[s][r];
   if (!d) return;
+
+  const banner = document.getElementById('unverifiedBanner');
+  if (banner) {
+    if (UNVERIFIED.has(s + '|' + r)) {
+      banner.style.display = 'flex';
+      banner.textContent = 'Unverified — ' + s + '" @ ' + Number(r).toLocaleString() + ' psi has not been re-keyed from a stamped API Spec 6A table. Do not use for field work until confirmed.';
+    } else {
+      banner.style.display = 'none';
+      banner.textContent = '';
+    }
+  }
 
   setIn('v_od', dispVal(d.od));
   setIn('v_rf', dispVal(d.rf));
@@ -680,7 +714,7 @@ async function confirmSave(){
   var summary=params.size+' × '+params.rating;
   try{
     var session=await window.__sbReady;
-    if(!session){window.location.replace('/');return;}
+    if(!session){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return;}
     await api.lookups.add({
       tool:'flange',
       label:label,

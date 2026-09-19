@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
@@ -88,7 +89,7 @@ a:hover{text-decoration:underline}
 .fsep{opacity:.35}
 .fmail{display:inline-flex;align-items:center;gap:4px;color:var(--dim);background:none;border:none;cursor:pointer;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0;transition:color var(--ease);min-height:44px}
 .fmail:hover{color:var(--muted)}
-@media(max-width:480px){.wrap{padding:32px 16px 60px}.tb-brand span:last-child{display:none}}
+@media(max-width:480px){.wrap{padding:32px 16px 60px}}
 .skip-link{position:absolute;top:-60px;left:0;background:var(--indigo,#19D3E6);color:#0B111A;padding:8px 16px;font:600 12px 'Inter',sans-serif;border-radius:0 0 4px 0;z-index:9999;text-decoration:none;transition:top 150ms ease}
 .skip-link:focus{top:0}
 .legal-tabs{display:flex;gap:18px;border-bottom:1px solid var(--border);margin-bottom:32px}
@@ -158,10 +159,10 @@ a:hover{text-decoration:underline}
   <p>AP Workspace's calculators reference dimensional data and formulas published in the following industry standards:</p>
   <ul>
     <li><strong>API 6A</strong> / ISO 10423 — wellhead and christmas tree equipment specification, published by the American Petroleum Institute.</li>
-    <li><strong>ASME B16.5</strong> — pipe flanges and flanged fittings, published by the American Society of Mechanical Engineers.</li>
     <li><strong>ASME PCC-1</strong> — guidelines for pressure boundary bolted flange joint assembly, published by the American Society of Mechanical Engineers.</li>
   </ul>
-  <p>ASME B16.5, ASME PCC-1, and API 6A are registered trademarks of the American Society of Mechanical Engineers and the American Petroleum Institute respectively. AP Workspace is an independent software tool and is not affiliated with, endorsed by, or sponsored by ASME or API. References to these standards are for informational and dimensional-lookup purposes only — always consult the current, controlled edition of the applicable standard for engineering, fabrication, inspection, or recertification work.</p>
+  <p>The Flange Slide Rule specifically covers <strong>API 6A wellhead flanges</strong> — it does not cover ASME B16.5 pipe flanges (the standard used for general plant/process piping). The two are not interchangeable: they carry different pressure ratings, bolt patterns, and gasket types at the same nominal size. Do not substitute one for the other in the field.</p>
+  <p>ASME PCC-1 and API 6A are registered trademarks of the American Society of Mechanical Engineers and the American Petroleum Institute respectively. AP Workspace is an independent software tool and is not affiliated with, endorsed by, or sponsored by ASME or API. References to these standards are for informational and dimensional-lookup purposes only — always consult the current, controlled edition of the applicable standard for engineering, fabrication, inspection, or recertification work.</p>
 
   <h2>Copyright &amp; proprietary design</h2>
   <p>&copy; <span id="dyr"></span> <a href="https://anjanpatel.ca" target="_blank" rel="noopener" style="color:var(--precision-cyan)">Anjan Patel</a> (AP Workspace). All rights reserved. The AP Workspace design system — including its CSS token structure ("Engineering Graphite"), the AP lettermark and logo, page layouts, and calculator interaction design — is the proprietary work of Anjan Patel and may not be copied, redistributed, or reused without written permission.</p>

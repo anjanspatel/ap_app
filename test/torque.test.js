@@ -22,13 +22,14 @@ test('torque — known reference case (1" B7, dry, 60% preload, 8 bolts)', () =>
   assert.ok(Math.abs(r.clampKn - 169.824) < 0.01);
 });
 
-test('B7 proof strength steps down at the documented diameter breakpoints', () => {
+test('B7 proof strength steps down at the ASTM A193 diameter breakpoints (2-1/2in, 4in)', () => {
   const proofFn = GRADES['B7'].proofFn;
-  assert.equal(proofFn(0.75), 105000, 'd <= 1in');
-  assert.equal(proofFn(1.0), 105000, 'd <= 1in, inclusive boundary');
-  assert.equal(proofFn(1.25), 95000, '1in < d <= 1.5in');
-  assert.equal(proofFn(1.5), 95000, 'd <= 1.5in, inclusive boundary');
-  assert.equal(proofFn(1.75), 75000, 'd > 1.5in');
+  assert.equal(proofFn(1.0), 105000, 'd <= 2.5in');
+  assert.equal(proofFn(2.0), 105000, 'd <= 2.5in — the largest bolt this app offers');
+  assert.equal(proofFn(2.5), 105000, 'd <= 2.5in, inclusive boundary');
+  assert.equal(proofFn(3.0), 95000, '2.5in < d <= 4in');
+  assert.equal(proofFn(4.0), 95000, 'd <= 4in, inclusive boundary');
+  assert.equal(proofFn(4.5), 75000, 'd > 4in');
 });
 
 test('B7M and L7M are flat 80,000 psi regardless of diameter', () => {
