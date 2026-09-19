@@ -1,0 +1,47 @@
+name: Deploy AP Workspace API (Cloudflare Worker)
+
+# Deploys worker/src/index.js to Cloudflare using worker/wrangler.toml,
+# which already has the real D1 binding and the api.anjanpatel.ca custom
+# domain route configured. This is the actual, working alternative to the
+# dashboard flows that haven't landed correctly (a Worker got created but
+# never received the real code, and the custom domain never attached).
+#
+# Manual trigger only (Actions tab -> this workflow -> Run workflow) —
+# same reasoning as the Pages preview workflow: it shouldn't fail loudly
+# on every push before the two secrets below exist.
+#
+# Requires two repo secrets (Settings -> Secrets and variables -> Actions):
+#   CLOUDFLARE_API_TOKEN   — dash.cloudflare.com -> My Profile -> API
+#                            Tokens -> Create Token -> "Edit Cloudflare
+#                            Workers" template.
+#   CLOUDFLARE_ACCOUNT_ID  — dash.cloudflare.com -> right sidebar of any
+#                            account page.
+# These are the same two secrets deploy-cloudflare-pages.yml already
+# documents needing — if you added them for that, this needs nothing new.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check secrets are configured
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID repo secrets aren't set. Add them under Settings -> Secrets and variables -> Actions, then re-run this workflow."
+            exit 1
+          fi
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          command: deploy
