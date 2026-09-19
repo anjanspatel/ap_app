@@ -1,0 +1,29 @@
+# Cloudflare Pages reads this file automatically and sends these as real
+# HTTP response headers. GitHub Pages ignores this file entirely (it has
+# no way to send custom headers), so it does nothing until static hosting
+# moves to Cloudflare Pages — see worker/README.md, "Move static hosting
+# to Cloudflare Pages", for that cutover.
+#
+# frame-ancestors, Permissions-Policy, and blocking a stray wildcard
+# Access-Control-Allow-Origin on HTML documents can only be done with a
+# real header — a <meta http-equiv> CSP tag (already present on every
+# page) can't express any of them.
+
+/*
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
+
+/flange/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
+
+/terms/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://plausible.io; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
+
+/privacy/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://plausible.io; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
+
+/disclaimer/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://plausible.io; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'

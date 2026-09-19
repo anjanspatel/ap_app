@@ -72,6 +72,45 @@ If someone is locked out, an admin resets their password directly:
 Admin Console → Users table → **Reset password** button next to their
 name. That's this app's only password-recovery path.
 
+## 8. Optional: move static hosting to Cloudflare Pages
+
+The site itself (everything outside this `worker/` folder) currently
+serves from GitHub Pages. GitHub Pages can't send custom HTTP response
+headers, so a few security headers (`frame-ancestors`, `Permissions-
+Policy`, and closing off a wildcard `Access-Control-Allow-Origin` on
+HTML pages) can't be added there — only a `<meta>`-tag CSP can, which
+covers most but not all of it. Moving the static site to Cloudflare
+Pages fixes this, and since `anjanpatel.ca` is already on Cloudflare
+DNS (step 6 above), there's no nameserver change — just a dashboard
+project and one DNS record swap, whenever you're ready.
+
+**This is optional and the live site keeps working exactly as-is until
+you do the last step.** Steps 1–3 don't touch `app.anjanpatel.ca` at all.
+
+1. **Add the two repo secrets** GitHub Actions needs (Settings → Secrets
+   and variables → Actions → New repository secret):
+   - `CLOUDFLARE_API_TOKEN` — dash.cloudflare.com → My Profile → API
+     Tokens → Create Token (the "Edit Cloudflare Workers" template
+     covers Pages too).
+   - `CLOUDFLARE_ACCOUNT_ID` — shown in the right sidebar of any page in
+     your Cloudflare dashboard.
+2. **Push to `main`** (or run the workflow manually from the Actions
+   tab). The `Deploy preview to Cloudflare Pages` workflow creates a
+   `ap-workspace` Pages project and publishes to a `*.pages.dev` URL —
+   this does not touch `app.anjanpatel.ca`.
+3. **Check the preview.** Open the `.pages.dev` URL from that workflow
+   run, sign in, and try the tools. Open your browser's dev tools →
+   Network → click the page request → confirm `content-security-policy`
+   and the other headers from `/_headers` are present in the response.
+4. **Cut over the domain** (only once you're happy with step 3):
+   - Workers & Pages → your `ap-workspace` Pages project → **Custom
+     domains → Set up a custom domain** → enter `app.anjanpatel.ca`.
+   - Cloudflare will offer to update the DNS record for you (it's the
+     same account, so this is a one-click confirmation, not a manual
+     DNS edit). Once it's active, GitHub Pages is no longer in the loop
+     for this domain — the `deploy.yml` workflow can stay (harmless,
+     just deploying somewhere nothing points at) or be deleted later.
+
 ## Ongoing maintenance
 
 - **Cost**: Workers and D1 both have a generous free tier; a small
