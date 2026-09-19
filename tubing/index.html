@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <meta name="robots" content="noindex,nofollow">
@@ -127,6 +128,8 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
   box-shadow:var(--shadow);
 }
 .card+.card{margin-top:20px}
+.swl-methodology-note{background:rgba(245,158,11,.08);border:1px solid var(--warn);border-radius:6px;padding:10px 12px;margin-bottom:16px;font-size:11.5px;line-height:1.5;color:var(--text)}
+.swl-methodology-note strong{color:var(--warn)}
 .card-label{
   font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
   color:var(--muted);margin-bottom:18px;
@@ -304,7 +307,7 @@ try{__sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.sessionStorag
 window.__sb=__sb;
 window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:null}})).then(function(r){
   var session=r.data&&r.data.session;
-  if(!session){window.location.replace('/');return null;}
+  if(!session){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return null;}
   return session;
 });
 </script>
@@ -382,7 +385,7 @@ window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:nul
 
       <!-- SWL hero answer -->
       <div class="swl-hero" style="position:relative">
-        <div class="swl-lbl">Safe Working Load</div>
+        <div class="swl-lbl">Estimated Safe Working Load</div>
         <div id="swlNum" class="swl-num"><span class="swl-empty-msg">Enter values →</span></div>
         <div id="swlAlt" class="swl-alt"></div>
         <button class="copy-btn" data-copy-target="#swlNum" style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7)" title="Copy SWL value" aria-label="Copy SWL value">Copy</button>
@@ -392,12 +395,22 @@ window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:nul
       <div class="card">
         <div class="card-label">Calculation Steps</div>
 
+        <div class="swl-methodology-note">
+          <strong>Engineering estimate, not a certified result.</strong>
+          This uses a common field approximation (UTS ≈ 500 × BHN) and applies
+          the 0.577 shear/tensile ratio to that estimated UTS rather than to a
+          measured yield strength — a simplification, not a cited calculation
+          procedure from ASTM/API/ASME. Treat this figure as a starting
+          reference only; a Professional Engineer must independently verify
+          safe working load before field use.
+        </div>
+
         <div class="steps">
           <div class="step dimmed" id="s1">
             <div class="step-num">1</div>
             <div class="step-body">
-              <div class="step-name">Ultimate Tensile Strength</div>
-              <div class="step-eq" id="eq1">UTS = 500 × BHN</div>
+              <div class="step-name">Estimated Ultimate Tensile Strength</div>
+              <div class="step-eq" id="eq1">UTS ≈ 500 × BHN</div>
               <div class="step-val pending" id="v1">—</div>
             </div>
           </div>
@@ -405,8 +418,8 @@ window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:nul
           <div class="step dimmed" id="s2">
             <div class="step-num">2</div>
             <div class="step-body">
-              <div class="step-name">Shear Strength (von Mises)</div>
-              <div class="step-eq" id="eq2">τ = UTS × 0.577</div>
+              <div class="step-name">Estimated Shear Strength</div>
+              <div class="step-eq" id="eq2">τ ≈ UTS × 0.577</div>
               <div class="step-val pending" id="v2">—</div>
             </div>
           </div>
@@ -771,7 +784,7 @@ async function confirmSave(){
   var summary=['BHN '+(params.bhn||'?'),params.width+'" W',params.thickness+'" T'].join(' / ');
   try{
     var session=await window.__sbReady;
-    if(!session){window.location.replace('/');return;}
+    if(!session){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return;}
     var res=await window.__sb.from('saved_lookups').insert({
       user_id:session.user.id,
       tool:'tubing',

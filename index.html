@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
@@ -430,7 +431,7 @@ body{
             <button type="button" class="link-btn" id="btn-forgot">Forgot?</button>
           </div>
           <div style="position:relative">
-            <input type="password" id="inp-pw" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px;width:100%">
+            <input type="password" id="inp-pw" placeholder="Enter your password" autocomplete="current-password" style="padding-right:40px;width:100%">
             <button type="button" id="pw-eye" aria-label="Show password" aria-pressed="false" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:color var(--motion-fast)">
               <svg id="pw-eye-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -471,7 +472,7 @@ body{
       <form id="reset-form" novalidate>
         <div class="field">
           <div class="field-row"><label for="inp-rst">New Password</label></div>
-          <input type="password" id="inp-rst" placeholder="••••••••" autocomplete="new-password">
+          <input type="password" id="inp-rst" placeholder="Enter new password" autocomplete="new-password">
           <p class="caps-warn" id="caps-rst" role="status">Caps Lock is on</p>
           <p class="err-txt" id="err-rst" role="alert" aria-live="polite"></p>
         </div>
@@ -600,6 +601,14 @@ try{sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.sessionStorage,
 
 var busy=false;
 var ERE=/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+/* Deep-link return path (e.g. /torque/ redirected here to sign in first).
+   Only ever a same-site path — reject protocol-relative ("//evil.com")
+   or absolute URLs so this can't be turned into an open redirect. */
+function safeNextPath(){
+  var next=new URLSearchParams(window.location.search).get('next');
+  if(next&&next.charAt(0)==='/'&&next.charAt(1)!=='/')return next;
+  return null;
+}
 var COPY={idle:'Access Workspace',work:'Signing In…',done:'Access Granted'};
 function q(id){return document.getElementById(id)}
 function showView(n){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});q('view-'+n).classList.add('active')}
@@ -626,7 +635,8 @@ q('auth-form').addEventListener('submit',async function(e){
   var r=await sb.auth.signInWithPassword({email:em,password:pw});
   if(r.error){swapLbl('auth-lbl',COPY.idle);setNote('auth-note',r.error.message);q('auth-submit').disabled=false;busy=false;return}
   swapLbl('auth-lbl',COPY.done);
-  setTimeout(function(){window.location.reload();},700);
+  var dest=safeNextPath();
+  setTimeout(function(){window.location.href=dest||window.location.pathname;},700);
 });
 q('btn-forgot').addEventListener('click',function(){setNote('frg-note','');showView('forgot')});
 q('btn-back-forgot').addEventListener('click',function(){showView('auth')});
@@ -676,10 +686,13 @@ async function doSignOut(){if(!sb){window.location.reload();return}await sb.auth
   var r=await sb.auth.getSession();
   var session=r.data&&r.data.session;
   if(session){
+    var dest=safeNextPath();
+    if(dest){window.location.replace(dest);return;}
     var nameEl=document.getElementById('launcher-name');
     if(nameEl&&session.user&&session.user.email){
       nameEl.textContent=', '+session.user.email.split('@')[0];
     }
+    document.title='AP Workspace — Workspace';
     document.querySelector('.hero').style.display='none';
     document.querySelector('.card').style.display='none';
     document.getElementById('view-launcher').style.display='block';
