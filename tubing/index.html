@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
@@ -298,15 +298,10 @@ footer a:hover{color:var(--text)}
 <link rel="stylesheet" href="/premium.css">
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="/api.js"></script>
 <script>
-var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var __sb=null;
-try{__sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.sessionStorage,persistSession:true,autoRefreshToken:true}});}catch(e){}
-window.__sb=__sb;
-window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:null}})).then(function(r){
-  var session=r.data&&r.data.session;
+window.__sbReady=api.auth.getSession().then(function(r){
+  var session=r.user?{user:r.user}:null;
   if(!session){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return null;}
   return session;
 });
@@ -785,14 +780,12 @@ async function confirmSave(){
   try{
     var session=await window.__sbReady;
     if(!session){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return;}
-    var res=await window.__sb.from('saved_lookups').insert({
-      user_id:session.user.id,
+    await api.lookups.add({
       tool:'tubing',
       label:label,
       params:params,
       result_summary:summary
     });
-    if(res.error)throw new Error(res.error.message);
     closeSaveModal();
     document.getElementById('saveLabel').value='';
     var toast=document.getElementById('saveToast');

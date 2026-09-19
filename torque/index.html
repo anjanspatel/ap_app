@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
@@ -282,17 +282,11 @@ footer a:hover{text-decoration:underline}
 <link rel="stylesheet" href="/premium.css">
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="/api.js"></script>
 <script>
-var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var __sb=null;
-try{__sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.sessionStorage,persistSession:true,autoRefreshToken:true}});}catch(e){}
-window.__sb=__sb;
-window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:null}})).then(function(r){
-  var session=r.data&&r.data.session;
-  if(!session){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return null;}
-  return session;
+window.__sbReady=api.auth.getSession().then(function(r){
+  if(!r.user){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return null;}
+  return {user:r.user};
 });
 </script>
 
@@ -809,8 +803,7 @@ $('saveConfirmBtn').addEventListener('click',function(){
 
   window.__sbReady.then(function(sess){
     if(!sess){$('saveMsg').textContent='Not signed in.';$('saveMsg').className='modal-msg err';$('saveConfirmBtn').disabled=false;return;}
-    return window.__sb.from('saved_lookups').insert({
-      user_id:sess.user.id,
+    return api.lookups.add({
       tool:'torque',
       label:($('saveLabel').value||'').trim()||null,
       params:{
@@ -822,7 +815,6 @@ $('saveConfirmBtn').addEventListener('click',function(){
       result_summary:summary
     });
   }).then(function(res){
-    if(res&&res.error){throw new Error(res.error.message);}
     $('saveMsg').textContent='Saved!';$('saveMsg').className='modal-msg ok';
     $('saveConfirmBtn').disabled=false;
     setTimeout(closeModal,1200);

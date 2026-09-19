@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
@@ -748,12 +748,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+<script src="/api.js"></script>
 <script>
-var SB_URL='https://uejlrooupfcrqimffgsn.supabase.co';
-var SB_KEY='sb_publishable_lNVg4KjZcmMqPgbOBJhTgA_dQM_yuO6';
-var sb=null;
-try{sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.sessionStorage,persistSession:true,autoRefreshToken:true}});}catch(e){}
 
 (function(){
   document.getElementById('legalYr').textContent=new Date().getFullYear();
@@ -852,11 +848,9 @@ function fmtP(tool,p){
 
 /* ── Auth guard ── */
 async function init(){
-  if(!sb){window.location.href='/';return}
-  var r=await sb.auth.getSession();
-  var s=r.data&&r.data.session;
-  if(!s){window.location.href='/';return}
-  session={userId:s.user.id,email:s.user.email,is_admin:s.user.app_metadata&&s.user.app_metadata.is_admin===true};
+  var r=await api.auth.getSession();
+  if(!r.user){window.location.href='/';return}
+  session={userId:r.user.id,email:r.user.email,is_admin:r.user.is_admin===true};
   var email=session.email||'';
   var init=email.charAt(0).toUpperCase();
   $('sbEmail').textContent=email;
@@ -886,20 +880,21 @@ function signOut(){document.getElementById('signout-modal').classList.add('open'
 function closeSignoutModal(){document.getElementById('signout-modal').classList.remove('open')}
 async function confirmSignOut(){
   closeSignoutModal();
-  if(sb)await sb.auth.signOut();
+  try{await api.auth.signOut();}catch(e){}
   window.location.href='/';
 }
 
 /* ── Dashboard ── */
 async function loadDashboard(){
-  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
-  if(r.error){
-    console.error('saved_lookups fetch error:',r.error);
+  var rows;
+  try{
+    rows=(await api.lookups.list()).lookups;
+  }catch(err){
+    console.error('saved_lookups fetch error:',err);
     var wrap=$('recentWrap');
-    if(wrap)wrap.innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error.message)+'</span></div>';
+    if(wrap)wrap.innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(err.message)+'</span></div>';
     return;
   }
-  var rows=r.data||[];
   allRows=rows;
   $('mSaved').textContent=rows.length;
   if(rows.length>0){
@@ -949,13 +944,14 @@ function renderRecent(rows){
 /* ── Logs ── */
 async function loadLogs(){
   showSkeleton('logsWrap',5);
-  var r=await sb.from('saved_lookups').select('*').order('created_at',{ascending:false});
-  if(r.error){
-    console.error('saved_lookups logs error:',r.error);
-    $('logsWrap').innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(r.error.message)+'</span></div>';
+  var rows;
+  try{
+    rows=(await api.lookups.list()).lookups;
+  }catch(err){
+    console.error('saved_lookups logs error:',err);
+    $('logsWrap').innerHTML='<div class="empty"><span class="empty-label" style="color:var(--error)">DB error: '+esc(err.message)+'</span></div>';
     return;
   }
-  var rows=r.data||[];
   allRows=rows;
   var total=rows.length;
   $('logCount').textContent=total+' records';
@@ -1024,8 +1020,9 @@ document.addEventListener('keydown',function(e){
 });
 
 async function delLookup(id){
-  var r=await sb.from('saved_lookups').delete().eq('id',id).eq('user_id',session.userId);
-  if(r.error){toast('Error deleting.');return}
+  try{
+    await api.lookups.remove(id);
+  }catch(err){toast('Error deleting.');return}
   toast('Lookup deleted.');
   loadDashboard();
   if($('sec-logs').classList.contains('active'))loadLogs();
@@ -1033,8 +1030,10 @@ async function delLookup(id){
 
 /* ── Admin ── */
 async function loadAdmin(){
-  var r=await sb.from('saved_lookups').select('id,user_id,tool,label,params,created_at').order('created_at',{ascending:false}).limit(200);
-  var rows=(r.data)||[];
+  var rows=[];
+  try{
+    rows=(await api.lookups.list()).lookups.slice(0,200);
+  }catch(err){}
   $('adminCount').textContent=rows.length+' total';
   renderAdminStats(rows);
   var tbody=$('adminRows');
@@ -1083,12 +1082,14 @@ var allUsers=[];
 async function loadUsers(){
   var tbody=$('usersRows');
   tbody.innerHTML='<tr><td colspan="8" class="empty"><span class="empty-label">Loading…</span></td></tr>';
-  var r=await sb.functions.invoke('admin-users',{body:{action:'list'}});
-  if(r.error||!r.data||r.data.error){
-    tbody.innerHTML='<tr><td colspan="8" class="empty"><span class="empty-label">'+esc((r.data&&r.data.error)||'Could not load users.')+'</span></td></tr>';
+  var r;
+  try{
+    r=await api.admin.list();
+  }catch(err){
+    tbody.innerHTML='<tr><td colspan="8" class="empty"><span class="empty-label">'+esc(err.message||'Could not load users.')+'</span></td></tr>';
     return;
   }
-  allUsers=r.data.users||[];
+  allUsers=r.users||[];
   renderUsers();
 }
 
@@ -1105,12 +1106,13 @@ function renderUsers(){
     var roleBadge=u.is_admin?'<span class="badge-role">Admin</span>':'<span class="badge-role plain">User</span>';
     var statusBadge=isBanned?'<span class="badge-status banned">Blocked</span>':'<span class="badge-status">Active</span>';
     var editBtn='<button class="row-action" data-act="edit" data-id="'+esc(u.id)+'">Edit</button>';
+    var resetBtn='<button class="row-action" data-act="reset" data-id="'+esc(u.id)+'" data-email="'+esc(u.email)+'">Reset password</button>';
     var adminBtn='<button class="row-action" data-act="admin" data-id="'+esc(u.id)+'" data-make="'+(!u.is_admin)+'" data-email="'+esc(u.email)+'">'+(u.is_admin?'Revoke admin':'Make admin')+'</button>';
     var banBtn='<button class="row-action'+(isBanned?'':' danger')+'" data-act="ban" data-id="'+esc(u.id)+'" data-make="'+(!isBanned)+'" data-email="'+esc(u.email)+'">'+(isBanned?'Unblock':'Block')+'</button>';
     var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'—';
     var acctNum=u.account_number?esc(u.account_number):'—';
     return '<tr><td class="td-mono">'+acctNum+'</td><td>'+esc(name)+'</td><td>'+esc(u.email||'—')+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
-      +'<td style="display:flex;gap:6px;justify-content:flex-end">'+editBtn+adminBtn+banBtn+'</td></tr>';
+      +'<td style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">'+editBtn+resetBtn+adminBtn+banBtn+'</td></tr>';
   }).join('');
 }
 
@@ -1152,19 +1154,25 @@ async function submitAddUser(){
   if(!email){adduserFb('Enter an email address.');return}
   if(password.length<8){adduserFb('Password must be at least 8 characters.');return}
   $('auSubmit').disabled=true;$('auSubmit').textContent='Creating…';
-  var r=await sb.functions.invoke('admin-users',{body:{action:'create',first_name:first||null,last_name:last||null,email:email,password:password,is_admin:isAdmin,verified_by_id:verifiedBy}});
+  var r;
+  try{
+    r=await api.admin.create({first_name:first||null,last_name:last||null,email:email,password:password,is_admin:isAdmin,verified_by_id:verifiedBy});
+  }catch(err){
+    $('auSubmit').disabled=false;$('auSubmit').textContent='Create User';
+    adduserFb(err.message||'Could not create user.');return;
+  }
   $('auSubmit').disabled=false;$('auSubmit').textContent='Create User';
-  if(r.error||!r.data||r.data.error){adduserFb((r.data&&r.data.error)||'Could not create user.');return}
   closeAddUserModal();
-  toast('User created — '+(r.data.account_number||'')+'.');
+  toast('User created — '+(r.account_number||'')+'.');
   loadUsers();
 }
 
 async function toggleAdmin(userId,makeAdmin,email){
   var verb=makeAdmin?'grant admin access to':'revoke admin access from';
   if(!confirm('Are you sure you want to '+verb+' '+email+'?'))return;
-  var r=await sb.functions.invoke('admin-users',{body:{action:'set_admin',user_id:userId,is_admin:makeAdmin}});
-  if(r.error||!r.data||r.data.error){toast('Error: '+((r.data&&r.data.error)||'could not update role.'));return}
+  try{
+    await api.admin.setAdmin(userId,makeAdmin);
+  }catch(err){toast('Error: '+(err.message||'could not update role.'));return}
   toast(makeAdmin?'Admin access granted.':'Admin access revoked.');
   loadUsers();
 }
@@ -1172,10 +1180,24 @@ async function toggleAdmin(userId,makeAdmin,email){
 async function toggleBan(userId,ban,email){
   var verb=ban?'block':'unblock';
   if(!confirm('Are you sure you want to '+verb+' '+email+'?'+(ban?' They will be signed out and unable to sign in again until unblocked.':'')))return;
-  var r=await sb.functions.invoke('admin-users',{body:{action:ban?'ban':'unban',user_id:userId}});
-  if(r.error||!r.data||r.data.error){toast('Error: '+((r.data&&r.data.error)||'could not update status.'));return}
+  try{
+    await (ban?api.admin.ban(userId):api.admin.unban(userId));
+  }catch(err){toast('Error: '+(err.message||'could not update status.'));return}
   toast(ban?'User blocked.':'User unblocked.');
   loadUsers();
+}
+
+async function resetUserPassword(userId,email){
+  // The only "forgot password" path this app has — there's no email
+  // provider wired up to send a self-service reset link, so an admin
+  // sets a new password directly and hands it to the person.
+  var pw=prompt('Enter a new password for '+email+' (at least 8 characters). They will be signed out everywhere and must use this password next time.');
+  if(pw===null)return;
+  if(pw.length<8){toast('Password must be at least 8 characters.');return}
+  try{
+    await api.admin.resetPassword(userId,pw);
+  }catch(err){toast('Error: '+(err.message||'could not reset password.'));return}
+  toast('Password reset for '+email+'.');
 }
 
 $('usersRows').addEventListener('click',function(e){
@@ -1184,6 +1206,7 @@ $('usersRows').addEventListener('click',function(e){
   var id=btn.dataset.id,make=btn.dataset.make==='true',email=btn.dataset.email;
   if(btn.dataset.act==='admin')toggleAdmin(id,make,email);
   else if(btn.dataset.act==='ban')toggleBan(id,make,email);
+  else if(btn.dataset.act==='reset')resetUserPassword(id,email);
   else if(btn.dataset.act==='edit')openEditUserModal(id);
 });
 
@@ -1209,9 +1232,13 @@ async function submitEditUser(){
   var email=$('euEmail').value.trim();
   if(!email){edituserFb('Enter an email address.');return}
   $('euSubmit').disabled=true;$('euSubmit').textContent='Saving…';
-  var r=await sb.functions.invoke('admin-users',{body:{action:'update_profile',user_id:userId,first_name:first||null,last_name:last||null,email:email}});
+  try{
+    await api.admin.updateProfile(userId,{first_name:first||null,last_name:last||null,email:email});
+  }catch(err){
+    $('euSubmit').disabled=false;$('euSubmit').textContent='Save Changes';
+    edituserFb(err.message||'Could not save changes.');return;
+  }
   $('euSubmit').disabled=false;$('euSubmit').textContent='Save Changes';
-  if(r.error||!r.data||r.data.error){edituserFb((r.data&&r.data.error)||'Could not save changes.');return}
   closeEditUserModal();
   toast('User updated.');
   loadUsers();
