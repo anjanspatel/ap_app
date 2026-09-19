@@ -19,10 +19,15 @@ var BOLTS = {
   '2.0':  {label:'2"',     tpi:4.5, area:2.5020},
 };
 
+/* Proof stress (psi) by nominal diameter — ASTM A193 (B7) / A320 (L7)
+   tiers break at 2-1/2" and 4", not at 1" / 1-1/2". A wrong breakpoint
+   here silently under-computes clamp load (and therefore torque) for
+   every bolt from 1-1/8" through 2" — the table above only goes up to
+   2", so this matters for every diameter above 1". */
 var GRADES = {
-  'B7' :{label:'A193 B7', proofFn:function(d){return d<=1?105000:d<=1.5?95000:75000;}},
+  'B7' :{label:'A193 B7', proofFn:function(d){return d<=2.5?105000:d<=4?95000:75000;}},
   'B7M':{label:'A193 B7M',proofFn:function(d){return 80000;}},
-  'L7' :{label:'A320 L7', proofFn:function(d){return d<=1?105000:d<=1.5?95000:75000;}},
+  'L7' :{label:'A320 L7', proofFn:function(d){return d<=2.5?105000:d<=4?95000:75000;}},
   'L7M':{label:'A320 L7M',proofFn:function(d){return 80000;}},
 };
 

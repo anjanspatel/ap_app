@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
 <meta name="robots" content="noindex,nofollow">
@@ -248,6 +249,14 @@ footer a:hover{text-decoration:underline}
   .r-value{font-size:22px}
   .page{padding:14px 10px 48px}
 }
+@media(max-width:400px){
+  /* Longer option text (e.g. "ASTM A193 B7M — low strength",
+     "Molykote / MoS₂ anti-seize") clips against the closed <select> box
+     below ~400px at 16px — a native <select> can't wrap or ellipsize its
+     closed-state text, so the only real fix is making the text itself
+     small enough to fit. */
+  .field select{font-size:13px}
+}
 
 /* ── print ── */
 .print-watermark{display:none}
@@ -282,7 +291,7 @@ try{__sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:window.sessionStorag
 window.__sb=__sb;
 window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:null}})).then(function(r){
   var session=r.data&&r.data.session;
-  if(!session){window.location.replace('/');return null;}
+  if(!session){window.location.replace('/?next='+encodeURIComponent(window.location.pathname));return null;}
   return session;
 });
 </script>
@@ -353,10 +362,10 @@ window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:nul
         <div class="field">
           <label class="field-label" for="boltGrade">Bolt Grade / Specification</label>
           <select id="boltGrade">
-            <option value="B7" selected>ASTM A193 B7 — Cr-Mo (standard)</option>
+            <option value="B7" selected>ASTM A193 B7 — Cr-Mo</option>
             <option value="B7M">ASTM A193 B7M — low strength</option>
-            <option value="L7">ASTM A320 L7 — low temperature</option>
-            <option value="L7M">ASTM A320 L7M — low temp, low strength</option>
+            <option value="L7">ASTM A320 L7 — low temp</option>
+            <option value="L7M">ASTM A320 L7M — low strength</option>
           </select>
         </div>
 
@@ -510,10 +519,10 @@ window.__sbReady=(__sb?__sb.auth.getSession():Promise.resolve({data:{session:nul
     </div>
     <div class="info-card">
       <strong>B7 Proof Strength</strong><br>
-      ≤ 1" dia: <strong>105,000 psi</strong> &nbsp;|&nbsp;
-      1-1/8" – 1-1/2": <strong>95,000 psi</strong> &nbsp;|&nbsp;
-      &gt; 1-1/2": <strong>75,000 psi</strong>.
-      Per ASTM A193 / API 20E.
+      ≤ 2-1/2" dia: <strong>105,000 psi</strong> &nbsp;|&nbsp;
+      2-1/2" – 4": <strong>95,000 psi</strong> &nbsp;|&nbsp;
+      &gt; 4": <strong>75,000 psi</strong>.
+      Per ASTM A193 / API 20E — every bolt size this calculator offers (up to 2") falls in the 105,000 psi tier.
     </div>
     <div class="info-card">
       <strong>Nut Factor (K) guidance</strong><br>
@@ -601,7 +610,9 @@ var calc = {};
   if(sp.get('lube')&&LUBES[sp.get('lube')]){state.lube=sp.get('lube');$('lubeCond').value=state.lube;}
   if(sp.get('preload')){var p=parseInt(sp.get('preload'));if(p>=30&&p<=90){state.preload=p;$('preloadSlider').value=p;$('preloadNum').value=p;}}
   if(sp.get('units')==='metric'){state.metric=true;$('unitMetric').classList.add('active');$('unitImperial').classList.remove('active');}
+  if(sp.get('job'))$('jobNum').value=sp.get('job');
 })();
+$('jobNum').addEventListener('input',syncURL);
 
 /* ── Shareable URL — silently synced, no reload ── */
 function buildTorqueParams(){
@@ -612,6 +623,8 @@ function buildTorqueParams(){
   p.set('lube',state.lube);
   p.set('preload',state.preload);
   if(state.metric)p.set('units','metric');
+  var job=($('jobNum').value||'').trim();
+  if(job)p.set('job',job);
   return p;
 }
 function syncURL(){
