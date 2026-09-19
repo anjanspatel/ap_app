@@ -42,12 +42,6 @@
       changePassword: function (current, next) {
         return call('/api/auth/change-password', { method: 'POST', body: { current: current, new: next } });
       },
-      requestReset: function (email) {
-        return call('/api/auth/request-reset', { method: 'POST', body: { email: email } });
-      },
-      completeReset: function (token, newPassword) {
-        return call('/api/auth/reset', { method: 'POST', body: { token: token, new_password: newPassword } });
-      },
     },
     lookups: {
       list: function () {
@@ -78,6 +72,9 @@
       },
       unban: function (userId) {
         return call('/api/admin/users/' + encodeURIComponent(userId) + '/unban', { method: 'POST' });
+      },
+      resetPassword: function (userId, newPassword) {
+        return call('/api/admin/users/' + encodeURIComponent(userId) + '/reset-password', { method: 'POST', body: { new_password: newPassword } });
       },
     },
   };

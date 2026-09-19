@@ -451,36 +451,11 @@ body{
 
     <section class="view" id="view-forgot">
       <div class="back"><button type="button" class="link-btn" id="btn-back-forgot">← Back</button></div>
-      <p class="vhd">Reset password</p>
-      <p class="vsub">Enter your account email. Reset link expires in 60 minutes.</p>
-      <form id="forgot-form" novalidate>
-        <div class="field">
-          <div class="field-row"><label for="inp-frg">Email</label></div>
-          <input type="email" id="inp-frg" placeholder="name@company.com" autocomplete="email" inputmode="email">
-          <p class="err-txt" id="err-frg" role="alert" aria-live="polite"></p>
-        </div>
-        <p class="note" id="frg-note" role="alert" aria-live="polite"></p>
-        <button type="submit" class="cta" id="frg-submit">
-          <span class="cta-lbl" id="frg-lbl">Send Reset Link</span>
-        </button>
-      </form>
-    </section>
-
-    <section class="view" id="view-reset">
-      <p class="vhd">Choose new password</p>
-      <p class="vsub">Minimum 8 characters. You'll be signed in immediately after.</p>
-      <form id="reset-form" novalidate>
-        <div class="field">
-          <div class="field-row"><label for="inp-rst">New Password</label></div>
-          <input type="password" id="inp-rst" placeholder="Enter new password" autocomplete="new-password">
-          <p class="caps-warn" id="caps-rst" role="status">Caps Lock is on</p>
-          <p class="err-txt" id="err-rst" role="alert" aria-live="polite"></p>
-        </div>
-        <p class="note" id="rst-note" role="alert" aria-live="polite"></p>
-        <button type="submit" class="cta" id="rst-submit">
-          <span class="cta-lbl" id="rst-lbl">Set New Password</span>
-        </button>
-      </form>
+      <p class="vhd">Forgot your password?</p>
+      <p class="vsub">There's no self-service email reset — an admin can set a new password for your account directly from the Admin Console. Reach out and they'll get you back in.</p>
+      <button type="button" class="cta" id="frg-contact-btn">
+        <span class="cta-lbl">Contact an admin</span>
+      </button>
     </section>
 
   </div>
@@ -547,6 +522,8 @@ body{
   document.getElementById('contact-btn').addEventListener('click',function(){window.location.href='mailto:'+e});
   var ra=document.getElementById('btn-request-access');
   if(ra)ra.addEventListener('click',function(){window.location.href='mailto:'+e});
+  var fc=document.getElementById('frg-contact-btn');
+  if(fc)fc.addEventListener('click',function(){window.location.href='mailto:'+e});
   document.getElementById('yr').textContent=new Date().getFullYear();
 })();
 
@@ -635,53 +612,12 @@ q('auth-form').addEventListener('submit',async function(e){
   var dest=safeNextPath();
   setTimeout(function(){window.location.href=dest||window.location.pathname;},700);
 });
-q('btn-forgot').addEventListener('click',function(){setNote('frg-note','');showView('forgot')});
+q('btn-forgot').addEventListener('click',function(){showView('forgot')});
 q('btn-back-forgot').addEventListener('click',function(){showView('auth')});
-q('forgot-form').addEventListener('submit',async function(e){
-  e.preventDefault();
-  var em=q('inp-frg').value.trim();
-  setErr('inp-frg','err-frg','');setNote('frg-note','');
-  if(!em){setErr('inp-frg','err-frg','Email required');return}
-  if(!ERE.test(em)){setErr('inp-frg','err-frg','Enter valid email');return}
-  q('frg-submit').disabled=true;swapLbl('frg-lbl','Sending…');
-  try{
-    await api.auth.requestReset(em);
-  }catch(err){
-    swapLbl('frg-lbl','Send Reset Link');q('frg-submit').disabled=false;setNote('frg-note',err.message);return;
-  }
-  swapLbl('frg-lbl','Send Reset Link');q('frg-submit').disabled=false;
-  setNote('frg-note','Reset link sent — check your inbox.','ok');
-});
-var pendingResetToken=null;
-q('reset-form').addEventListener('submit',async function(e){
-  e.preventDefault();
-  var pw=q('inp-rst').value;
-  setErr('inp-rst','err-rst','');setNote('rst-note','');
-  if(!pw){setErr('inp-rst','err-rst','Password required');return}
-  if(pw.length<8){setErr('inp-rst','err-rst','Min 8 characters');return}
-  if(!pendingResetToken){setNote('rst-note','This reset link is invalid or has expired.');return}
-  q('rst-submit').disabled=true;swapLbl('rst-lbl','Setting…');
-  try{
-    await api.auth.completeReset(pendingResetToken,pw);
-  }catch(err){
-    swapLbl('rst-lbl','Set New Password');q('rst-submit').disabled=false;setNote('rst-note',err.message);return;
-  }
-  swapLbl('rst-lbl','Set New Password');q('rst-submit').disabled=false;
-  setNote('rst-note','Password updated — signing in…','ok');
-  setTimeout(function(){window.location.href='/dashboard.html'},1200);
-});
 
 async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.location.reload();}
 
 (async function boot(){
-  var params=new URLSearchParams(window.location.search);
-  var resetToken=params.get('reset_token');
-  if(resetToken){
-    pendingResetToken=resetToken;
-    window.history.replaceState({},'',window.location.pathname);
-    showView('reset');
-    return;
-  }
   var r=await api.auth.getSession();
   var session=r.user?{user:r.user}:null;
   if(session){
@@ -713,7 +649,6 @@ async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.locati
     el.addEventListener('blur',function(){m.classList.remove('turned')});
   }
   wire('inp-pw');
-  wire('inp-rst');
 })();
 
 /* ── Caps Lock warning on password fields ── */
@@ -730,7 +665,6 @@ async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.locati
     inp.addEventListener('blur',function(){warn.style.display='none'});
   }
   wireCapsLock('inp-pw','caps-pw');
-  wireCapsLock('inp-rst','caps-rst');
 })();
 
 /* ── PW visibility toggle ── */

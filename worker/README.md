@@ -1,94 +1,83 @@
-# AP Workspace API — deploy guide
+# AP Workspace API — deploy guide (dashboard only, no terminal)
 
-This replaces Supabase with a backend that runs entirely on Cloudflare
-(Workers + D1), inside your own Cloudflare account. Do these steps once.
+This replaces Supabase with a backend that runs entirely on Cloudflare —
+Workers + D1 — inside your own Cloudflare account. Everything below is
+done by clicking through **dash.cloudflare.com** in a browser. No
+terminal, no npm, no command-line tools of any kind, and no other
+service besides Cloudflare itself.
 
-## 1. Install the tools
+## 1. Create a Cloudflare account
 
-```
-cd worker
-npm install
-npx wrangler login
-```
-
-`wrangler login` opens a browser to connect your Cloudflare account.
+If you don't already have one: cloudflare.com → Sign up. Free plan is
+enough for this.
 
 ## 2. Create the database
 
-```
-npx wrangler d1 create ap-workspace
-```
+1. In the Cloudflare dashboard, go to **Workers & Pages → D1**.
+2. Click **Create database**. Name it `ap-workspace`. Create.
+3. Open the new database, go to its **Console** tab.
+4. Open `schema.sql` (in this folder), copy its entire contents, paste
+   into the Console, and click **Execute**.
 
-This prints a `database_id`. Copy it into `worker/wrangler.toml`, replacing
-`REPLACE_WITH_D1_DATABASE_ID`.
+## 3. Add your first account(s)
 
-Then create the tables:
+1. Open `seed-users.sql` (in this folder). Edit the placeholder row(s)
+   with real email/name/admin values for yourself (and anyone else who
+   needs an account) — leave the `password_hash` values exactly as
+   they are.
+2. Paste the edited SQL into the same D1 Console and click **Execute**.
+3. Everyone signs in the first time with the password `ChangeMe123!`,
+   then changes it immediately from Settings → Change Password.
 
-```
-npx wrangler d1 execute ap-workspace --remote --file=./schema.sql
-```
+## 4. Create the Worker
 
-## 3. Migrate your existing users and saved lookups
+1. Go to **Workers & Pages → Create → Workers → Create Worker**.
+2. Name it `ap-workspace-api`. Deploy the default starter (you'll
+   replace its code next).
+3. Open the Worker → **Edit code** (Quick Edit).
+4. Open `src/index.js` (in this folder), select all, copy, and paste
+   it over the starter code in the Quick Edit box, replacing it
+   entirely.
+5. Click **Save and deploy**.
 
-From the Supabase dashboard: **Settings → Database → Connection string**
-(the "URI" tab, direct connection, not the pooler). Then:
+## 5. Connect the database to the Worker
 
-```
-npm install pg
-SUPABASE_DB_URL="postgresql://postgres:<password>@<host>:5432/postgres" node migrate-from-supabase.js
-```
+1. On the Worker's page, go to **Settings → Bindings** (sometimes
+   labelled **Variables and Bindings**).
+2. Add a **D1 database** binding: variable name `DB` (must be exactly
+   this, capital letters), database `ap-workspace`. Save.
 
-This writes `migration-data.sql` — open it and skim it once, then run:
+## 6. Point api.anjanpatel.ca at the Worker
 
-```
-npx wrangler d1 execute ap-workspace --remote --file=./migration-data.sql
-```
+1. Still on the Worker's page: **Settings → Domains & Routes → Add →
+   Custom Domain**.
+2. Enter `api.anjanpatel.ca` and confirm. Cloudflare issues the TLS
+   certificate automatically — this can take a couple of minutes.
 
-Existing passwords carry over as-is (same bcrypt hashes), so nobody has to
-reset their password.
-
-## 4. (Optional) Password reset emails
-
-Sign-in works immediately without this. To let people reset a forgotten
-password by email, create a free account at resend.com, verify a sending
-domain, then set two secrets:
-
-```
-npx wrangler secret put RESEND_API_KEY
-npx wrangler secret put RESEND_FROM
-```
-
-(`RESEND_FROM` is an address like `AP Workspace <noreply@anjanpatel.ca>`.)
-Skip this step if you'd rather handle password resets manually for now —
-everything else works without it.
-
-## 5. Deploy the Worker
-
-```
-npx wrangler deploy
-```
-
-## 6. Point api.anjanpatel.ca at it
-
-In the Cloudflare dashboard, add `api` as a subdomain on the
-`anjanpatel.ca` zone (Cloudflare → DNS → add an A/AAAA or CNAME record is
-not needed for Workers routes — instead go to Workers & Pages → your
-worker → Settings → Domains & Routes → Add → Custom Domain →
-`api.anjanpatel.ca`). Cloudflare provisions the TLS certificate
-automatically.
+(This assumes `anjanpatel.ca` is already using Cloudflare for DNS. If
+it isn't yet, Cloudflare's domain setup wizard — **Add a site** — walks
+you through pointing your domain's nameservers at Cloudflare first.)
 
 ## 7. Point the frontend at it
 
-The site's HTML already calls `https://api.anjanpatel.ca` (see `/api.js`
-at the repo root) — nothing else to change once the domain above is live.
+Nothing to do here — the site's pages already call
+`https://api.anjanpatel.ca` (see `/api.js` at the repo root). Once step
+6 finishes, sign-in works.
+
+## What this app can and can't do without a third-party service
+
+Because there's no email provider connected (on purpose — one less
+service to depend on), there is no self-service "forgot password" link.
+If someone is locked out, an admin resets their password directly:
+Admin Console → Users table → **Reset password** button next to their
+name. That's this app's only password-recovery path.
 
 ## Ongoing maintenance
 
-- **Cost**: D1 and Workers both have a free tier; a personal app like this
-  should stay within it. If usage grows, Cloudflare's paid Workers plan is
-  $5/month.
-- **Backups**: `npx wrangler d1 export ap-workspace --remote --output=backup.sql`
-  — run this occasionally and keep the file somewhere safe.
-- **Admin audit log / schema changes**: edit `schema.sql` and re-run the
-  relevant `create table` / `alter table` statements with
-  `wrangler d1 execute ap-workspace --remote --command="..."`.
+- **Cost**: Workers and D1 both have a generous free tier; a small
+  personal app like this should stay well within it.
+- **Backups**: from the D1 database's page, use **Export** (in the
+  dashboard, no terminal needed) occasionally, and keep the downloaded
+  file somewhere safe.
+- **Making a change later**: edit `src/index.js` locally, then repeat
+  step 4 (paste the updated file into Quick Edit, Save and deploy).

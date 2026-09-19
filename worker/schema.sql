@@ -1,15 +1,15 @@
 -- ═══════════════════════════════════════════════════
 -- AP Workspace — Cloudflare D1 Schema
--- Replaces the Supabase Postgres schema (see /schema.sql at repo root,
--- kept for historical reference). Run once against a fresh D1 database:
---
---   wrangler d1 execute ap-workspace --remote --file=./schema.sql
+-- Everything runs on Cloudflare (Workers + D1) — no other service.
+-- Run this once against a fresh D1 database, from the Cloudflare
+-- dashboard: your D1 database → Console tab → paste this whole file →
+-- Execute. No terminal, no Wrangler needed.
 -- ═══════════════════════════════════════════════════
 
 create table if not exists users (
-  id               text primary key,              -- reuses the Supabase UUID on migration
+  id               text primary key,              -- a random id, e.g. from an online UUID generator
   email            text unique not null,
-  password_hash    text not null,                 -- bcrypt, same format Supabase used
+  password_hash    text not null,                 -- pbkdf2$<iterations>$<salt b64>$<hash b64>, set by the Worker
   first_name       text,
   last_name        text,
   is_admin         integer not null default 0,    -- 0/1
@@ -29,14 +29,6 @@ create table if not exists sessions (
 );
 create index if not exists sessions_user_id_idx on sessions (user_id);
 
-create table if not exists password_resets (
-  token      text primary key,
-  user_id    text not null references users(id) on delete cascade,
-  created_at text not null,
-  expires_at text not null,
-  used       integer not null default 0
-);
-
 create table if not exists saved_lookups (
   id             text primary key,
   user_id        text not null references users(id) on delete cascade,
@@ -51,7 +43,7 @@ create index if not exists saved_lookups_user_id_idx on saved_lookups (user_id, 
 create table if not exists admin_audit_log (
   id              text primary key,
   actor_id        text not null references users(id),
-  action          text not null check (action in ('create_user','update_profile','set_admin','revoke_admin','ban_user','unban_user')),
+  action          text not null check (action in ('create_user','update_profile','set_admin','revoke_admin','ban_user','unban_user','reset_password')),
   target_user_id  text not null references users(id),
   details         text not null default '{}',  -- JSON-encoded
   created_at      text not null
