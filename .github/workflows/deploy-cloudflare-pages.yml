@@ -1,0 +1,47 @@
+name: Deploy preview to Cloudflare Pages
+
+# Runs alongside the existing GitHub Pages deploy — it does not replace it
+# and does not touch app.anjanpatel.ca. It publishes the same static site
+# to a *.pages.dev preview URL so you can confirm the real security
+# headers (see /_headers) work before pointing the live domain at
+# Cloudflare Pages. See worker/README.md, "Move static hosting to
+# Cloudflare Pages", for the full cutover.
+#
+# Requires two repo secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   — dash.cloudflare.com → My Profile → API Tokens
+#                            → Create Token → "Edit Cloudflare Workers"
+#                            template covers Pages too.
+#   CLOUDFLARE_ACCOUNT_ID  — dash.cloudflare.com → right sidebar of any
+#                            account page.
+# Until both secrets exist, this workflow will fail — that's expected and
+# harmless; the GitHub Pages deploy is unaffected.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stage site
+        run: |
+          mkdir -p dist
+          rsync -a --exclude='.github' --exclude='.git' --exclude='dist' \
+            --exclude='.dev' --exclude='test' --exclude='package.json' \
+            ./ dist/
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ap-workspace
+          directory: dist
