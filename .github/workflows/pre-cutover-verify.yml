@@ -44,6 +44,8 @@ jobs:
           curl -sSI "$BASE/dashboard.html" | tee headers_dashboard.txt
           echo "== /flange/ headers =="
           curl -sSI "$BASE/flange/" | tee headers_flange.txt
+          echo "== /torque/ headers =="
+          curl -sSI "$BASE/torque/" | tee headers_torque.txt
           echo "== Static asset status codes =="
           for p in /api.js /global-features.js /theme-init.js /sw.js /sw-register.js /manifest.json /favicon.svg /icon-192.png /icon-512.png /apple-touch-icon.png /_headers /tokens.css /premium.css /dashboard-page.js /settings-page.js /login-page.js; do
             code=$(curl -sS -o /dev/null -w '%{http_code}' "$BASE$p")
@@ -104,6 +106,19 @@ jobs:
               report.screenshots.push(path);
             }
 
+            // Directly check what the session-check API call actually returns
+            // inside a real browser context (not curl) — on the production
+            // domain this should be a real 401 JSON body, not a CORS block.
+            report.sessionCheckInPage = await page.evaluate(async () => {
+              try {
+                const res = await fetch('https://api.anjanpatel.ca/api/auth/session', { credentials: 'include' });
+                const body = await res.text();
+                return { status: res.status, ok: res.ok, body: body.slice(0, 300) };
+              } catch (e) {
+                return { error: String(e) };
+              }
+            }).catch(e => ({ error: String(e) }));
+
             // Try /dashboard.html to see redirect behavior (expected: bounce to / since no session)
             phase = 'dashboard-html-nav';
             const dashResp = await page.goto(BASE + '/dashboard.html', { waitUntil: 'networkidle', timeout: 30000 }).catch(e => ({ error: String(e) }));
@@ -111,6 +126,18 @@ jobs:
             await page.waitForTimeout(1500);
             report.dashboardFinalUrl = page.url();
             report.dashboardBodyHasContent = await page.evaluate(() => !!document.querySelector('.sidebar, #sidebar, .metric, #greetSub')).catch(() => null);
+
+            phase = 'torque-nav';
+            const torqueResp = await page.goto(BASE + '/torque/', { waitUntil: 'networkidle', timeout: 30000 }).catch(e => ({ error: String(e) }));
+            report.torqueNavStatus = torqueResp && torqueResp.status ? torqueResp.status() : null;
+            await page.waitForTimeout(1500);
+            report.torqueFinalUrl = page.url();
+
+            phase = 'flange-nav';
+            const flangeResp = await page.goto(BASE + '/flange/', { waitUntil: 'networkidle', timeout: 30000 }).catch(e => ({ error: String(e) }));
+            report.flangeNavStatus = flangeResp && flangeResp.status ? flangeResp.status() : null;
+            await page.waitForTimeout(1500);
+            report.flangeFinalUrl = page.url();
 
             fs.writeFileSync('report.json', JSON.stringify(report, null, 2));
             await browser.close();
