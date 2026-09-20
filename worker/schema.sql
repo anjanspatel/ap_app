@@ -57,16 +57,20 @@ create table if not exists login_attempts (
   locked_until    text
 );
 
-create table if not exists admin_audit_log (
+-- Deliberately no CHECK constraint on `action` (unlike the other tables'
+-- fixed-vocabulary columns) — the vocabulary below is documentation of the
+-- values the Worker actually writes, not a schema-enforced list, so a future
+-- new action type doesn't require a migration to unblock it.
+-- Actions currently written by the Worker: USER_CREATED, USER_UPDATED,
+-- USER_DELETED, ROLE_CHANGED, USER_DISABLED, USER_ENABLED,
+-- PASSWORD_RESET_BY_ADMIN, PASSWORD_CHANGED, LOGIN_SUCCESS, LOGIN_FAILURE,
+-- LOGOUT, SESSION_REVOKED.
+create table if not exists audit_logs (
   id              text primary key,
   actor_id        text references users(id),   -- null for a failed login against an unknown identifier
-  action          text not null check (action in (
-                    'USER_CREATED','USER_UPDATED','USER_DELETED','ROLE_CHANGED',
-                    'USER_DISABLED','USER_ENABLED','PASSWORD_RESET_BY_ADMIN','PASSWORD_CHANGED',
-                    'LOGIN_SUCCESS','LOGIN_FAILURE','LOGOUT','SESSION_REVOKED'
-                  )),
+  action          text not null,
   target_user_id  text references users(id),   -- null when there's no specific target (e.g. an unknown-identifier login failure)
   details         text not null default '{}',  -- JSON-encoded, never passwords/secrets
   created_at      text not null
 );
-create index if not exists admin_audit_log_target_idx on admin_audit_log (target_user_id, created_at desc);
+create index if not exists audit_logs_target_idx on audit_logs (target_user_id, created_at desc);

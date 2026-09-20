@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
@@ -65,7 +65,7 @@ body{
   position:relative;overflow-x:hidden;
   overscroll-behavior:none;
 }
-::selection{background:var(--indigo);color:#fff}
+::selection{background:var(--accent);color:#fff}
 
 .stage{
   position:relative;z-index:1;
@@ -115,7 +115,7 @@ body{
   -webkit-tap-highlight-color:transparent;
 }
 .link-btn:hover{color:var(--muted)}
-.link-btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:2px}
+.link-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 
 .field input{
   width:100%;height:44px;
@@ -167,7 +167,7 @@ body{
 .cta:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
 .cta:active:not(:disabled){transform:none}
 .cta:disabled{opacity:0.5;cursor:default}
-.cta:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+.cta:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .cta-lbl{display:inline-block;transition:opacity var(--ease)}
 .cta-lbl.fade{opacity:0}
 
@@ -182,7 +182,7 @@ body{
 }
 .ob:hover{border-color:var(--border);color:var(--text);background:var(--ob-hover-bg);transform:translateY(-1px)}
 .ob:active{transform:none}
-.ob:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+.ob:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .ob svg{flex-shrink:0}
 .ob-full{grid-column:1/-1}
 
@@ -264,14 +264,13 @@ body{
   transition:border-color var(--motion-fast),color var(--motion-fast);
   -webkit-tap-highlight-color:transparent;
 }
-.theme-btn:hover{color:var(--text);border-color:var(--indigo-fg)}
-.theme-btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.theme-btn:hover{color:var(--text);border-color:var(--accent-fg)}
+.theme-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .theme-btn .icon-sun{display:none}
 .theme-btn .icon-moon{display:block}
 [data-theme="light"] .theme-btn .icon-sun{display:block}
 [data-theme="light"] .theme-btn .icon-moon{display:none}
 </style>
-<script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 <link rel="stylesheet" href="/premium.css">
 </head>
 <body class="mesh-bg">

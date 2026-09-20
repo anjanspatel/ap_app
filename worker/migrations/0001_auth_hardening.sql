@@ -21,15 +21,13 @@ create table if not exists login_attempts (
   locked_until    text
 );
 
--- admin_audit_log's CHECK constraint can't be altered in place in SQLite —
--- recreate it with the new action vocabulary. Safe because this table was
--- only ever written to by this same Worker deploy, and existing rows keep
--- their original action strings (harmless historical values; the CHECK
--- only constrains new inserts once recreated, so this preserves history
--- instead of deleting it).
+-- Renamed admin_audit_log -> audit_logs (matching the Worker code and
+-- schema.sql, and dropping the old CHECK constraint SQLite can't alter
+-- in place) — recreated rather than altered so existing rows survive
+-- with their original action strings intact.
 alter table admin_audit_log rename to admin_audit_log_old;
 
-create table admin_audit_log (
+create table audit_logs (
   id              text primary key,
   actor_id        text references users(id),
   action          text not null,
@@ -37,9 +35,9 @@ create table admin_audit_log (
   details         text not null default '{}',
   created_at      text not null
 );
-create index if not exists admin_audit_log_target_idx on admin_audit_log (target_user_id, created_at desc);
+create index if not exists audit_logs_target_idx on audit_logs (target_user_id, created_at desc);
 
-insert into admin_audit_log (id, actor_id, action, target_user_id, details, created_at)
+insert into audit_logs (id, actor_id, action, target_user_id, details, created_at)
   select id, actor_id, action, target_user_id, details, created_at from admin_audit_log_old;
 
 drop table admin_audit_log_old;

@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: https:; base-uri 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
@@ -60,11 +60,11 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .tb-back:hover{color:var(--text)}
 .tb-right{display:flex;align-items:center;gap:10px}
 .tb-btn{width:32px;height:32px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:border-color var(--ease),color var(--ease)}
-.tb-btn:hover{border-color:var(--indigo-fg);color:var(--text)}
+.tb-btn:hover{border-color:var(--accent-fg);color:var(--text)}
 
 .wrap{max-width:680px;margin:0 auto;padding:48px 24px 80px}
 
-.eyebrow{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo-fg);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.eyebrow{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-fg);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
 h1{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:6px}
 .updated{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);margin-bottom:40px}
 
@@ -72,9 +72,9 @@ h2{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.01em;margin:
 p{font-size:14px;color:var(--muted);margin-bottom:12px}
 ul{font-size:14px;color:var(--muted);padding-left:20px;margin-bottom:12px}
 li{margin-bottom:5px}
-a{color:var(--indigo-fg);text-decoration:none}
+a{color:var(--accent-fg);text-decoration:none}
 a:hover{text-decoration:underline}
-.pill{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;padding:2px 8px;border-radius:3px;background:rgba(25,211,230,.1);color:var(--indigo-fg);border:1px solid rgba(25,211,230,.25);letter-spacing:.04em;white-space:nowrap}
+.pill{display:inline-block;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600;padding:2px 8px;border-radius:3px;background:rgba(25,211,230,.1);color:var(--accent-fg);border:1px solid rgba(25,211,230,.25);letter-spacing:.04em;white-space:nowrap}
 
 .footer-bar{
   display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 12px;
@@ -87,14 +87,13 @@ a:hover{text-decoration:underline}
 .fmail{display:inline-flex;align-items:center;gap:4px;color:var(--dim);background:none;border:none;cursor:pointer;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.04em;padding:0;transition:color var(--ease);min-height:44px}
 .fmail:hover{color:var(--muted)}
 @media(max-width:480px){.wrap{padding:32px 16px 60px}}
-.skip-link{position:absolute;top:-60px;left:0;background:var(--indigo,#19D3E6);color:#0B111A;padding:8px 16px;font:600 12px 'Inter',sans-serif;border-radius:0 0 4px 0;z-index:9999;text-decoration:none;transition:top 150ms ease}
+.skip-link{position:absolute;top:-60px;left:0;background:var(--accent,#19D3E6);color:#0B111A;padding:8px 16px;font:600 12px 'Inter',sans-serif;border-radius:0 0 4px 0;z-index:9999;text-decoration:none;transition:top 150ms ease}
 .skip-link:focus{top:0}
 .legal-tabs{display:flex;gap:18px;border-bottom:1px solid var(--border);margin-bottom:32px}
 .legal-tab{font-size:12px;font-weight:600;color:var(--dim);text-decoration:none;padding:0 0 10px;border-bottom:2px solid transparent;transition:color var(--ease),border-color var(--ease)}
 .legal-tab:hover{color:var(--text);text-decoration:none}
-.legal-tab.active{color:var(--text);border-bottom-color:var(--indigo-fg)}
+.legal-tab.active{color:var(--text);border-bottom-color:var(--accent-fg)}
 </style>
-<script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 <link rel="stylesheet" href="/premium.css">
 </head>
 <body>
@@ -147,8 +146,7 @@ a:hover{text-decoration:underline}
 
   <h2>Third-party services</h2>
   <p>Authentication and all account and saved-lookup data run entirely on <strong>Cloudflare</strong> infrastructure that we control directly — a Cloudflare Worker and a Cloudflare D1 database, both inside our own Cloudflare account. Cloudflare is our hosting infrastructure, not a party with its own access to your account data: it never sees your password (only a salted, hashed value we compute is ever stored), and every request is authorized so an account can only ever access its own saved lookups. Administrators access user data only through the built-in Admin Console, never by querying the database directly. Review Cloudflare's privacy policy at <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a>.</p>
-  <p>We use <strong>Plausible Analytics</strong> (plausible.io) for aggregate page-view statistics on public pages. Plausible is cookieless and collects no personal data — no IP addresses, no device fingerprints, no cross-site tracking. Data is not shared with third parties. Review their data policy at <a href="https://plausible.io/privacy" target="_blank" rel="noopener">plausible.io/privacy</a>.</p>
-  <p>No other third-party services receive your personal data. We do not use advertising networks, social tracking pixels, or analytics services that share data with third parties.</p>
+  <p>We do not run any analytics, telemetry, or tracking service of any kind. No other third-party services receive your personal data. We do not use advertising networks, social tracking pixels, or analytics services.</p>
 
   <h2>Cookies &amp; browser storage</h2>
   <p>We do not use tracking, advertising, or analytics cookies. To keep you signed in, an httpOnly session cookie is set that JavaScript on this site (or any site) cannot read — it is never copied into browser storage. It is a session cookie, not a persistent one: closing your browser ends the session and you'll need to sign in again next time.</p>

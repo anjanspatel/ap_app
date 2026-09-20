@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca https://plausible.io; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
@@ -36,7 +36,7 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow-x:hidden}
 body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
-::selection{background:var(--indigo);color:#fff}
+::selection{background:var(--accent);color:#fff}
 
 .sidebar{position:fixed;top:0;left:0;width:var(--sb-w);height:100%;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform var(--ease),background .2s,border-color .2s;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);will-change:transform}
 .sb-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0;text-decoration:none;cursor:pointer;transition:opacity var(--ease)}
@@ -48,7 +48,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .sb-section{padding:16px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif;border-left:2px solid transparent;transition:color var(--ease),background var(--ease),border-color var(--ease)}
 .nav-item:hover{background:rgba(25,211,230,.06);color:var(--text)}
-.nav-item.active{background:rgba(25,211,230,.1);color:var(--text);border-left-color:var(--indigo-fg)}
+.nav-item.active{background:rgba(25,211,230,.1);color:var(--text);border-left-color:var(--accent-fg)}
 .nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
 .nav-item.active svg,.nav-item:hover svg{opacity:1}
 .sb-user{padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -69,13 +69,13 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 
 .content{flex:1;padding:24px;max-width:640px}
 .page-hd{margin-bottom:20px}
-.page-eyebrow{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo-fg);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.page-eyebrow{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-fg);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
 .page-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}
 
 .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
 .tab-btn{font:500 12px 'Inter',sans-serif;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;cursor:pointer;letter-spacing:.02em;transition:color var(--ease),border-color var(--ease);margin-bottom:-1px;min-height:44px}
 .tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--indigo-fg);border-bottom-color:var(--indigo-fg)}
+.tab-btn.active{color:var(--accent-fg);border-bottom-color:var(--accent-fg)}
 .tab-pane{display:none}
 .tab-pane.active{display:block}
 
@@ -91,7 +91,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .field-val{font:500 11px 'JetBrains Mono',monospace;color:var(--dim);word-break:break-all}
 
 .inp{width:100%;font:500 16px 'JetBrains Mono',monospace;color:var(--text);background:var(--elevated);border:1px solid var(--border);border-radius:4px;padding:8px 10px;height:44px;outline:none;transition:border-color var(--ease);-webkit-appearance:none;appearance:none}
-.inp:focus{border-color:var(--indigo-fg)}
+.inp:focus{border-color:var(--accent-fg)}
 .inp::placeholder{color:var(--dim)}
 .inp-group{display:flex;flex-direction:column;gap:6px}
 .inp-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
@@ -107,7 +107,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 
 .theme-opts{display:flex;gap:8px;flex-wrap:wrap}
 .theme-opt{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:4px;border:1px solid var(--border);cursor:pointer;font:500 12px 'Inter',sans-serif;color:var(--muted);background:var(--elevated);transition:border-color var(--ease),color var(--ease);min-height:44px}
-.theme-opt.active{border-color:var(--indigo-fg);color:var(--text);background:rgba(25,211,230,.08)}
+.theme-opt.active{border-color:var(--accent-fg);color:var(--text);background:rgba(25,211,230,.08)}
 .theme-opt:hover:not(.active){border-color:var(--dim);color:var(--text)}
 .swatch{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0}
 .sw-l{background:#F4F7FA}.sw-d{background:#0B111A}.sw-s{background:linear-gradient(135deg,#F4F7FA 50%,#0B111A 50%)}
@@ -138,7 +138,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 }
 @media(prefers-reduced-motion:reduce){*{transition-duration:1ms!important;animation-duration:1ms!important}}
 </style>
-<script defer data-domain="app.anjanpatel.ca" src="https://plausible.io/js/script.js"></script>
 <link rel="stylesheet" href="/premium.css">
 </head>
 
