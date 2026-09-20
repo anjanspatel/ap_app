@@ -60,17 +60,52 @@ body{
   min-height:100%;min-height:100dvh;
   background:var(--canvas);color:var(--text);
   font-family:var(--font-ui);-webkit-font-smoothing:antialiased;
-  display:flex;flex-direction:column;
-  align-items:center;
   position:relative;overflow-x:hidden;
   overscroll-behavior:none;
 }
 ::selection{background:var(--accent);color:#fff}
 
+/* ── Split-screen shell: photo/brand panel (left) + sign-in panel (right) ── */
+.split-shell{display:flex;min-height:100dvh;width:100%}
+
+.hero{
+  flex:0 0 46%;max-width:640px;min-width:420px;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:48px 52px;
+  border-right:1px solid var(--border-color);
+  background:
+    radial-gradient(ellipse at 26% 18%,rgba(25,211,230,.16),transparent 55%),
+    linear-gradient(165deg,#0A121C 0%,#0D1826 45%,#0A1420 100%);
+  animation:fadeUp 900ms var(--anim-ease) both;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(25,211,230,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(25,211,230,.06) 1px,transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.95),rgba(0,0,0,.3));
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.95),rgba(0,0,0,.3));
+}
+/* Real product photo goes here once supplied — see docs note in chat.
+   Swap by setting background-image on .hero-art (or delete the rule to
+   fall back to the gradient placeholder above). */
+.hero-art{position:absolute;inset:0;z-index:0;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:.55}
+
+.hero-brand,.hero-baseline{position:relative;z-index:1}
+.hero-brand{display:flex;align-items:center;gap:16px}
+.hero-mark{flex-shrink:0;filter:drop-shadow(0 6px 22px rgba(25,211,230,.35))}
+.hero-word{display:flex;flex-direction:column;gap:7px}
+.hero-name{font:900 30px/1 var(--font-ui);letter-spacing:.22em;color:#fff}
+.hero-tag{font:600 11px var(--font-mono);letter-spacing:.16em;color:var(--precision-cyan-hover)}
+.hero-tag i{font-style:normal;opacity:.45;margin:0 7px}
+.hero-baseline{display:flex;align-items:center;gap:14px;font:600 11px var(--font-mono);letter-spacing:.22em;color:rgba(255,255,255,.55)}
+.baseline-rule{width:34px;height:2px;background:var(--precision-cyan);display:inline-block}
+@media(max-width:900px){.hero{display:none}}
+
 .stage{
-  position:relative;z-index:1;
+  position:relative;z-index:1;flex:1;min-width:0;
   display:flex;flex-direction:column;align-items:center;
-  width:100%;flex:1;min-height:100dvh;
+  min-height:100dvh;
   padding:max(24px,env(safe-area-inset-top,24px)) 20px max(24px,env(safe-area-inset-bottom,24px));
 }
 .stage-center{
@@ -78,15 +113,6 @@ body{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
 
-.hero{
-  text-align:center;margin-bottom:26px;
-  animation:fadeUp 900ms var(--anim-ease) 80ms both;
-}
-.hero-title{
-  font-size:clamp(28px,4.8vw,44px);
-  font-weight:900;letter-spacing:-0.035em;
-  line-height:1.08;color:var(--text);margin-bottom:8px;
-}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
 .card{
@@ -95,10 +121,15 @@ body{
   background:var(--bg-panel);
   border:1px solid var(--border-color);
   border-radius:var(--radius-lg);
-  padding:28px 28px 22px;
+  padding:32px 28px 24px;
   box-shadow:0 8px 40px rgba(0,0,0,0.32);
   animation:fadeUp 900ms var(--anim-ease) 230ms both;
 }
+
+.card-brand{display:flex;align-items:center;gap:10px}
+.card-mark{flex-shrink:0}
+.card-word{font:900 15px var(--font-ui);letter-spacing:.2em;color:var(--text)}
+.card-divider{width:56px;height:2px;margin:16px 0 20px;background:linear-gradient(90deg,var(--precision-cyan),transparent)}
 
 .view{display:none}
 .view.active{display:block;animation:viewIn 220ms var(--anim-ease) both}
@@ -117,11 +148,13 @@ body{
 .link-btn:hover{color:var(--muted)}
 .link-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 
+.input-wrap{position:relative}
+.field-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;z-index:1}
 .field input{
   width:100%;height:44px;
   background:var(--input-bg);
   border:1px solid var(--border);border-radius:8px;
-  padding:0 12px;
+  padding:0 12px 0 38px;
   font:500 16px var(--font-mono);color:var(--text);caret-color:var(--emerald);
   transition:border-color var(--ease),box-shadow var(--ease);
   -webkit-appearance:none;appearance:none;
@@ -156,20 +189,31 @@ body{
 .shake{animation:shake 280ms cubic-bezier(.36,.07,.19,.97) both}
 @keyframes shake{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
 
+.field-meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 16px}
+.remember-row{display:flex;align-items:center;gap:8px;font:500 12px var(--font-ui);color:var(--muted);cursor:pointer;user-select:none;min-height:44px}
+.remember-row input[type="checkbox"]{width:16px;height:16px;accent-color:var(--precision-cyan);cursor:pointer}
+.field-meta-row .link-btn{font-size:11px}
+
 .cta{
   width:100%;height:44px;margin-top:4px;
-  background:var(--precision-cyan);color:#0B111A;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(90deg,var(--precision-cyan),var(--precision-cyan-hover));color:#0B111A;
   font:700 13px var(--font-ui);letter-spacing:0.05em;
   border:none;border-radius:var(--radius-lg);cursor:pointer;
   transition:filter var(--motion-fast),transform var(--motion-fast);
   -webkit-tap-highlight-color:transparent;
 }
 .cta:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+.cta:hover:not(:disabled) .cta-arrow{transform:translateX(3px)}
 .cta:active:not(:disabled){transform:none}
 .cta:disabled{opacity:0.5;cursor:default}
 .cta:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .cta-lbl{display:inline-block;transition:opacity var(--ease)}
 .cta-lbl.fade{opacity:0}
+.cta-arrow{transition:transform var(--motion-fast)}
+
+.or{display:flex;align-items:center;gap:10px;margin:18px 0 14px;font:700 10px var(--font-mono);letter-spacing:.12em;color:var(--dim)}
+.or::before,.or::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-color),transparent)}
 
 .ob{
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -180,15 +224,21 @@ body{
   transition:border-color var(--ease),color var(--ease),background var(--ease),transform var(--ease);
   -webkit-tap-highlight-color:transparent;
 }
-.ob:hover{border-color:var(--border);color:var(--text);background:var(--ob-hover-bg);transform:translateY(-1px)}
+.ob:hover{border-color:var(--precision-cyan);color:var(--text);background:var(--ob-hover-bg);transform:translateY(-1px)}
 .ob:active{transform:none}
 .ob:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .ob svg{flex-shrink:0}
-.ob-full{grid-column:1/-1}
+.ob-full{grid-column:1/-1;width:100%}
 
 .back{margin-bottom:14px}
-.vhd{font:700 15px var(--font-ui);color:var(--text);margin-bottom:3px}
-.vsub{font:400 11px var(--font-ui);color:var(--muted);line-height:1.65;margin-bottom:16px}
+.vhd{font:900 22px var(--font-ui);letter-spacing:-.01em;color:var(--text);margin-bottom:4px}
+.vsub{font:400 12px var(--font-ui);color:var(--muted);line-height:1.65;margin-bottom:20px}
+
+.card-foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--border-color);text-align:center}
+.card-foot-line{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--font-ui);color:var(--muted)}
+.card-foot-line i{font-style:normal;opacity:.4;margin:0 6px}
+.card-foot-tag{display:block;margin-top:5px;font:700 9px var(--font-mono);letter-spacing:.18em;color:var(--precision-cyan)}
+.card-foot-tag i{font-style:normal;opacity:.6;margin:0 5px}
 
 .legal{
   position:relative;
@@ -221,13 +271,10 @@ body{
 .legal .mail-btn:hover{color:var(--muted)}
 
 @media(max-width:440px){
-  .card{padding:22px 18px 20px;border-radius:var(--radius-lg)}
+  .card{padding:24px 18px 20px;border-radius:var(--radius-lg)}
   .oauth-row{grid-template-columns:1fr}
-  .hero-title{font-size:26px}
 }
 @media(max-height:700px){
-  .hero{margin-bottom:14px}
-  .hero-title{font-size:22px}
   .card{padding:20px 22px 18px}
   .field{margin-bottom:10px}
   .cta{height:42px}
@@ -235,8 +282,6 @@ body{
   .ob{height:40px;font-size:11px}
 }
 @media(max-height:560px){
-  .hero{margin-bottom:8px}
-  .hero-title{font-size:18px;margin-bottom:0}
   .card{padding:16px 20px 14px}
   .field{margin-bottom:8px}
   .or{margin:8px 0 8px}
@@ -251,7 +296,6 @@ body{
   box-shadow:0 0 0 1px rgba(0,0,0,0.04) inset,0 12px 70px rgba(0,0,0,0.12),0 0 30px rgba(25,211,230,0.06);
   border-color:rgba(200,212,232,0.75);
 }
-[data-theme="light"] .tab-track{box-shadow:0 1px 4px rgba(0,0,0,0.08)}
 [data-theme="light"] .or::before,[data-theme="light"] .or::after{background:linear-gradient(90deg,transparent,var(--border),transparent)}
 
 /* Theme toggle button */
@@ -278,38 +322,56 @@ body{
 </style>
 <link rel="stylesheet" href="/premium.css">
 </head>
-<body class="mesh-bg">
+<body>
 
 <button class="theme-btn" id="themeBtnLogin" aria-label="Toggle light/dark theme">
   <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
 </button>
 
-<main class="stage" id="main-content">
+<div class="split-shell">
+
+  <aside class="hero" aria-label="AP Workspace">
+    <div class="hero-art" aria-hidden="true"></div>
+    <div class="hero-brand">
+      <svg class="hero-mark" width="56" height="56" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
+      <div class="hero-word">
+        <span class="hero-name">WORKSPACE</span>
+        <span class="hero-tag">ENGINEERING<i>/</i>CALCULATIONS<i>/</i>RESULTS</span>
+      </div>
+    </div>
+    <p class="hero-baseline"><span class="baseline-rule" aria-hidden="true"></span>PRECISION BUILDS TOMORROW</p>
+  </aside>
+
+  <main class="stage" id="main-content">
 
   <div class="stage-center">
-  <div class="hero" aria-label="AP Workspace">
-    <h1 class="hero-title">AP Workspace</h1>
-  </div>
 
   <div class="card">
+    <div class="card-brand">
+      <svg class="card-mark" width="34" height="34" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
+      <span class="card-word">WORKSPACE</span>
+    </div>
+    <div class="card-divider" aria-hidden="true"></div>
 
-    <section class="view" id="view-auth">
-      <p class="vhd">Sign in</p>
+    <section class="view active" id="view-auth">
+      <p class="vhd">Welcome back</p>
+      <p class="vsub">Sign in to your AP Workspace account</p>
 
       <form id="auth-form" novalidate>
         <div class="field">
           <div class="field-row"><label for="inp-email">Email or username</label></div>
-          <input type="text" id="inp-email" placeholder="name@company.com" autocomplete="username">
+          <div class="input-wrap">
+            <svg class="field-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="text" id="inp-email" placeholder="Email address or username" autocomplete="username">
+          </div>
           <p class="err-txt" id="err-email" role="alert" aria-live="polite"></p>
         </div>
         <div class="field">
-          <div class="field-row">
-            <label for="inp-pw">Password</label>
-            <button type="button" class="link-btn" id="btn-forgot">Forgot?</button>
-          </div>
-          <div style="position:relative">
-            <input type="password" id="inp-pw" placeholder="Enter your password" autocomplete="current-password" style="padding-right:40px;width:100%">
+          <div class="field-row"><label for="inp-pw">Password</label></div>
+          <div class="input-wrap">
+            <svg class="field-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="inp-pw" placeholder="Password" autocomplete="current-password" style="padding-right:40px;width:100%">
             <button type="button" id="pw-eye" aria-label="Show password" aria-pressed="false" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:color var(--motion-fast)">
               <svg id="pw-eye-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -317,14 +379,38 @@ body{
           <p class="caps-warn" id="caps-pw" role="status">Caps Lock is on</p>
           <p class="err-txt" id="err-pw" role="alert" aria-live="polite"></p>
         </div>
+
+        <div class="field-meta-row">
+          <label class="remember-row" for="chk-remember">
+            <input type="checkbox" id="chk-remember">
+            <span>Remember me</span>
+          </label>
+          <button type="button" class="link-btn" id="btn-forgot">Forgot your password?</button>
+        </div>
+
         <p class="note" id="auth-note" role="alert" aria-live="polite"></p>
         <button type="submit" class="cta btn-shimmer" id="auth-submit">
-          <span class="cta-lbl" id="auth-lbl">Sign in</span>
+          <span class="cta-lbl" id="auth-lbl">Sign In</span>
+          <svg class="cta-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </form>
 
+      <div class="or" role="separator"><span>OR</span></div>
+
+      <button type="button" class="ob ob-full" id="btn-secure-access">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/></svg>
+        Secure Access
+      </button>
 
       <p class="vsub" style="text-align:center;margin-top:16px">Invitation only — <button type="button" class="link-btn" id="btn-request-access">request access</button> if you don't have an account.</p>
+
+      <div class="card-foot">
+        <span class="card-foot-line">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--precision-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/></svg>
+          AP Workspace <i>|</i> Engineering Tools
+        </span>
+        <span class="card-foot-tag">PRECISION <i>&bull;</i> CALCULATION <i>&bull;</i> RESULTS</span>
+      </div>
     </section>
 
     <section class="view" id="view-forgot">
@@ -391,7 +477,8 @@ body{
     </button>
   </footer>
 
-</main>
+  </main>
+</div>
 
 <script src="/api.js"></script>
 <script src="login-page.js"></script>

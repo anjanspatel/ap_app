@@ -61,6 +61,10 @@ q('auth-form').addEventListener('submit',async function(e){
     swapLbl('auth-lbl',COPY.idle);setNote('auth-note',err.message);q('auth-submit').disabled=false;busy=false;return;
   }
   swapLbl('auth-lbl',COPY.done);
+  try{
+    if(q('chk-remember').checked)localStorage.setItem(REMEMBER_KEY,em);
+    else localStorage.removeItem(REMEMBER_KEY);
+  }catch(err){}
   // A password an admin just set (bootstrap or reset) must be changed
   // before anything else — skip the normal deep-link destination entirely.
   if(signInResult&&signInResult.user&&signInResult.user.must_change_password){
@@ -72,6 +76,22 @@ q('auth-form').addEventListener('submit',async function(e){
 });
 q('btn-forgot').addEventListener('click',function(){showView('forgot')});
 q('btn-back-forgot').addEventListener('click',function(){showView('auth')});
+
+/* ── Remember me: persists only the identifier locally, not a session
+   length — the Worker issues a fixed 24h session either way. ── */
+var REMEMBER_KEY='ap-remember-id';
+(function(){
+  var saved;
+  try{saved=localStorage.getItem(REMEMBER_KEY)}catch(e){}
+  if(saved){q('inp-email').value=saved;q('chk-remember').checked=true}
+})();
+
+/* ── Secure Access (passkey): not built yet — say so instead of a dead
+   click. Remove this handler and wire real WebAuthn if it ships. ── */
+var secureAccessBtn=q('btn-secure-access');
+if(secureAccessBtn)secureAccessBtn.addEventListener('click',function(){
+  setNote('auth-note','Passkey sign-in isn’t set up yet — sign in with email and password below.','inf');
+});
 
 async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.location.reload();}
 
