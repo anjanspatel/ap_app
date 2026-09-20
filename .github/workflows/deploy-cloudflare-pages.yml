@@ -56,6 +56,18 @@ jobs:
             --exclude='.dev' --exclude='test' --exclude='package.json' \
             ./ dist/
 
+      # The Pages project itself isn't created by `pages deploy` — it has to
+      # exist first. `project create` errors if it's already there, which is
+      # exactly what happens on every run after the first, so that failure
+      # is expected and ignored rather than treated as this step failing.
+      - name: Ensure Cloudflare Pages project exists
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create ap-workspace --production-branch=main
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
