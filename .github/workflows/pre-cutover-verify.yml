@@ -80,11 +80,12 @@ jobs:
             const browser = await chromium.launch();
             const report = { consoleMessages: [], pageErrors: [], failedRequests: [], responseHeadersMain: null, screenshots: [] };
 
+            let phase = 'initial-load';
             const context = await browser.newContext();
             const page = await context.newPage();
-            page.on('console', msg => report.consoleMessages.push({ type: msg.type(), text: msg.text() }));
-            page.on('pageerror', err => report.pageErrors.push(String(err)));
-            page.on('requestfailed', req => report.failedRequests.push({ url: req.url(), failure: req.failure() && req.failure().errorText }));
+            page.on('console', msg => report.consoleMessages.push({ phase, type: msg.type(), text: msg.text() }));
+            page.on('pageerror', err => report.pageErrors.push({ phase, message: err.message, stack: err.stack }));
+            page.on('requestfailed', req => report.failedRequests.push({ phase, url: req.url(), failure: req.failure() && req.failure().errorText }));
             page.on('response', res => {
               if (res.url() === BASE + '/' || res.url() === BASE) {
                 report.responseHeadersMain = res.headers();
@@ -104,9 +105,12 @@ jobs:
             }
 
             // Try /dashboard.html to see redirect behavior (expected: bounce to / since no session)
+            phase = 'dashboard-html-nav';
             const dashResp = await page.goto(BASE + '/dashboard.html', { waitUntil: 'networkidle', timeout: 30000 }).catch(e => ({ error: String(e) }));
+            report.dashboardNavStatus = dashResp && dashResp.status ? dashResp.status() : null;
             await page.waitForTimeout(1500);
             report.dashboardFinalUrl = page.url();
+            report.dashboardBodyHasContent = await page.evaluate(() => !!document.querySelector('.sidebar, #sidebar, .metric, #greetSub')).catch(() => null);
 
             fs.writeFileSync('report.json', JSON.stringify(report, null, 2));
             await browser.close();
