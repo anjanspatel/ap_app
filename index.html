@@ -69,38 +69,84 @@ body{
 .split-shell{display:flex;min-height:100dvh;width:100%}
 
 .hero{
-  flex:0 0 46%;max-width:640px;min-width:420px;
+  --hero-bg1:#0B111A;--hero-bg2:#111827;--hero-bg3:#151E2E;
+  --hero-grid:rgba(25,211,230,.05);
+  --hero-ink:#F3F4F6;--hero-ink-dim:#94A3B8;
+  --hero-line:rgba(148,163,184,.5);--hero-line-soft:rgba(148,163,184,.26);
+  --hero-steel:#3A4658;--hero-steel-dark:#1C2534;
+  flex:0 0 56%;max-width:1100px;min-width:440px;
   position:relative;overflow:hidden;
   display:flex;flex-direction:column;justify-content:space-between;
   padding:48px 52px;
   border-right:1px solid var(--border-color);
   background:
-    radial-gradient(ellipse at 26% 18%,rgba(25,211,230,.16),transparent 55%),
-    linear-gradient(165deg,#0A121C 0%,#0D1826 45%,#0A1420 100%);
+    radial-gradient(ellipse at 28% 10%,rgba(25,211,230,.10),transparent 55%),
+    linear-gradient(165deg,var(--hero-bg1) 0%,var(--hero-bg2) 45%,var(--hero-bg3) 100%);
   animation:fadeUp 900ms var(--anim-ease) both;
 }
 .hero::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(rgba(25,211,230,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(25,211,230,.06) 1px,transparent 1px);
+  background-image:linear-gradient(var(--hero-grid) 1px,transparent 1px),linear-gradient(90deg,var(--hero-grid) 1px,transparent 1px);
   background-size:42px 42px;
   mask-image:linear-gradient(180deg,rgba(0,0,0,.95),rgba(0,0,0,.3));
   -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.95),rgba(0,0,0,.3));
 }
-/* Real product photo goes here once supplied — see docs note in chat.
-   Swap by setting background-image on .hero-art (or delete the rule to
-   fall back to the gradient placeholder above). */
-.hero-art{position:absolute;inset:0;z-index:0;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:.55}
+.hero-art{position:absolute;inset:0;z-index:0}
+.hero-art svg{width:100%;height:100%;display:block}
+
+/* ── Pump-jack rig: slow mechanical cycle, not a marketing bounce.
+   Beam nods on a real ease-in-out (mimics inertia at each end of the
+   stroke); crank makes one full turn per beam cycle, same duration,
+   linear (constant angular velocity is the mechanically correct part).
+   Both driven purely by CSS transform — no JS, no per-frame cost. ── */
+.pj-beam{transform-origin:200px 140px;animation:pjNod 7s cubic-bezier(.45,.05,.55,.95) infinite}
+.pj-crank{transform-origin:200px 315px;animation:pjSpin 7s linear infinite}
+@keyframes pjNod{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes pjSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* Very slow, very small drift on the background technical-overlay layer
+   only — reads as atmosphere, never competes with the rig or the form. */
+.hero-atmos{animation:pjDrift 46s ease-in-out infinite}
+@keyframes pjDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,-3px)}}
+@media(prefers-reduced-motion:reduce){
+  .pj-beam,.pj-crank,.hero-atmos{animation:none}
+}
 
 .hero-brand,.hero-baseline{position:relative;z-index:1}
 .hero-brand{display:flex;align-items:center;gap:16px}
 .hero-mark{flex-shrink:0;filter:drop-shadow(0 6px 22px rgba(25,211,230,.35))}
 .hero-word{display:flex;flex-direction:column;gap:7px}
-.hero-name{font:900 30px/1 var(--font-ui);letter-spacing:.22em;color:#fff}
+.hero-name{font:900 30px/1 var(--font-ui);letter-spacing:.22em;color:var(--hero-ink)}
 .hero-tag{font:600 11px var(--font-mono);letter-spacing:.16em;color:var(--precision-cyan-hover)}
 .hero-tag i{font-style:normal;opacity:.45;margin:0 7px}
-.hero-baseline{display:flex;align-items:center;gap:14px;font:600 11px var(--font-mono);letter-spacing:.22em;color:rgba(255,255,255,.55)}
+.hero-baseline{display:flex;align-items:center;gap:14px;font:600 11px var(--font-mono);letter-spacing:.22em;color:var(--hero-ink-dim)}
 .baseline-rule{width:34px;height:2px;background:var(--precision-cyan);display:inline-block}
-@media(max-width:900px){.hero{display:none}}
+
+/* Light theme: same rig, reinterpreted as a steel-gray line drawing on
+   a blueprint-paper ground rather than a night scene — not a different
+   product, the same one on paper instead of at dusk. */
+[data-theme="light"] .hero{
+  --hero-bg1:#EEF3F7;--hero-bg2:#E4ECF2;--hero-bg3:#EEF3F7;
+  --hero-grid:rgba(15,23,42,.06);
+  --hero-ink:#0F172A;--hero-ink-dim:#475569;
+  --hero-line:rgba(15,23,42,.42);--hero-line-soft:rgba(15,23,42,.2);
+  --hero-steel:#94A3B8;--hero-steel-dark:#475569;
+}
+
+.hero-mobile{display:none}
+@media(max-width:900px){
+  .hero{display:none}
+  .hero-mobile{
+    display:flex;align-items:center;gap:14px;
+    width:100%;max-width:400px;margin-bottom:18px;
+    padding:12px 16px;border-radius:var(--radius-lg);
+    border:1px solid var(--border-color);background:var(--bg-panel);
+    animation:fadeUp 900ms var(--anim-ease) both;
+  }
+  .hero-mobile svg{flex-shrink:0}
+  .hero-mobile .hero-word{gap:4px}
+  .hero-mobile .hero-name{font-size:16px;letter-spacing:.14em}
+  .hero-mobile .hero-tag{font-size:8.5px}
+}
 
 .stage{
   position:relative;z-index:1;flex:1;min-width:0;
@@ -342,7 +388,63 @@ body{
 <div class="split-shell">
 
   <aside class="hero" aria-label="AP Workspace">
-    <div class="hero-art" aria-hidden="true"></div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMax meet" focusable="false">
+        <defs>
+          <linearGradient id="pjSteel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--hero-steel)"/>
+            <stop offset="1" stop-color="var(--hero-steel-dark)"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Atmospheric CAD overlay: a section-view circle, a couple of
+             centerlines and a dimension stub. Decorative only — none of
+             this is a real measurement, so no numbers are attached. -->
+        <g class="hero-atmos" opacity=".35" fill="none" stroke="var(--hero-line-soft)" stroke-width="1">
+          <circle cx="332" cy="86" r="44"/>
+          <circle cx="332" cy="86" r="44" stroke-dasharray="2 6"/>
+          <line x1="332" y1="28" x2="332" y2="144"/>
+          <line x1="274" y1="86" x2="390" y2="86"/>
+          <line x1="22" y1="58" x2="92" y2="58"/>
+          <line x1="22" y1="58" x2="22" y2="96"/>
+          <line x1="60" y1="380" x2="360" y2="380" stroke-dasharray="1 6"/>
+        </g>
+
+        <line x1="20" y1="380" x2="380" y2="380" stroke="var(--hero-line)" stroke-width="1" stroke-dasharray="4 4"/>
+
+        <g fill="none" stroke="var(--hero-line)" stroke-width="1.5">
+          <line x1="284" y1="196" x2="284" y2="300"/>
+          <rect x="266" y="300" width="36" height="12" rx="2"/>
+          <rect x="272" y="312" width="24" height="30" rx="2"/>
+        </g>
+
+        <rect x="140" y="368" width="120" height="12" rx="2" fill="none" stroke="var(--hero-line)" stroke-width="1.5"/>
+
+        <g fill="none" stroke="var(--hero-line)" stroke-width="2">
+          <line x1="155" y1="368" x2="200" y2="140"/>
+          <line x1="245" y1="368" x2="200" y2="140"/>
+          <line x1="168" y1="260" x2="232" y2="260" stroke-width="1.2"/>
+        </g>
+
+        <rect x="182" y="300" width="36" height="30" rx="3" fill="none" stroke="var(--hero-line)" stroke-width="1.5"/>
+        <g class="pj-crank">
+          <circle cx="200" cy="315" r="16" fill="none" stroke="var(--precision-cyan)" stroke-width="1.5"/>
+          <line x1="200" y1="315" x2="200" y2="300" stroke="var(--precision-cyan)" stroke-width="2"/>
+          <circle cx="200" cy="315" r="2.5" fill="var(--precision-cyan)"/>
+        </g>
+
+        <circle cx="200" cy="140" r="5" fill="var(--precision-cyan)" fill-opacity=".85"/>
+
+        <g class="pj-beam">
+          <rect x="110" y="136" width="180" height="8" rx="4" fill="url(#pjSteel)" stroke="var(--hero-line)" stroke-width="1"/>
+          <rect x="118" y="140" width="34" height="26" rx="3" fill="url(#pjSteel)" stroke="var(--hero-line)" stroke-width="1.5"/>
+          <path d="M270,140 Q300,138 300,158 Q300,172 282,172 L266,172 Q262,155 270,140 Z" fill="url(#pjSteel)" stroke="var(--hero-line)" stroke-width="1.5" stroke-linejoin="round"/>
+          <line x1="284" y1="172" x2="284" y2="196" stroke="var(--hero-line)" stroke-width="1.5"/>
+          <circle cx="122" cy="153" r="1.6" fill="var(--hero-line)"/>
+          <circle cx="288" cy="140" r="1.6" fill="var(--hero-line)"/>
+        </g>
+      </svg>
+    </div>
     <div class="hero-brand">
       <svg class="hero-mark" width="56" height="56" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
       <div class="hero-word">
@@ -356,6 +458,30 @@ body{
   <main class="stage" id="main-content">
 
   <div class="stage-center">
+
+  <div class="hero-mobile" aria-hidden="true">
+    <svg width="44" height="44" viewBox="120 120 160 160" focusable="false">
+      <defs>
+        <linearGradient id="pjSteelM" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="var(--hero-steel)"/>
+          <stop offset="1" stop-color="var(--hero-steel-dark)"/>
+        </linearGradient>
+      </defs>
+      <line x1="155" y1="270" x2="245" y2="270" stroke="var(--hero-line)" stroke-width="2"/>
+      <line x1="155" y1="270" x2="200" y2="140" stroke="var(--hero-line)" stroke-width="2"/>
+      <line x1="245" y1="270" x2="200" y2="140" stroke="var(--hero-line)" stroke-width="2"/>
+      <circle cx="200" cy="140" r="5" fill="var(--precision-cyan)"/>
+      <g class="pj-beam">
+        <rect x="150" y="136" width="100" height="7" rx="3.5" fill="url(#pjSteelM)" stroke="var(--hero-line)" stroke-width="1"/>
+        <rect x="156" y="139" width="20" height="16" rx="2" fill="url(#pjSteelM)" stroke="var(--hero-line)" stroke-width="1"/>
+        <path d="M228,139 Q245,138 245,150 Q245,159 233,159 L224,159 Q221,148 228,139 Z" fill="url(#pjSteelM)" stroke="var(--hero-line)" stroke-width="1" stroke-linejoin="round"/>
+      </g>
+    </svg>
+    <div class="hero-word">
+      <span class="hero-name">WORKSPACE</span>
+      <span class="hero-tag">ENGINEERING<i>/</i>OIL &amp; GAS</span>
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-brand">
