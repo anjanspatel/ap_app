@@ -2,11 +2,11 @@
 <html lang="en-CA">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <link rel="preload" href="/tokens.css" as="style">
 <link rel="preload" href="/premium.css" as="style">
-<script>(function(){try{var t=localStorage.getItem('ap-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}}());</script>
+<script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0B111A">
@@ -175,17 +175,17 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       <span class="sb-user-email" id="sbEmail">—</span>
       <span class="sb-user-role" id="sbRole">Member</span>
     </div>
-    <button class="sb-signout" onclick="signOut()" title="Sign out" aria-label="Open sign out confirmation">
+    <button class="sb-signout" id="sidebarSignoutBtn" title="Sign out" aria-label="Open sign out confirmation">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
 </aside>
 
-<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<div class="sb-overlay" id="sbOverlay"></div>
 
 <div class="main-wrap">
   <header class="topbar">
-    <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <span class="tb-title">Settings</span>
@@ -201,8 +201,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('general',0)">General</button>
-      <button class="tab-btn" onclick="showTab('security',1)">Security</button>
+      <button class="tab-btn active" id="tabGeneralBtn">General</button>
+      <button class="tab-btn" id="tabSecurityBtn">Security</button>
     </div>
 
     <div class="tab-pane active" id="tab-general">
@@ -220,8 +220,8 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
         <div class="s-hd"><div class="s-hd-t">Appearance</div><div class="s-hd-s">Colour scheme</div></div>
         <div class="s-body" style="padding:14px 16px">
           <div class="theme-opts">
-            <button class="theme-opt" id="th-light" onclick="setTheme('light')"><span class="swatch sw-l"></span>Light</button>
-            <button class="theme-opt" id="th-dark" onclick="setTheme('dark')"><span class="swatch sw-d"></span>Dark</button>
+            <button class="theme-opt" id="th-light"><span class="swatch sw-l"></span>Light</button>
+            <button class="theme-opt" id="th-dark"><span class="swatch sw-d"></span>Dark</button>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
       <div class="s-block">
         <div class="row-between">
           <div class="row-label">Sign out of this session</div>
-          <button class="btn btn-ghost" onclick="signOut()">Sign out</button>
+          <button class="btn btn-ghost" id="signoutRowBtn">Sign out</button>
         </div>
       </div>
     </div>
@@ -242,7 +242,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
             <label class="inp-label" for="curPw">Current Password</label>
             <div style="position:relative">
               <input class="inp" type="password" id="curPw" placeholder="Enter current password" autocomplete="current-password" style="padding-right:40px">
-              <button type="button" onclick="togglePw('curPw','eye0')" aria-label="Toggle password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
+              <button type="button" class="pw-eye-toggle" data-field="curPw" data-icon="eye0" aria-label="Toggle password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
                 <svg id="eye0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -251,7 +251,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
             <label class="inp-label" for="newPw">New Password</label>
             <div style="position:relative">
               <input class="inp" type="password" id="newPw" placeholder="Enter new password" autocomplete="new-password" style="padding-right:40px">
-              <button type="button" onclick="togglePw('newPw','eye1')" aria-label="Toggle password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
+              <button type="button" class="pw-eye-toggle" data-field="newPw" data-icon="eye1" aria-label="Toggle password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
                 <svg id="eye1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -260,13 +260,13 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
             <label class="inp-label" for="confirmPw">Confirm Password</label>
             <div style="position:relative">
               <input class="inp" type="password" id="confirmPw" placeholder="Re-enter password" autocomplete="new-password" style="padding-right:40px">
-              <button type="button" onclick="togglePw('confirmPw','eye2')" aria-label="Toggle confirm password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
+              <button type="button" class="pw-eye-toggle" data-field="confirmPw" data-icon="eye2" aria-label="Toggle confirm password visibility" style="position:absolute;right:0;top:0;height:100%;width:40px;background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;justify-content:center">
                 <svg id="eye2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
           </div>
           <div id="pwFb" class="fb"></div>
-          <button class="btn btn-em" id="pwBtn" onclick="changePassword()">Update Password</button>
+          <button class="btn btn-em" id="pwBtn">Update Password</button>
         </div>
       </div>
 
@@ -277,7 +277,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
             <div class="row-label">Sign out everywhere</div>
             <div class="row-sub">Invalidates all active tokens</div>
           </div>
-          <button class="btn btn-danger" onclick="signOutAll()">Sign out all</button>
+          <button class="btn btn-danger" id="signoutAllBtn">Sign out all</button>
         </div>
       </div>
     </div>
@@ -303,134 +303,19 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     <div class="ap-modal-title" id="signout-modal-title">Sign out?</div>
     <div class="ap-modal-body">You will need to sign in again to access AP Workspace.</div>
     <div class="ap-modal-actions">
-      <button class="ap-modal-cancel" onclick="closeSignoutModal()">Cancel</button>
-      <button class="ap-modal-confirm" onclick="confirmSignOut()">Sign out</button>
+      <button class="ap-modal-cancel" id="signoutModalCancelBtn">Cancel</button>
+      <button class="ap-modal-confirm" id="signoutModalConfirmBtn">Sign out</button>
     </div>
   </div>
 </div>
 
 <script src="/global-features.js"></script>
 <script src="/api.js"></script>
-<script>
-var session=null;
-function $(id){return document.getElementById(id)}
-
-/* ── Footer (runs after DOM is ready) ── */
-(function(){
-  $('settYr').textContent=new Date().getFullYear();
-  var e='support'+'@'+'app'+'.'+'anjanpatel'+'.'+'ca';
-  $('sett-mail').addEventListener('click',function(){window.location.href='mailto:'+e});
-})();
-
-function openSidebar(){
-  $('sidebar').classList.add('open');
-  var o=$('sbOverlay');
-  o.classList.add('visible');
-  requestAnimationFrame(function(){o.classList.add('open')});
-}
-function closeSidebar(){
-  $('sidebar').classList.remove('open');
-  var o=$('sbOverlay');
-  o.classList.remove('open');
-  setTimeout(function(){o.classList.remove('visible')},260);
-}
-
-function showTab(name,idx){
-  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active')});
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
-  $('tab-'+name).classList.add('active');
-  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-}
-
-function setTheme(t){
-  document.documentElement.dataset.theme=t;
-  try{localStorage.setItem('ap-theme',t)}catch(e){}
-  document.querySelectorAll('.theme-opt').forEach(function(el){el.classList.remove('active')});
-  var el=$('th-'+t);if(el)el.classList.add('active');
-}
-
-async function init(){
-  var r=await api.auth.getSession();
-  if(!r.user){window.location.href='/';return}
-  session={email:r.user.email,is_admin:r.user.is_admin===true};
-  var email=session.email||r.user.username||'';
-  var ini=email.charAt(0).toUpperCase();
-  $('sbEmail').textContent=email;
-  $('sbAvatar').textContent=ini;
-  $('tbAvatar').textContent=ini;
-  $('fEmail').textContent=email;
-  $('fUid').textContent='—';
-  if(session.is_admin===true){$('fRole').textContent='Admin';$('sbRole').textContent='Admin'}
-  $('fProvider').textContent='Email';
-  var t=document.documentElement.dataset.theme||'dark';
-  var el=$('th-'+t);if(el)el.classList.add('active');
-
-  // An admin (or the bootstrap seed) set this password directly, so it must
-  // be changed before it's used for anything else — jump straight to the
-  // Security tab and explain why, rather than silently letting them wander
-  // off to Dashboard first.
-  if(r.user.must_change_password){
-    showTab('security',1);
-    var banner=document.createElement('div');
-    banner.setAttribute('role','alert');
-    banner.style.cssText='background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:6px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--text);line-height:1.5';
-    banner.innerHTML='<strong style="color:var(--warn)">Password change required.</strong> This account has a password that was set for you — choose a new one below before continuing.';
-    var content=$('main-content')||document.querySelector('.content');
-    if(content)content.insertBefore(banner,content.firstChild);
-  }
-}
-
-async function changePassword(){
-  var cur=$('curPw').value,p=$('newPw').value,c=$('confirmPw').value;
-  if(!cur){fb('err','Enter your current password.');return}
-  if(!p){fb('err','Enter a new password.');return}
-  if(p.length<8){fb('err','Minimum 8 characters required.');return}
-  if(p!==c){fb('err','Passwords do not match.');return}
-  $('pwBtn').disabled=true;$('pwBtn').textContent='Updating…';
-  try{
-    await api.auth.changePassword(cur,p);
-  }catch(err){
-    $('pwBtn').disabled=false;$('pwBtn').textContent='Update Password';
-    fb('err',err.message);return;
-  }
-  $('pwBtn').disabled=false;$('pwBtn').textContent='Update Password';
-  fb('ok','Password updated.');
-  $('curPw').value='';$('newPw').value='';$('confirmPw').value='';
-}
-function fb(type,msg){var el=$('pwFb');el.textContent=msg;el.className='fb '+type;setTimeout(function(){el.className='fb'},4000)}
-function signOut(){document.getElementById('signout-modal').classList.add('open')}
-function closeSignoutModal(){document.getElementById('signout-modal').classList.remove('open')}
-async function confirmSignOut(){closeSignoutModal();try{await api.auth.signOut();}catch(e){}window.location.href='/'}
-async function signOutAll(){closeSignoutModal();try{await api.auth.signOut(true);}catch(e){}window.location.href='/'}
-
-function togglePw(fieldId,iconId){
-  var f=document.getElementById(fieldId);
-  var show=f.type==='password';
-  f.type=show?'text':'password';
-  var ic=document.getElementById(iconId);
-  ic.innerHTML=show
-    ?'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-    :'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-}
-
-init();
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js').then(function(reg){
-    reg.addEventListener('updatefound',function(){
-      var sw=reg.installing;
-      sw.addEventListener('statechange',function(){
-        if(sw.state==='installed'&&navigator.serviceWorker.controller){
-          var b=document.getElementById('sw-update-banner');if(b)b.style.display='flex';
-        }
-      });
-    });
-  }).catch(function(){});
-  navigator.serviceWorker.addEventListener('controllerchange',function(){window.location.reload()});
-}
-</script>
+<script src="settings-page.js"></script>
 <div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--bg-elevated);color:var(--text-primary);border:1px solid rgba(25,211,230,.45);border-radius:8px;padding:11px 16px;font-size:12.5px;font-family:'Inter',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
   <span>Update available</span>
-  <button onclick="window.location.reload()" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px">Refresh</button>
+  <button id="sw-refresh-btn" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px">Refresh</button>
 </div>
+<script src="/sw-register.js"></script>
 </body>
 </html>
