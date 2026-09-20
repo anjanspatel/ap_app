@@ -45,13 +45,24 @@ function closeSidebar(){
 }
 
 /* ── Section nav ── */
+/* Slides the highlight bar (#navIndicator) behind the active sidebar
+   item. Positions are read off the real DOM each time rather than
+   hardcoded, since nav-users is conditionally hidden for non-admins and
+   shifts every item below it. */
+function moveNavIndicator(el){
+  var ind=$('navIndicator');
+  if(!ind||!el)return;
+  ind.style.height=el.offsetHeight+'px';
+  ind.style.transform='translateY('+el.offsetTop+'px)';
+  ind.style.opacity='1';
+}
 var SECTION_TITLES={dashboard:'Dashboard',tools:'Calculators',logs:'Calc Logs',users:'Admin Console'};
 function showSection(name, opts){
   if(!$('sec-'+name))name='dashboard';
   document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
   document.querySelectorAll('.nav-item[id^="nav-"]').forEach(function(el){el.classList.remove('active')});
   $('sec-'+name).classList.add('active');
-  var navEl=$('nav-'+name);if(navEl)navEl.classList.add('active');
+  var navEl=$('nav-'+name);if(navEl){navEl.classList.add('active');moveNavIndicator(navEl)}
   $('tbTitle').textContent=SECTION_TITLES[name]||name;
   document.title='AP Workspace — '+(SECTION_TITLES[name]||name);
   var url=name==='dashboard' ? '/dashboard.html' : '/dashboard.html#'+name;

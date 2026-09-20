@@ -65,20 +65,32 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .sb-name-main{font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em;line-height:1}
 .sb-name-sub{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--dim);letter-spacing:.1em}
 
-.sb-nav{flex:1;padding:8px 0;overflow-y:auto;overscroll-behavior:contain}
-.sb-section{padding:16px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.sb-nav{flex:1;padding:8px 0;overflow-y:auto;overscroll-behavior:contain;position:relative}
+.sb-section{padding:16px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);position:relative}
 .nav-item{
+  position:relative;z-index:1;
   display:flex;align-items:center;gap:9px;
   padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);
   text-decoration:none;cursor:pointer;border:none;background:none;
   width:100%;text-align:left;font-family:'Inter',sans-serif;
   border-left:2px solid transparent;
-  transition:color var(--ease),background var(--ease),border-color var(--ease);
+  transition:color var(--ease);
 }
-.nav-item:hover{background:rgba(25,211,230,.06);color:var(--text)}
-.nav-item.active{background:rgba(25,211,230,.1);color:var(--text);border-left-color:var(--accent-fg)}
-.nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
+.nav-item:hover{color:var(--text)}
+.nav-item.active{color:var(--text)}
+.nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6;transition:opacity var(--ease)}
 .nav-item.active svg,.nav-item:hover svg{opacity:1}
+/* Sliding highlight that animates between nav items on activation,
+   positioned by JS (moveNavIndicator in dashboard-page.js) using the
+   active item's offsetTop/offsetHeight within this relatively-positioned
+   nav. Sits behind item content (z-index:0 vs items' z-index:1). */
+.nav-indicator{
+  position:absolute;left:0;top:0;width:100%;height:0;z-index:0;
+  background:rgba(25,211,230,.1);border-left:2px solid var(--accent-fg);
+  opacity:0;
+  transition:transform .32s cubic-bezier(.22,1,.36,1),height .32s cubic-bezier(.22,1,.36,1),opacity .2s var(--ease);
+}
+@media(prefers-reduced-motion:reduce){.nav-indicator{transition:opacity .2s}}
 .nav-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;padding:1px 6px;border-radius:3px;background:rgba(25,211,230,.15);color:var(--accent-fg)}
 
 .sb-user{
@@ -143,7 +155,23 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
 .page-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-.metric{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;transition:background .2s,border-color .2s}
+.metric{
+  position:relative;overflow:hidden;isolation:isolate;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;
+  transition:background .2s,border-color .2s,transform .2s var(--ease),box-shadow .2s var(--ease);
+}
+/* Cursor-follow glow — --mx/--my are set on mousemove by the "Metric
+   tile cursor glow" listener in dashboard-page.js; this is the half of
+   the effect that actually renders it (that listener previously set
+   the custom properties with nothing reading them). */
+.metric::before{
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(25,211,230,.14),transparent 70%);
+  opacity:0;transition:opacity .25s var(--ease);
+}
+.metric:hover{transform:translateY(-2px);border-color:rgba(25,211,230,.35);box-shadow:0 10px 28px rgba(0,0,0,.22)}
+.metric:hover::before{opacity:1}
+@media(prefers-reduced-motion:reduce){.metric{transition:background .2s,border-color .2s}.metric:hover{transform:none}}
 .metric-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .metric-value{font:600 24px/1 'JetBrains Mono',monospace;color:var(--text);letter-spacing:-.03em}
 .metric-value.em{color:var(--emerald)}
@@ -327,6 +355,7 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   </a>
 
   <nav class="sb-nav" role="navigation" aria-label="Main navigation">
+    <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
     <div class="sb-section">Workspace</div>
     <button class="nav-item active" id="nav-dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
