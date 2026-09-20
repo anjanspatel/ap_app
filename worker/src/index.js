@@ -558,6 +558,14 @@ export default {
       // (which for a D1 error can include schema/column detail) to the
       // client — log the real error server-side only.
       console.error('[AP Workspace API error]', e);
+      // TEMPORARY: record the real error privately (never in the HTTP
+      // response) so it can be read from the database directly while
+      // diagnosing the live sign-in 500. Reverted once root-caused.
+      try {
+        await env.DB.prepare(
+          `insert into audit_logs (id, actor_id, action, target_user_id, details, created_at) values (?,null,'DEBUG_ERROR',null,?,?)`
+        ).bind(crypto.randomUUID(), JSON.stringify({ message: String(e && e.message || e), stack: String(e && e.stack || '') }), nowIso()).run();
+      } catch (e2) {}
       return json({ error: 'Something went wrong. Please try again.' }, 500);
     }
   },
