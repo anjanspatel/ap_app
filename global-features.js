@@ -320,4 +320,37 @@
     el.textContent = new Date().getFullYear();
   });
 
+  /* ── 11. Build version badge ─────────────────
+     Small, non-interactive tag in the bottom-right corner so it's
+     obvious at a glance which deploy is actually live — no scrolling
+     to a footer required. Bump AP_BUILD by hand on any change worth
+     confirming landed (this project has no build step to stamp it
+     automatically). Opposite corner from Back-to-Top (bottom-left,
+     #3 above) so the two never overlap. Offsets above the cookie
+     banner and, on tool pages, the Engineering Disclaimer too, when
+     either is still showing — both heights added together, since on
+     a first tool-page visit they stack. Same technique as #4b above,
+     computed once at creation. Known trade-off, matching #4b's own
+     behavior: if a banner is dismissed afterward, the badge stays at
+     its original height rather than sliding down.
+     pointer-events:none so it never blocks a tap near that corner.
+  ──────────────────────────────────────────────── */
+  var AP_BUILD = '2026.09.20';
+  var cookieBannerEl = document.getElementById('cookie-banner');
+  var disclaimerEl = document.getElementById('eng-disclaimer');
+  var badgeOffset = (cookieBannerEl ? cookieBannerEl.offsetHeight : 0) +
+                     (disclaimerEl ? disclaimerEl.offsetHeight : 0);
+  var badge = document.createElement('div');
+  badge.id = 'ap-build-badge';
+  badge.textContent = 'v' + AP_BUILD;
+  badge.title = 'Build ' + AP_BUILD;
+  badge.style.cssText = [
+    'position:fixed','bottom:calc(' + (badgeOffset + 6) + 'px + env(safe-area-inset-bottom,0px))','right:8px','z-index:650',
+    'font-family:var(--font-mono,ui-monospace,monospace)','font-size:10px','line-height:1',
+    'color:var(--dim,var(--text-secondary,#94A3B8))','background:var(--bg-panel,rgba(21,31,44,.85))',
+    'padding:3px 6px','border-radius:4px','box-shadow:0 1px 2px rgba(0,0,0,.15)',
+    'pointer-events:none','user-select:none','letter-spacing:.02em'
+  ].join(';');
+  document.body.appendChild(badge);
+
 })();
