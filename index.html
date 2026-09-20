@@ -245,30 +245,40 @@ body{
   width:100%;
   margin-top:20px;
   z-index:10;
-  display:flex;align-items:center;justify-content:center;
-  flex-wrap:wrap;gap:4px 12px;
-  font:400 10px var(--font-mono);color:var(--dim);letter-spacing:0.04em;
+  display:flex;flex-direction:column;align-items:center;
+  gap:6px;
   animation:fadeUp 900ms var(--anim-ease) 380ms both;
 }
+.legal-row{
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:4px 12px;
+}
+.legal-primary{
+  font:400 10px var(--font-mono);color:var(--dim);letter-spacing:0.04em;
+}
+.legal-secondary{
+  font:400 9px var(--font-mono);color:var(--dim);letter-spacing:0.04em;
+  opacity:.65;
+}
 .legal a,.legal button.lbtn{
-  color:var(--dim);text-decoration:none;
+  color:inherit;text-decoration:none;
   background:none;border:none;cursor:pointer;
-  font:400 10px var(--font-mono);letter-spacing:0.04em;
+  font:inherit;letter-spacing:inherit;
   min-height:44px;display:inline-flex;align-items:center;padding:0 2px;
-  transition:color var(--ease);
+  transition:color var(--ease),opacity var(--ease);
   -webkit-tap-highlight-color:transparent;
 }
-.legal a:hover,.legal button.lbtn:hover{color:var(--muted)}
+.legal a:hover,.legal button.lbtn:hover{color:var(--muted);opacity:1}
 .legal .sep{opacity:0.3}
 .legal .mail-btn{
   display:inline-flex;align-items:center;gap:4px;
-  color:var(--dim);background:none;border:none;cursor:pointer;
-  font:400 10px var(--font-mono);letter-spacing:0.04em;
+  color:inherit;background:none;border:none;cursor:pointer;
+  font:inherit;letter-spacing:inherit;
   min-height:44px;padding:0 2px;
-  transition:color var(--ease);
+  transition:color var(--ease),opacity var(--ease);
   -webkit-tap-highlight-color:transparent;
 }
-.legal .mail-btn:hover{color:var(--muted)}
+.legal .mail-btn:hover{color:var(--muted);opacity:1}
 
 @media(max-width:440px){
   .card{padding:24px 18px 20px;border-radius:var(--radius-lg)}
@@ -461,20 +471,23 @@ body{
   </div>
 
   <footer class="legal" role="contentinfo">
-    <span>&copy; <span id="yr"></span> <a href="https://anjanpatel.ca" target="_blank" rel="noopener" style="color:var(--precision-cyan)">Anjan Patel</a>. All rights reserved.</span>
-    <span class="sep">·</span>
-    <a href="/terms/">Terms</a>
-    <span class="sep">·</span>
-    <a href="/disclaimer/">Disclaimer</a>
-    <span class="sep">·</span>
-    <a href="/privacy/">Privacy</a>
-    <span class="sep">·</span>
-    <a href="/disclaimer/#standards">Standards</a>
-    <span class="sep">·</span>
-    <button class="mail-btn lbtn" id="contact-btn" type="button" aria-label="Contact">
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      Contact
-    </button>
+    <div class="legal-row legal-primary">
+      <span>&copy; <span id="yr"></span> <a href="https://anjanpatel.ca" target="_blank" rel="noopener" style="color:var(--precision-cyan)">Anjan Patel</a>. All rights reserved.</span>
+      <span class="sep">·</span>
+      <a href="/terms/">Terms</a>
+      <span class="sep">·</span>
+      <a href="/privacy/">Privacy</a>
+    </div>
+    <div class="legal-row legal-secondary">
+      <a href="/disclaimer/">Disclaimer</a>
+      <span class="sep">·</span>
+      <a href="/disclaimer/#standards">Standards</a>
+      <span class="sep">·</span>
+      <button class="mail-btn lbtn" id="contact-btn" type="button" aria-label="Contact">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Contact
+      </button>
+    </div>
   </footer>
 
   </main>
