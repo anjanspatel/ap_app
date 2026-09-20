@@ -100,20 +100,10 @@ body{
    cheaper and more robust across themes than per-edge highlights. */
 .pj-rig{filter:drop-shadow(0 0 18px var(--hero-rig-rim))}
 
-/* ── Pump-jack rig: slow mechanical cycle, not a marketing bounce.
-   Beam nods on a real ease-in-out (mimics inertia at each end of the
-   stroke); crank makes one full turn per beam cycle, same duration,
-   linear (constant angular velocity is the mechanically correct part).
-   Both driven purely by CSS transform — no JS, no per-frame cost. ── */
-.pj-beam{transform-origin:160px 120px;animation:pjNod 7s cubic-bezier(.45,.05,.55,.95) infinite}
-@keyframes pjNod{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
-/* Very slow, very small drift on the background technical-overlay layer
-   only — reads as atmosphere, never competes with the rig or the form. */
-.hero-atmos{animation:pjDrift 46s ease-in-out infinite}
-@keyframes pjDrift{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,-3px)}}
-@media(prefers-reduced-motion:reduce){
-  .pj-beam,.hero-atmos{animation:none}
-}
+/* Static by request — the animated nod read as distracting/gimmicky
+   rather than "engineering visualization." transform-origin is left in
+   place (harmless with no animation) in case motion is ever revisited. */
+.pj-beam{transform-origin:160px 120px}
 
 .hero-brand,.hero-baseline{position:relative;z-index:1}
 .hero-brand{display:flex;align-items:center;gap:16px}
