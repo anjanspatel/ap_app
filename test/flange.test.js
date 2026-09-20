@@ -75,26 +75,26 @@ test('bolt hole is always larger than bolt diameter (clearance)', () => {
   });
 });
 
-test('every size covers at least the base 3000 and 5000 psi ratings', () => {
-  // 10000/15000 are intentionally absent for the largest bores (13 5/8",
-  // 16 3/4") — those sizes are not manufactured in those pressure
-  // classes per API 6A, so this only asserts the ratings every size
-  // actually has, not a universal 4-rating grid that doesn't exist.
+test('every remaining size has all four pressure ratings (3000/5000/10000/15000 psi)', () => {
+  // 13 5/8" and 16 3/4" used to be the exception to this (present, but
+  // missing 10K/15K). They've since been removed entirely — see the test
+  // below — so this now checks a plain, exception-free invariant: every
+  // size that exists has the full rating set.
   sizes.forEach((size) => {
-    ['3000', '5000'].forEach((rating) => {
+    ['3000', '5000', '10000', '15000'].forEach((rating) => {
       assert.ok(data[size][rating], `${size} is missing the ${rating} psi rating`);
     });
   });
 });
 
-test('only the two largest bores omit the 10000/15000 psi ratings', () => {
-  const expectedToOmitHighPressure = ['13 5/8', '16 3/4'];
-  sizes.forEach((size) => {
-    const hasHighPressure = Boolean(data[size]['10000']) && Boolean(data[size]['15000']);
-    if (expectedToOmitHighPressure.includes(size)) {
-      assert.ok(!hasHighPressure, `${size} was expected to omit 10K/15K but now has them — update this test if that's an intentional data addition`);
-    } else {
-      assert.ok(hasHighPressure, `${size} is missing 10000 or 15000 psi — every size except 13 5/8" and 16 3/4" should have all four ratings`);
-    }
-  });
+test('13 5/8" and 16 3/4" stay removed until re-keyed from a stamped API Spec 6A source', () => {
+  // Removed entirely, not just banner-warned — a warning wasn't enough
+  // since the wrong OD/BC/bolt numbers were still readable, saveable,
+  // and printable. Re-adding needs a stamped API Spec 6A table, not a
+  // web-search reconstruction. This test is the guardrail against that
+  // happening by accident in a future edit.
+  assert.ok(!sizes.includes('13 5/8'), '"13 5/8" should not be reintroduced without a stamped API Spec 6A source');
+  assert.ok(!sizes.includes('16 3/4'), '"16 3/4" should not be reintroduced without a stamped API Spec 6A source');
+  assert.ok(!data['13 5/8'], 'data table should not have an orphaned "13 5/8" entry either');
+  assert.ok(!data['16 3/4'], 'data table should not have an orphaned "16 3/4" entry either');
 });
