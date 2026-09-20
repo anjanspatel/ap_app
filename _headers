@@ -8,20 +8,32 @@
 # Access-Control-Allow-Origin on HTML documents can only be done with a
 # real header — a <meta http-equiv> CSP tag (already present on every
 # page) can't express any of them.
+#
+# script-src is plain 'self' here — CSP Phase B (see git log) converted
+# every page's inline <script> blocks and onclick= attributes to external
+# .js files, so no page needs 'unsafe-inline' for scripts anymore. This
+# used to say 'self' 'unsafe-inline' as a fallback for pages not yet
+# converted; keeping it after Phase B finished meant every page got BOTH
+# this header and its own stricter override in the same response —
+# Cloudflare sends one Content-Security-Policy header per matching rule,
+# and multiple matches all get sent, not just the most specific. Two
+# headers didn't loosen anything in practice (browsers enforce the
+# intersection), but it was pure noise. style-src keeps 'unsafe-inline' —
+# pages still use scattered style="" attributes and <style> blocks that
+# weren't part of that pass.
 
 /*
   Referrer-Policy: strict-origin-when-cross-origin
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
 
-# Hardened below the general rule — these pages' inline <script> blocks and
-# onclick= attributes were all moved to external .js files (theme-init.js,
-# theme-toggle.js, sw-register.js, and per-page legal-footer.js), so
-# script-src no longer needs 'unsafe-inline'. style-src keeps it — these
-# pages still use scattered style="" attributes and a <style> block that
-# weren't part of this pass.
+# Page-specific overrides below still exist for real differences the
+# general rule above can't express: connect-src (API-calling pages vs.
+# the static legal pages) and flange's extra cdnjs.cloudflare.com in
+# script-src. Every value here now matches what's in the page's own
+# <meta http-equiv="Content-Security-Policy"> tag.
 /404.html
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
 
