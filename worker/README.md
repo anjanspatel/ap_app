@@ -6,6 +6,16 @@ done by clicking through **dash.cloudflare.com** in a browser. No
 terminal, no npm, no command-line tools of any kind, and no other
 service besides Cloudflare itself.
 
+> **This is already done in production.** The Worker (`ap-app`), the D1
+> database (`ap-workspace`), and the `api.anjanpatel.ca` route all exist
+> and are live today — verified directly against the Cloudflare account,
+> not assumed. Steps 1–7 below are the from-scratch instructions kept for
+> disaster recovery (see `../docs/DISASTER-RECOVERY.md`) or setting this
+> up again elsewhere; you don't need to repeat them to keep the current
+> site running. See `../docs/PRODUCTION-INVENTORY.md` for the exact,
+> current resource names/IDs, and `../docs/CLOUDFLARE-RUNBOOK.md` for how
+> to ship a code change to the *existing* Worker.
+
 ## 1. Create a Cloudflare account
 
 If you don't already have one: cloudflare.com → Sign up. Free plan is

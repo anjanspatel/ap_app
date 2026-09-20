@@ -17,8 +17,18 @@
 #
 # The database_id below is the real, already-created "ap-workspace" D1
 # database backing production — not a placeholder.
+#
+# name MUST be "ap-app" — that is the Worker script actually live in the
+# Cloudflare account today (created via the dashboard, serving
+# api.anjanpatel.ca with the real DB binding already attached). A
+# different name here does not rename anything in Cloudflare; it makes
+# `wrangler deploy` create and push to a brand-new, separate Worker with
+# no bindings and no route, leaving the real one untouched and looking
+# like the deploy silently did nothing. Verified 2026-09-20 via the
+# Cloudflare API (Workers list): only "ap-app" exists, "ap-workspace-api"
+# does not.
 
-name = "ap-workspace-api"
+name = "ap-app"
 main = "src/index.js"
 compatibility_date = "2026-09-19"
 
