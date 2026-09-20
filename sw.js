@@ -2,7 +2,7 @@
    Caches design system assets + tool shells for offline use.
    Stale-while-revalidate for static assets, network-first for navigation.
 */
-var CACHE = 'ap-v18';
+var CACHE = 'ap-v19';
 /* dashboard.html and settings.html are deliberately NOT precached here —
    they're auth-gated, and there's no reason to proactively cache them for
    every visitor, including ones who never sign in. Navigation is
