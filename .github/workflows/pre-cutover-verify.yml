@@ -1,0 +1,139 @@
+name: Pre-cutover verification (read-only)
+
+# One-off, manual-trigger-only verification job for the Cloudflare Pages
+# preview. Read-only against both the preview and the production API:
+# no login, no admin actions, no writes, no production data touched.
+# Exists to get real observed evidence (headers, console errors, CORS,
+# asset status codes) for the pre-cutover report, since the sandbox this
+# was authored in has no outbound network access to verify any of this
+# directly.
+
+on:
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: 'Cloudflare Pages preview URL to check'
+        required: true
+        default: 'https://6d8c57fe.ap-workspace-bei.pages.dev'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright (Chromium only)
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.48.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium
+
+      - name: Header + asset checks (curl)
+        run: |
+          set -x
+          BASE="${{ inputs.preview_url }}"
+          echo "== Main document headers =="
+          curl -sSI "$BASE/" | tee headers_root.txt
+          echo "== /dashboard.html headers =="
+          curl -sSI "$BASE/dashboard.html" | tee headers_dashboard.txt
+          echo "== /flange/ headers =="
+          curl -sSI "$BASE/flange/" | tee headers_flange.txt
+          echo "== Static asset status codes =="
+          for p in /api.js /global-features.js /theme-init.js /sw.js /sw-register.js /manifest.json /favicon.svg /icon-192.png /icon-512.png /apple-touch-icon.png /_headers /tokens.css /premium.css /dashboard-page.js /settings-page.js /login-page.js; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' "$BASE$p")
+            echo "$p -> $code"
+          done
+          echo "== Font load (Google Fonts CSS) =="
+          curl -sS -o /dev/null -w 'fonts.googleapis.com css2 -> %{http_code}\n' "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+
+      - name: CORS preflight from preview origin to production API
+        run: |
+          set -x
+          ORIGIN="${{ inputs.preview_url }}"
+          echo "== OPTIONS preflight: api.anjanpatel.ca, Origin: $ORIGIN =="
+          curl -sSI -X OPTIONS "https://api.anjanpatel.ca/api/auth/session" \
+            -H "Origin: $ORIGIN" \
+            -H "Access-Control-Request-Method: GET" | tee cors_preview_origin.txt
+          echo "== OPTIONS preflight: api.anjanpatel.ca, Origin: https://app.anjanpatel.ca (production) =="
+          curl -sSI -X OPTIONS "https://api.anjanpatel.ca/api/auth/session" \
+            -H "Origin: https://app.anjanpatel.ca" \
+            -H "Access-Control-Request-Method: GET" | tee cors_prod_origin.txt
+          echo "== Unauthenticated GET /api/auth/session (expect 401, no credentials sent) =="
+          curl -sSI "https://api.anjanpatel.ca/api/auth/session" | tee unauth_session.txt
+
+      - name: Playwright console + screenshot capture (login page only — auth-gated pages are out of scope without credentials)
+        run: |
+          cat > check.js << 'JS_EOF'
+          const { chromium, devices } = require('playwright');
+          const fs = require('fs');
+
+          const BASE = process.env.PREVIEW_URL;
+          const widths = [320, 375, 390, 414, 768, 1024, 1280, 1440, 1920];
+
+          (async () => {
+            const browser = await chromium.launch();
+            const report = { consoleMessages: [], pageErrors: [], failedRequests: [], responseHeadersMain: null, screenshots: [] };
+
+            const context = await browser.newContext();
+            const page = await context.newPage();
+            page.on('console', msg => report.consoleMessages.push({ type: msg.type(), text: msg.text() }));
+            page.on('pageerror', err => report.pageErrors.push(String(err)));
+            page.on('requestfailed', req => report.failedRequests.push({ url: req.url(), failure: req.failure() && req.failure().errorText }));
+            page.on('response', res => {
+              if (res.url() === BASE + '/' || res.url() === BASE) {
+                report.responseHeadersMain = res.headers();
+              }
+            });
+
+            const resp = await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 30000 }).catch(e => ({ error: String(e) }));
+            report.navStatus = resp && resp.status ? resp.status() : null;
+            await page.waitForTimeout(1500);
+
+            for (const w of widths) {
+              await page.setViewportSize({ width: w, height: 900 });
+              await page.waitForTimeout(200);
+              const path = `screenshot-${w}.png`;
+              await page.screenshot({ path, fullPage: false });
+              report.screenshots.push(path);
+            }
+
+            // Try /dashboard.html to see redirect behavior (expected: bounce to / since no session)
+            const dashResp = await page.goto(BASE + '/dashboard.html', { waitUntil: 'networkidle', timeout: 30000 }).catch(e => ({ error: String(e) }));
+            await page.waitForTimeout(1500);
+            report.dashboardFinalUrl = page.url();
+
+            fs.writeFileSync('report.json', JSON.stringify(report, null, 2));
+            await browser.close();
+          })();
+          JS_EOF
+          PREVIEW_URL="${{ inputs.preview_url }}" node check.js
+          echo "===REPORT_JSON_START==="
+          cat report.json
+          echo "===REPORT_JSON_END==="
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: pre-cutover-screenshots
+          path: screenshot-*.png
+          retention-days: 7
+
+      - name: Upload raw check outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pre-cutover-raw-output
+          path: |
+            headers_root.txt
+            headers_dashboard.txt
+            headers_flange.txt
+            cors_preview_origin.txt
+            cors_prod_origin.txt
+            unauth_session.txt
+            report.json
+          retention-days: 7
