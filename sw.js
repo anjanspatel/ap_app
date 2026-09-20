@@ -2,7 +2,7 @@
    Caches design system assets + tool shells for offline use.
    Stale-while-revalidate for static assets, network-first for navigation.
 */
-var CACHE = 'ap-v17';
+var CACHE = 'ap-v18';
 /* dashboard.html and settings.html are deliberately NOT precached here —
    they're auth-gated, and there's no reason to proactively cache them for
    every visitor, including ones who never sign in. Navigation is
@@ -16,6 +16,12 @@ var STATIC = [
   '/global-features.js',
   '/api.js',
   '/manifest.json',
+  '/theme-init.js',
+  '/theme-toggle.js',
+  '/sw-register.js',
+  '/terms/legal-footer.js',
+  '/privacy/legal-footer.js',
+  '/disclaimer/legal-footer.js',
   '/flange/',
   '/torque/',
   '/tubing/',
