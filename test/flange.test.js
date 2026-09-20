@@ -2,20 +2,22 @@
    formula — there's nothing to "compute" and verify against a reference
    calculation. What can regress is the data itself: a typo'd bore, a
    missing rating, a bolt circle smaller than the bore. This test parses
-   the real table straight out of flange/index.html (no refactor of the
-   live page needed) and checks structural/physical invariants.
+   the real table straight out of flange/calc-page.js (the external file
+   the CSP-hardening pass extracted it into — was flange/index.html
+   before that; no refactor of the live logic itself) and checks
+   structural/physical invariants.
 */
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const html = fs.readFileSync(path.join(__dirname, '../flange/index.html'), 'utf8');
+const html = fs.readFileSync(path.join(__dirname, '../flange/calc-page.js'), 'utf8');
 
 function extract(sourceName) {
   const startMarker = `const ${sourceName} =`;
   const start = html.indexOf(startMarker);
-  assert.ok(start !== -1, `could not find "${startMarker}" in flange/index.html — has the variable been renamed?`);
+  assert.ok(start !== -1, `could not find "${startMarker}" in flange/calc-page.js — has the variable been renamed?`);
   const exprStart = start + startMarker.length;
   // Walk forward tracking brace/bracket depth to find the matching end of
   // this literal, then evaluate it as JS (trusted, our own source file).
