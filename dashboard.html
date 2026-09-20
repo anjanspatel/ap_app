@@ -1111,7 +1111,8 @@ function renderUsers(){
     var deleteBtn='<button class="row-action danger" data-act="delete" data-id="'+esc(u.id)+'" data-email="'+esc(u.email)+'">Delete</button>';
     var name=[u.first_name,u.last_name].filter(Boolean).join(' ')||'—';
     var acctNum=u.account_number?esc(u.account_number):'—';
-    return '<tr><td class="td-mono">'+acctNum+'</td><td>'+esc(name)+'</td><td>'+esc(u.email||'—')+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
+    var emailCell=esc(u.email||'—')+(u.username?'<br><span class="td-dim td-mono" style="font-size:10px">@'+esc(u.username)+' (username login)</span>':'');
+    return '<tr><td class="td-mono">'+acctNum+'</td><td>'+esc(name)+'</td><td>'+emailCell+'</td><td class="td-mono">'+joined+'</td><td class="td-mono">'+lastSeen+'</td><td>'+roleBadge+'</td><td>'+statusBadge+'</td>'
       +'<td style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">'+editBtn+resetBtn+adminBtn+banBtn+deleteBtn+'</td></tr>';
   }).join('');
 }
