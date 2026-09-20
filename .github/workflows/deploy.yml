@@ -1,8 +1,17 @@
 name: Deploy to GitHub Pages
 
+# Manual trigger ONLY. app.anjanpatel.ca's DNS now points at Cloudflare
+# Pages (see deploy-cloudflare-pages.yml, the actual live-site deploy
+# path) — this used to redeploy GitHub Pages on every push to main,
+# which meant every push updated a site nothing points to anymore.
+# GitHub Pages itself is untouched and still serving whatever it last
+# deployed, kept intentionally as a rollback target: if Cloudflare
+# Pages ever needs to be rolled back from, DNS can point back to a
+# known-good GitHub Pages snapshot without needing this workflow to
+# have kept running in the meantime. Run it manually (Actions tab ->
+# this workflow -> Run workflow) if that snapshot ever needs updating.
+
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
