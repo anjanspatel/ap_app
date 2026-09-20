@@ -26,7 +26,7 @@ values (
   'u1',                                                                       -- any unique id — 'u1', 'u2', ... is fine
   'you@example.com',                                                          -- <-- your real email
   null,                                                                       -- <-- or a plain username, e.g. 'YourName_admin'
-  'pbkdf2$210000$SHUUzhgyszYMdFnoc13eQQ==$OnLivIzRXmOs4wkdBNUdBTmCUxQ5iTp+6d1fHJ64EtY=',
+  'pbkdf2$100000$T2XVHC8xxQJLhddq1jLLEQ==$YIWLZ1kZaWGVdoHkaAqzBFl5P8k6jWyY+/2yLIhF1sw=',
   'Your First Name',                                                          -- <-- edit
   'Your Last Name',                                                           -- <-- edit
   1,                                                                          -- 1 = admin, 0 = regular user
@@ -41,7 +41,7 @@ values (
 --   'u2',
 --   'someone-else@example.com',
 --   null,
---   'pbkdf2$210000$SHUUzhgyszYMdFnoc13eQQ==$OnLivIzRXmOs4wkdBNUdBTmCUxQ5iTp+6d1fHJ64EtY=',
+--   'pbkdf2$100000$T2XVHC8xxQJLhddq1jLLEQ==$YIWLZ1kZaWGVdoHkaAqzBFl5P8k6jWyY+/2yLIhF1sw=',
 --   'Their First Name',
 --   'Their Last Name',
 --   0,

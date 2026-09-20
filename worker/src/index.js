@@ -43,7 +43,12 @@
 const ALLOWED_ORIGIN = 'https://app.anjanpatel.ca';
 const COOKIE_NAME = 'ap_sess';
 const SESSION_MAX_AGE_S = 60 * 60 * 24; // 24h absolute server-side cap, checked per request
-const PBKDF2_ITERATIONS = 210000; // OWASP's current minimum for PBKDF2-HMAC-SHA256
+// Cloudflare Workers' crypto.subtle PBKDF2 implementation hard-caps
+// iterations at 100,000 (verified live: higher values throw
+// "iteration counts above 100000 are not supported" at derive time).
+// OWASP's current minimum recommendation is 210,000 — this platform
+// simply doesn't support that, so 100,000 is the real ceiling here.
+const PBKDF2_ITERATIONS = 100000;
 const PBKDF2_HASH = 'SHA-256';
 const PBKDF2_KEYLEN_BITS = 256;
 const MAX_LOGIN_ATTEMPTS = 10;
@@ -558,14 +563,6 @@ export default {
       // (which for a D1 error can include schema/column detail) to the
       // client — log the real error server-side only.
       console.error('[AP Workspace API error]', e);
-      // TEMPORARY: record the real error privately (never in the HTTP
-      // response) so it can be read from the database directly while
-      // diagnosing the live sign-in 500. Reverted once root-caused.
-      try {
-        await env.DB.prepare(
-          `insert into audit_logs (id, actor_id, action, target_user_id, details, created_at) values (?,null,'DEBUG_ERROR',null,?,?)`
-        ).bind(crypto.randomUUID(), JSON.stringify({ message: String(e && e.message || e), stack: String(e && e.stack || '') }), nowIso()).run();
-      } catch (e2) {}
       return json({ error: 'Something went wrong. Please try again.' }, 500);
     }
   },

@@ -54,7 +54,7 @@ test('maybeBootstrapAdmin creates exactly one admin from valid secrets', async (
   assert.equal(users[0].is_admin, 1);
   // The stored value must be a hash, never the plaintext secret.
   assert.notEqual(users[0].password_hash, 'TestPassw0rd!');
-  assert.match(users[0].password_hash, /^pbkdf2\$210000\$/);
+  assert.match(users[0].password_hash, /^pbkdf2\$100000\$/);
 });
 
 test('maybeBootstrapAdmin is idempotent — running it again does not create a second admin', async () => {

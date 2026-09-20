@@ -14,7 +14,7 @@ test('hashPassword produces the documented pbkdf2$iterations$salt$hash format', 
   const parts = hash.split('$');
   assert.equal(parts.length, 4);
   assert.equal(parts[0], 'pbkdf2');
-  assert.equal(parts[1], '210000');
+  assert.equal(parts[1], '100000');
 });
 
 test('verifyPassword accepts the correct password', async () => {

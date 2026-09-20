@@ -90,14 +90,18 @@ Nothing to do here — the site's pages already call
   checked against `email` if it looks like one, otherwise `username`.
   Most accounts only need an email; `username` is there for cases like a
   bootstrap admin account that shouldn't need a real mailbox.
-- **Password hashing: PBKDF2-SHA256, 210,000 iterations**, via the
+- **Password hashing: PBKDF2-SHA256, 100,000 iterations**, via the
   Workers runtime's native `crypto.subtle` — zero dependencies. Argon2id
   was considered first (it's the generally preferred choice today) but
   has no native implementation on Workers; using it would require a WASM
   package, which breaks this Worker's one deliberate constraint: a single
   file with zero dependencies that can be pasted straight into the
-  dashboard's Quick Edit box. PBKDF2-SHA256 at this iteration count is
-  OWASP's current minimum-acceptable recommendation for the algorithm.
+  dashboard's Quick Edit box. OWASP's current minimum-acceptable
+  recommendation for PBKDF2-SHA256 is 210,000 iterations, but Cloudflare
+  Workers' `crypto.subtle` implementation hard-caps PBKDF2 at 100,000 —
+  a higher value throws at derive time rather than silently truncating,
+  which is how this got caught. 100,000 is this platform's real ceiling
+  for this primitive, not a deliberate security tradeoff.
 - **Forced password change.** Every account created or reset by an admin
   (including the bootstrap seed) gets `must_change_password = 1`. The
   frontend checks this on sign-in and routes straight to Settings →
