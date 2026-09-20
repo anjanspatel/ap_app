@@ -747,15 +747,6 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
   </div>
 </div>
 
-<script src="/api.js"></script>
-<script src="/dashboard-page.js"></script>
-<script src="/global-features.js"></script>
-<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--bg-elevated);color:var(--text-primary);border:1px solid rgba(25,211,230,.45);border-radius:8px;padding:11px 16px;font-size:12.5px;font-family:'Inter',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
-  <span>Update available</span>
-  <button id="sw-refresh-btn" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px">Refresh</button>
-</div>
-<script src="/sw-register.js"></script>
-
 <!-- Sign-out confirmation modal -->
 <div class="ap-modal-overlay" id="signout-modal">
   <div class="ap-modal" role="dialog" aria-modal="true" aria-labelledby="signout-modal-title">
@@ -767,5 +758,14 @@ body{background:var(--canvas);color:var(--text);font-family:'Inter',system-ui,sa
     </div>
   </div>
 </div>
+
+<script src="/api.js"></script>
+<script src="/dashboard-page.js"></script>
+<script src="/global-features.js"></script>
+<div id="sw-update-banner" aria-live="polite" style="display:none;position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:var(--bg-elevated);color:var(--text-primary);border:1px solid rgba(25,211,230,.45);border-radius:8px;padding:11px 16px;font-size:12.5px;font-family:'Inter',Arial,sans-serif;gap:12px;align-items:center;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap">
+  <span>Update available</span>
+  <button id="sw-refresh-btn" style="background:#19D3E6;color:#fff;border:none;border-radius:6px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px">Refresh</button>
+</div>
+<script src="/sw-register.js"></script>
 </body>
 </html>
