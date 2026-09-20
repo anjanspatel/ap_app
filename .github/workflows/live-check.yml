@@ -1,0 +1,95 @@
+name: Live production check (read-only, one-off)
+
+# Throwaway diagnostic — checks the real production domain now that
+# app.anjanpatel.ca's DNS points at Cloudflare Pages. Read-only: no
+# login, no admin actions, no writes to D1. Delete this file once the
+# check is done; it isn't part of the deploy pipeline.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright (Chromium only)
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.48.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium
+
+      - name: Header checks (curl)
+        run: |
+          set -x
+          BASE="https://app.anjanpatel.ca"
+          echo "== / headers =="
+          curl -sSI "$BASE/"
+          echo "== /dashboard.html headers =="
+          curl -sSI "$BASE/dashboard.html"
+          echo "== /torque/ headers =="
+          curl -sSI "$BASE/torque/"
+          echo "== /flange/ headers =="
+          curl -sSI "$BASE/flange/"
+
+      - name: Playwright check
+        run: |
+          cat > check.js << 'JS_EOF'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const BASE = 'https://app.anjanpatel.ca';
+
+          (async () => {
+            const browser = await chromium.launch();
+            const report = { pages: {} };
+
+            async function checkPage(name, path) {
+              const context = await browser.newContext();
+              const page = await context.newPage();
+              const entry = { consoleErrors: [], pageErrors: [], failedRequests: [] };
+              page.on('console', msg => { if (msg.type() === 'error') entry.consoleErrors.push(msg.text()); });
+              page.on('pageerror', err => entry.pageErrors.push({ message: err.message, stack: err.stack }));
+              page.on('requestfailed', req => entry.failedRequests.push({ url: req.url(), failure: req.failure() && req.failure().errorText }));
+
+              const resp = await page.goto(BASE + path, { waitUntil: 'networkidle', timeout: 30000 }).catch(e => ({ error: String(e) }));
+              entry.status = resp && resp.status ? resp.status() : (resp && resp.error) || null;
+              await page.waitForTimeout(1500);
+              entry.finalUrl = page.url();
+              entry.title = await page.title().catch(() => null);
+
+              // Confirm the real session-check API call now works cross-origin
+              entry.sessionCheck = await page.evaluate(async () => {
+                try {
+                  const res = await fetch('https://api.anjanpatel.ca/api/auth/session', { credentials: 'include' });
+                  return { status: res.status, ok: res.ok };
+                } catch (e) { return { error: String(e) }; }
+              }).catch(e => ({ error: String(e) }));
+
+              await page.screenshot({ path: `screenshot-${name}.png`, fullPage: false });
+              await context.close();
+              report.pages[name] = entry;
+            }
+
+            await checkPage('dashboard', '/dashboard.html');
+            await checkPage('torque', '/torque/');
+            await checkPage('flange', '/flange/');
+
+            fs.writeFileSync('report.json', JSON.stringify(report, null, 2));
+            await browser.close();
+          })();
+          JS_EOF
+          node check.js
+          echo "===REPORT_JSON_START==="
+          cat report.json
+          echo "===REPORT_JSON_END==="
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-check-screenshots
+          path: screenshot-*.png
+          retention-days: 3
