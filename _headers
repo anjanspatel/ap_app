@@ -31,6 +31,9 @@
 /torque/*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
 
+/tubing/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anjanpatel.ca; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
+
 /terms/*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; img-src 'self' data: https:; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
 
