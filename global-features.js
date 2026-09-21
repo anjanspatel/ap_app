@@ -311,7 +311,10 @@
      obvious at a glance which deploy is actually live — no scrolling
      to a footer required. Bump AP_BUILD by hand on any change worth
      confirming landed (this project has no build step to stamp it
-     automatically). Opposite corner from Back-to-Top (bottom-left,
+     automatically) — and bump the matching ".card-version" text in
+     index.html at the same time, since the login page shows the
+     version inline rather than as a corner badge. Opposite corner
+     from Back-to-Top (bottom-left,
      #3 above) so the two never overlap. Offsets above the cookie
      banner and, on tool pages, the Engineering Disclaimer too, when
      either is still showing — both heights added together, since on
