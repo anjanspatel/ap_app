@@ -296,17 +296,52 @@ body{
   .card{padding:24px 18px 20px;border-radius:var(--radius-lg)}
   .oauth-row{grid-template-columns:1fr}
 }
-@media(max-height:700px){
-  .card{padding:20px 22px 18px}
-  .field{margin-bottom:10px}
-  .cta{height:42px}
-  .or{margin:12px 0 10px}
-  .ob{height:40px;font-size:11px}
+/* Fit-on-one-screen tiers: the goal is zero page scroll on ordinary
+   laptop/phone heights, not just a cosmetic squeeze. Shrinks vertical
+   rhythm first (margins/padding), then drops the purely decorative
+   card-foot tagline before anything functional is touched — the form
+   fields themselves never shrink below a comfortable tap/read size. */
+@media(max-height:920px){
+  .stage{padding-top:16px;padding-bottom:16px}
+  .card{padding:24px 26px 18px}
+  .vsub{margin-bottom:14px}
+  .field{margin-bottom:11px}
+  .card-divider{margin:12px 0 14px}
+  /* Decorative tagline goes first — nothing functional lost. This is
+     the tier that covers the common 768/800/812px laptop and phone
+     heights, which is why it drops here rather than waiting for a
+     more cramped tier further down. */
+  .card-foot{display:none}
+  .legal{margin-top:10px}
+  /* Below 44px, links keep 24px (WCAG 2.2 AA minimum, not the AAA 44px
+     this page uses by default) — a deliberate trade against the
+     explicit no-scroll requirement, only at heights where every pixel
+     is already accounted for. */
+  .legal a,.legal button.lbtn,.legal .mail-btn{min-height:24px}
 }
-@media(max-height:560px){
-  .card{padding:16px 20px 14px}
-  .field{margin-bottom:8px}
-  .or{margin:8px 0 8px}
+@media(max-height:700px){
+  .stage{padding-top:10px;padding-bottom:10px}
+  .card{padding:16px 22px 12px}
+  .vhd{margin-bottom:2px}
+  .vsub{margin-bottom:8px}
+  .field{margin-bottom:7px}
+  .field-meta-row{margin:0 0 8px}
+  .card-divider{margin:8px 0 10px}
+  .cta{height:42px}
+  .or{margin:8px 0 6px}
+  .ob{height:38px;font-size:11px}
+  .legal{margin-top:6px}
+}
+@media(max-height:620px){
+  .card{padding:16px 20px 12px}
+  .field{margin-bottom:7px}
+  .or{margin:8px 0 6px}
+}
+@media(max-height:520px){
+  .card-brand{margin-bottom:0}
+  .card-divider{margin:6px 0 8px}
+  .legal{margin-top:6px}
+  .legal-primary{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}
