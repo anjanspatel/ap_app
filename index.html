@@ -144,6 +144,20 @@ body{
 @media(max-width:900px){
   .hero{display:none}
 }
+/* The background illustration uses preserveAspectRatio="slice", so on
+   a portrait viewport its horizontal edges get cropped — the closer a
+   text block sits to the center, the taller-and-narrower the screen
+   has to be before that crop reaches it. Abstract lines read fine cut
+   off; text sliced mid-word doesn't, so each text block hides once
+   its own crop point is reached, computed from its actual position in
+   the 900-wide viewBox (title block spans x 40–250; disclaimer spans
+   x ~180–620) rather than guessed from a device-width breakpoint. */
+@media(max-aspect-ratio:19/20){
+  .hero-titleblock{display:none}
+}
+@media(max-aspect-ratio:13/20){
+  .hero-disclaimer{display:none}
+}
 
 .stage{
   position:relative;z-index:1;flex:1 1 42%;min-width:0;
@@ -454,7 +468,7 @@ body{
     <!-- Title block — the small spec table every real drawing sheet
          carries in a corner. Kept clear of the card panel, which
          floats over the right side of this illustration. -->
-    <g transform="translate(40,558)">
+    <g class="hero-titleblock" transform="translate(40,558)">
       <rect width="210" height="88" fill="var(--hero-bg2)" stroke="var(--precision-cyan)" stroke-width="1.5" opacity=".9"/>
       <line x1="0" y1="30" x2="210" y2="30" stroke="var(--hero-line)" stroke-width="1"/>
       <line x1="0" y1="59" x2="210" y2="59" stroke="var(--hero-line)" stroke-width="1"/>
@@ -463,7 +477,7 @@ body{
       <text x="12" y="78" font-family="var(--font-mono)" font-size="10" letter-spacing="1" fill="var(--hero-ink-dim)">SCALE: N.T.S.&#160;&#160;REV: A</text>
     </g>
 
-    <text x="400" y="748" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--hero-line)" letter-spacing="2" opacity=".8">AP WORKSPACE — REFERENCE ONLY, NOT FOR CONSTRUCTION</text>
+    <text class="hero-disclaimer" x="400" y="748" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--hero-line)" letter-spacing="2" opacity=".8">AP WORKSPACE — REFERENCE ONLY, NOT FOR CONSTRUCTION</text>
   </svg>
 </div>
 
