@@ -76,12 +76,11 @@ body{
 [data-theme="light"]{
   --hero-scrim-top:rgba(20,26,36,.5);--hero-scrim-mid:rgba(20,26,36,.1);--hero-scrim-bottom:rgba(20,26,36,.56);
 }
-/* Real photo (see docs note in chat — a 428x240 source, upscaled; swap
-   hero-pumpjack.jpg for a higher-resolution version any time by
-   replacing the file, no CSS change needed). Deliberately not blurred
-   further — the softness from upscaling already reads as a soft-focus
-   cinematic treatment rather than a broken asset. Fixed so it never
-   scrolls out from behind the card on a tall/scrolled page. */
+/* Real photo, 2000x1308 (pump jack silhouette at sunset) — full
+   resolution, no upscaling softness. Swap hero-pumpjack.jpg for a
+   different photo any time by replacing the file; no CSS change
+   needed. Fixed so it never scrolls out from behind the card on a
+   tall/scrolled page. */
 .page-photo{
   position:fixed;inset:0;z-index:0;
   background-image:url(/hero-pumpjack.jpg);
