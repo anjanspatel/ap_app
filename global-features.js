@@ -256,20 +256,6 @@
     }
   });
 
-  /* ── 8. Expandable FAQ ───────────────────────
-     Initialises .faq-q buttons with aria toggles.
-  ──────────────────────────────────────────────── */
-  document.querySelectorAll('.faq-q').forEach(function(btn) {
-    btn.setAttribute('aria-expanded', 'false');
-    var answer = btn.nextElementSibling;
-    if (!answer) return;
-    btn.addEventListener('click', function() {
-      var open = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
-      answer.classList.toggle('open', !open);
-    });
-  });
-
   /* ── 9. Copy Buttons ─────────────────────────
      Activates .copy-btn elements — copies sibling
      output or data-copy-target selector content.
@@ -352,5 +338,10 @@
     'pointer-events:none','user-select:none','letter-spacing:.02em'
   ].join(';');
   document.body.appendChild(badge);
+
+  // Dev-only chrome — never belongs in a printed page or PDF export.
+  var printHideStyle = document.createElement('style');
+  printHideStyle.textContent = '@media print{#ap-build-badge,#saveToast{display:none!important}}';
+  document.head.appendChild(printHideStyle);
 
 })();

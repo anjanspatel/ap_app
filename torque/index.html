@@ -265,7 +265,7 @@ footer a:hover{text-decoration:underline}
   @page{size:letter portrait;margin:14mm}
   html,body{background:#fff!important;color:#111!important;overflow:visible!important;height:auto!important}
   body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .site-header,footer,.job-row .hint,.field-warn-msg,.copy-btn,input[type=range],.faq-section,.info-row,#eng-disclaimer,#cookie-banner,#back-to-top,#sw-update-banner{display:none!important}
+  .site-header,footer,.job-row .hint,.field-warn-msg,.copy-btn,input[type=range],.info-row,#eng-disclaimer,#cookie-banner,#back-to-top,#sw-update-banner{display:none!important}
   .page{padding:0!important;max-width:none!important}
   .title-row{margin-bottom:6px!important}
   h1{color:#0B1F3A!important;font-size:16pt!important}
@@ -275,7 +275,6 @@ footer a:hover{text-decoration:underline}
   .r-value,.r-value.em{color:#111!important}
   .k-badge{background:#eee!important;color:#111!important;border-color:#999!important}
   .print-watermark{display:block!important;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:44pt;font-weight:900;color:#000;opacity:.05;white-space:nowrap;pointer-events:none;z-index:9999;font-family:Arial,sans-serif;letter-spacing:.08em;text-align:center}
-  .print-footer{display:block!important;margin-top:8mm;font-size:8pt;color:#666;text-align:center}
 }
 </style>
 <link rel="stylesheet" href="/premium.css">
@@ -476,27 +475,6 @@ footer a:hover{text-decoration:underline}
       </tbody>
     </table>
   </div>
-
-  <!-- FAQ SECTION -->
-  <section class="faq-section" aria-label="Frequently asked questions">
-    <h2 class="faq-title">Frequently Asked</h2>
-    <div class="faq-item">
-      <button class="faq-q" type="button">What nut factor (K) should I use?<svg class="faq-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-      <div class="faq-a">K depends on lubrication: Dry (no lube) K≈0.20, Lightly oiled K≈0.15, Heavy grease K≈0.13, MoS₂ paste K≈0.12, PTFE tape K≈0.10, Nickel anti-seize K≈0.13. These are typical values — always verify with your lubricant supplier's datasheet. Using the wrong K can result in under- or over-torqued joints, risking leak or yielding.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" type="button">Why use a 3-pass crossbolt torque sequence?<svg class="faq-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-      <div class="faq-a">A single-pass torque produces uneven clamp load distribution — bolts tightened early relax as adjacent bolts are torqued. The 3-pass crossbolt sequence (30% → 70% → 100%) per ASME PCC-1 ensures even load distribution around the flange. Crossing to the bolt ~180° opposite prevents the flange from tilting and distorting the gasket seating surface.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" type="button">What percentage of yield is recommended for API 6A bolts?<svg class="faq-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-      <div class="faq-a">ASME PCC-1 and most API 6A JIPs recommend 60–70% of proof load for standard service. Sour/H₂S service per NACE MR0175 requires A193 B7M (lower hardness) and limits stress to avoid sulphide stress cracking — always check the project-specific bolting specification. Exceeding 80% proof load approaches yield and risks thread galling on re-use.</div>
-    </div>
-    <div class="faq-item">
-      <button class="faq-q" type="button">What is the difference between B7 and B7M?<svg class="faq-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
-      <div class="faq-a">A193 B7 is standard chrome-moly alloy with high strength (Sy=105 ksi for ≤2-1/2" dia). B7M is a modified grade with hardness limited to 235 HBW maximum for sour-service compatibility per NACE MR0175. B7M has lower proof strength (~80–95 ksi) so torque values are lower. L7 and L7M are similar low-temperature variants used below −45°C.</div>
-    </div>
-  </section>
 
   <!-- INFO CARDS -->
   <div class="info-row">

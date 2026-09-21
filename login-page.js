@@ -72,7 +72,7 @@ q('auth-form').addEventListener('submit',async function(e){
     return;
   }
   var dest=safeNextPath();
-  setTimeout(function(){window.location.href=dest||window.location.pathname;},700);
+  setTimeout(function(){window.location.href=dest||'/dashboard.html';},700);
 });
 q('btn-forgot').addEventListener('click',function(){showView('forgot')});
 q('btn-back-forgot').addEventListener('click',function(){showView('auth')});
@@ -85,8 +85,6 @@ var REMEMBER_KEY='ap-remember-id';
   try{saved=localStorage.getItem(REMEMBER_KEY)}catch(e){}
   if(saved){q('inp-email').value=saved;q('chk-remember').checked=true}
 })();
-
-async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.location.reload();}
 
 (async function boot(){
   // If the API is unreachable for any reason, fail safe to the sign-in
@@ -103,16 +101,12 @@ async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.locati
   }
   var session=r.user?{user:r.user}:null;
   if(session){
+    // Already signed in — the dashboard already has its own tool
+    // launcher (a quick-access widget plus a full Calculators
+    // section), so there's nothing for an in-between tile screen to
+    // add. Go straight there.
     var dest=safeNextPath();
-    if(dest){window.location.replace(dest);return;}
-    var nameEl=document.getElementById('launcher-name');
-    if(nameEl&&session.user&&session.user.email){
-      nameEl.textContent=', '+session.user.email.split('@')[0];
-    }
-    document.title='AP Workspace — Workspace';
-    document.querySelector('.hero').style.display='none';
-    document.querySelector('.card').style.display='none';
-    document.getElementById('view-launcher').style.display='block';
+    window.location.replace(dest||'/dashboard.html');
     return;
   }
   showView('auth');
@@ -151,6 +145,3 @@ async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.locati
   });
 })();
 
-/* Wiring for the launcher sign-out button that was an onclick= attribute */
-var signOutBtn=document.getElementById('launcher-signout');
-if(signOutBtn)signOutBtn.addEventListener('click',doSignOut);

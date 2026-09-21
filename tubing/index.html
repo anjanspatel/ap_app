@@ -274,17 +274,29 @@ footer a:hover{color:var(--text)}
 /* ── print ── */
 .print-footer{display:none}
 @media print{
-  @page{margin:14mm}
+  @page{margin:12mm}
   html,body{background:#fff!important;color:#111!important}
   body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .site-header,.btn-pdf,.unit-row,.about-wrap,footer,#eng-disclaimer,#cookie-banner,#back-to-top,#sw-update-banner{display:none!important}
+  .site-header,.btn-pdf,.unit-row,.about-wrap,footer,.copy-btn,#eng-disclaimer,#cookie-banner,#back-to-top,#sw-update-banner{display:none!important}
   main{padding:0!important;max-width:100%!important}
-  .calc-layout{grid-template-columns:1fr!important;gap:16px!important}
+  /* Keep the two-column layout for print regardless of the actual
+     window width the print was triggered from (mobile included) —
+     stacking to one column here is what was pushing this onto a
+     second page. */
+  .calc-layout{grid-template-columns:300px 1fr!important;gap:14px!important}
   .card,.step,.swl-hero{break-inside:avoid}
   .card{background:#fff!important;border-color:#ccc!important;color:#111!important}
   select,input{background:#fff!important;color:#111!important;border-color:#999!important}
-  .swl-hero{background:var(--brand-navy,#0B1D2D)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .print-footer{display:block!important;margin-top:8mm;font-size:8pt;color:#666;text-align:center}
+  .swl-hero{background:var(--brand-navy,#0B1D2D)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:14px 18px!important;margin-bottom:10px!important}
+  /* Trim vertical rhythm (not content) so the real data — inputs,
+     result, and all five calculation steps — stays on one page
+     without shrinking type or dropping anything. Only the watermark
+     below is decorative; everything else here is real data. */
+  .page-hero{margin-bottom:10px!important}
+  .swl-methodology-note{margin-bottom:8px!important;padding:6px 10px!important}
+  .steps{margin-bottom:6px!important}
+  .step{padding:6px 0!important}
+  .input-group{margin-bottom:8px!important}
   body::after{
     content:"REFERENCE ONLY \2014 NOT FOR CONSTRUCTION";
     position:fixed;top:50%;left:50%;

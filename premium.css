@@ -192,23 +192,3 @@
 
 @keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
-
-/* ── 10. FAQ accordion ──────────────────────────
-   Expandable FAQ sections on tool pages.
-────────────────────────────────────────────────── */
-.faq-section { margin-top: 24px; }
-.faq-title { font: 700 10px var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
-.faq-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 6px; overflow: hidden; }
-.faq-q {
-  width: 100%; background: none; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 14px; font: 500 12px var(--font-ui); color: var(--text-primary);
-  text-align: left; transition: background var(--motion-fast); gap: 10px;
-  min-height: 44px;
-}
-.faq-q:hover { background: rgba(25, 211, 230, 0.04); }
-.faq-q[aria-expanded="true"] { color: var(--precision-cyan); }
-.faq-chevron { flex-shrink: 0; transition: transform var(--motion-fast); }
-.faq-q[aria-expanded="true"] .faq-chevron { transform: rotate(180deg); }
-.faq-a { display: none; padding: 0 14px 12px; font: 400 12px var(--font-ui); color: var(--text-secondary); line-height: 1.6; border-top: 1px solid var(--border-color); }
-.faq-a.open { display: block; }
