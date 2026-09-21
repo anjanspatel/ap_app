@@ -71,20 +71,33 @@ body{
    reference than the two-panel layout this replaced. ── */
 :root{
   --hero-ink:#F3F4F6;--hero-ink-dim:#94A3B8;
-  --hero-scrim-top:rgba(8,12,18,.72);--hero-scrim-mid:rgba(8,12,18,.22);--hero-scrim-bottom:rgba(8,12,18,.82);
+  /* Warm, near-black scrim (not a cool blue-black) — this photo's own
+     upper sky is a cool pale teal, and a cool-toned scrim on top of it
+     read as a muddy olive cast rather than a clean moody dark. A warm
+     scrim sits closer to the sunset's own palette instead of fighting
+     it, and lower opacity lets more of the real sky color through. */
+  --hero-scrim-top:rgba(18,12,8,.5);--hero-scrim-mid:rgba(14,9,6,.12);--hero-scrim-bottom:rgba(10,7,5,.72);
 }
 [data-theme="light"]{
-  --hero-scrim-top:rgba(20,26,36,.5);--hero-scrim-mid:rgba(20,26,36,.1);--hero-scrim-bottom:rgba(20,26,36,.56);
+  --hero-scrim-top:rgba(28,20,14,.4);--hero-scrim-mid:rgba(28,20,14,.08);--hero-scrim-bottom:rgba(20,14,10,.5);
 }
 /* Real photo, 2000x1308 (pump jack silhouette at sunset) — full
    resolution, no upscaling softness. Swap hero-pumpjack.jpg for a
    different photo any time by replacing the file; no CSS change
    needed. Fixed so it never scrolls out from behind the card on a
-   tall/scrolled page. */
-.page-photo{
-  position:fixed;inset:0;z-index:0;
+   tall/scrolled page. Slight saturate/contrast lift: the source is a
+   touch flat straight out of the camera, and this makes the sunset
+   read as intended without needing a re-export. */
+.page-photo{position:fixed;inset:0;z-index:0;overflow:hidden}
+/* Photo lives on ::before (its own layer) so the saturate/contrast
+   lift applies only to the image, not to the ::after scrim stacked on
+   top of it — filter on a shared parent would otherwise warp the
+   scrim's own colors along with the photo's. */
+.page-photo::before{
+  content:'';position:absolute;inset:-2%;
   background-image:url(/hero-pumpjack.jpg);
-  background-position:center 60%;background-size:cover;background-repeat:no-repeat;
+  background-position:center 68%;background-size:cover;background-repeat:no-repeat;
+  filter:saturate(1.18) contrast(1.08);
 }
 /* Scrim: keeps the brand lockup (top-left) and baseline tag (bottom-left)
    legible over a bright sky/sunset photo without flattening the image
