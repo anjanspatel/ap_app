@@ -396,13 +396,16 @@ body{
 
 <div class="page-photo" aria-hidden="true">
   <svg class="hero-svg" viewBox="0 0 900 900" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <!-- AP Workspace flange technical drawing — an actual CAD-style
-         reference view (bolt circle, centerlines, section callout)
-         instead of a machine illustration, since this is literally
-         what the app's own Flange Slide Rule tool works with. Kept
-         "simple": no fabricated dimension numbers anywhere (a "8X"
-         hole-count callout describes what's actually drawn; nothing
-         claims to be a real measurement). -->
+    <!-- AP Workspace monogram, drawn as a signage/fabrication spec
+         sheet — the real logo mark (same navy badge + "AP" text used
+         on every other page, not a redrawn version) with genuine
+         drafting conventions around it: centerlines, registration
+         crosshairs, dimension lines, a title block. No fabricated
+         numbers anywhere ("N.T.S." — Not To Scale — is itself the
+         standard drafting way of saying exactly that). -->
+
+    <!-- Slow-turning dashed orbit around the badge -->
+    <circle class="cad-spin" cx="400" cy="430" r="250" fill="none" stroke="var(--precision-cyan)" stroke-width="1" stroke-dasharray="2 8" opacity=".35"/>
 
     <!-- Centerlines: dash-dot, the standard drafting convention -->
     <g stroke="var(--hero-line)" stroke-width="1.5" opacity=".55">
@@ -410,67 +413,48 @@ body{
       <line x1="400" y1="150" x2="400" y2="710" stroke-dasharray="26 6 4 6"/>
     </g>
 
-    <!-- Section cutting-plane arrows (A-A), standard drawing notation -->
-    <g fill="var(--precision-cyan)" font-family="var(--font-mono)" font-size="15" font-weight="700">
-      <path d="M400,170 l-7,14 h14 z"/>
-      <text x="414" y="182">A</text>
-      <path d="M400,690 l-7,-14 h14 z"/>
-      <text x="414" y="700">A</text>
+    <!-- Corner registration crosshairs — a real print/signage
+         fabrication convention, not decoration invented for this -->
+    <g stroke="var(--hero-line)" stroke-width="1.5" opacity=".6">
+      <path d="M230,260 h14 M237,253 v14"/>
+      <path d="M570,260 h-14 M563,253 v14"/>
+      <path d="M230,600 h14 M237,593 v14"/>
+      <path d="M570,600 h-14 M563,593 v14"/>
     </g>
 
-    <!-- Flange body: outer edge, raised face, bore -->
-    <circle class="cad-draw" cx="400" cy="430" r="210" fill="var(--hero-bg2)" stroke="var(--precision-cyan)" stroke-width="3" style="--len:1320" pathLength="1320"/>
-    <circle cx="400" cy="430" r="150" fill="none" stroke="var(--precision-cyan)" stroke-width="1.5" opacity=".5"/>
-    <circle class="cad-draw" cx="400" cy="430" r="70" fill="var(--hero-bg1)" stroke="var(--precision-cyan)" stroke-width="2.5" style="--len:440" pathLength="440"/>
-    <circle cx="400" cy="430" r="4" fill="var(--precision-cyan)"/>
+    <!-- The real mark: same fixed navy badge + "AP" text as every
+         other page's logo, scaled up — not a reinterpretation. -->
+    <rect class="cad-draw" x="270" y="300" width="260" height="260" rx="42" fill="#0B1D2D" stroke="var(--precision-cyan)" stroke-width="3" style="--len:1080" pathLength="1080"/>
+    <text x="400" y="432" text-anchor="middle" dominant-baseline="central" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="126" letter-spacing="-5" fill="#FFFFFF">AP</text>
 
-    <!-- Bolt circle + holes — the whole group turns slowly, like a
-         reference ring being dialed in, not a mechanism in motion -->
-    <g class="cad-spin">
-      <circle cx="400" cy="430" r="170" fill="none" stroke="var(--hero-line)" stroke-width="1" stroke-dasharray="2 6" opacity=".7"/>
-      <g fill="var(--hero-bg1)" stroke="var(--precision-cyan)" stroke-width="2">
-        <circle cx="400" cy="260" r="13"/>
-        <circle cx="520" cy="310" r="13"/>
-        <circle cx="570" cy="430" r="13"/>
-        <circle cx="520" cy="550" r="13"/>
-        <circle cx="400" cy="600" r="13"/>
-        <circle cx="280" cy="550" r="13"/>
-        <circle cx="230" cy="430" r="13"/>
-        <circle cx="280" cy="310" r="13"/>
-      </g>
-    </g>
-
-    <!-- "8X" hole-count callout with leader — describes what's drawn,
-         not a fabricated dimension -->
-    <g stroke="var(--hero-line)" stroke-width="1" opacity=".8">
-      <line x1="520" y1="310" x2="590" y2="255"/>
-    </g>
-    <text x="596" y="252" font-family="var(--font-mono)" font-size="14" fill="var(--hero-ink-dim)" letter-spacing="1">8X &#8960;</text>
-
-    <!-- A generic (numberless, on purpose) diameter dimension line -->
+    <!-- Width dimension (numberless — this is a spec sheet, not a
+         claimed measurement) -->
     <g stroke="var(--hero-line)" stroke-width="1" opacity=".7">
-      <line x1="190" y1="668" x2="610" y2="668"/>
-      <line x1="190" y1="640" x2="190" y2="676"/>
-      <line x1="610" y1="640" x2="610" y2="676"/>
-      <path d="M190,668 l14,-5 v10 z" fill="var(--hero-line)"/>
-      <path d="M610,668 l-14,-5 v10 z" fill="var(--hero-line)"/>
+      <line x1="270" y1="630" x2="530" y2="630"/>
+      <line x1="270" y1="562" x2="270" y2="638"/>
+      <line x1="530" y1="562" x2="530" y2="638"/>
+      <path d="M270,630 l14,-5 v10 z" fill="var(--hero-line)"/>
+      <path d="M530,630 l-14,-5 v10 z" fill="var(--hero-line)"/>
     </g>
-    <text x="400" y="662" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--hero-ink-dim)" letter-spacing="1">&#8960;</text>
+    <!-- Height dimension -->
+    <g stroke="var(--hero-line)" stroke-width="1" opacity=".7">
+      <line x1="200" y1="300" x2="200" y2="560"/>
+      <line x1="208" y1="300" x2="192" y2="300"/>
+      <line x1="208" y1="560" x2="192" y2="560"/>
+      <path d="M200,300 l-5,14 h10 z" fill="var(--hero-line)"/>
+      <path d="M200,560 l-5,-14 h10 z" fill="var(--hero-line)"/>
+    </g>
 
-    <!-- Section-view inset: a small cut/hatched detail, the second
-         view a real flange drawing would carry alongside the front view -->
-    <g transform="translate(646,520)">
-      <rect width="120" height="140" fill="var(--hero-bg2)" stroke="var(--precision-cyan)" stroke-width="1.5"/>
-      <g stroke="var(--hero-line)" stroke-width="1" opacity=".6">
-        <line x1="8" y1="132" x2="30" y2="8"/>
-        <line x1="26" y1="132" x2="48" y2="8"/>
-        <line x1="44" y1="132" x2="66" y2="8"/>
-        <line x1="62" y1="132" x2="84" y2="8"/>
-        <line x1="80" y1="132" x2="102" y2="8"/>
-        <line x1="98" y1="132" x2="112" y2="52"/>
-      </g>
-      <rect width="120" height="140" fill="none" stroke="var(--precision-cyan)" stroke-width="1.5"/>
-      <text x="60" y="162" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="var(--hero-ink-dim)" letter-spacing="1">SECTION A-A</text>
+    <!-- Title block — the small spec table every real drawing sheet
+         carries in a corner. Kept clear of the card panel, which
+         floats over the right side of this illustration. -->
+    <g transform="translate(40,558)">
+      <rect width="210" height="88" fill="var(--hero-bg2)" stroke="var(--precision-cyan)" stroke-width="1.5" opacity=".9"/>
+      <line x1="0" y1="30" x2="210" y2="30" stroke="var(--hero-line)" stroke-width="1"/>
+      <line x1="0" y1="59" x2="210" y2="59" stroke="var(--hero-line)" stroke-width="1"/>
+      <text x="12" y="20" font-family="var(--font-mono)" font-size="12" letter-spacing="1" fill="var(--hero-ink)">AP WORKSPACE</text>
+      <text x="12" y="49" font-family="var(--font-mono)" font-size="10" letter-spacing="1" fill="var(--hero-ink-dim)">DWG: LOGO-MARK-01</text>
+      <text x="12" y="78" font-family="var(--font-mono)" font-size="10" letter-spacing="1" fill="var(--hero-ink-dim)">SCALE: N.T.S.&#160;&#160;REV: A</text>
     </g>
 
     <text x="400" y="748" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--hero-line)" letter-spacing="2" opacity=".8">AP WORKSPACE — REFERENCE ONLY, NOT FOR CONSTRUCTION</text>
