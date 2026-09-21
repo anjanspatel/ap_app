@@ -345,6 +345,12 @@ body{
 @media(max-height:620px){
   .card{padding:16px 20px 12px}
   .field{margin-bottom:7px}
+  /* Privacy/Disclaimer/LinkedIn wrap the footer to a second line at
+     this height and reintroduce scroll — drop back to the minimal
+     Terms + Contact set that was already proven to fit here.
+     (Needs the extra `.legal a` specificity match — `.legal a` alone
+     otherwise beats a plain `.legal-extra` selector and stays visible.) */
+  .legal a.legal-extra,.legal-extra{display:none}
 }
 @media(max-height:520px){
   .card-brand{margin-bottom:0}
@@ -589,6 +595,12 @@ body{
       <span>&copy; <span id="yr"></span> <a href="https://anjanpatel.ca" target="_blank" rel="noopener" style="color:var(--precision-cyan)">Anjan Patel</a>. All rights reserved.</span>
       <span class="sep">·</span>
       <a href="/terms/">Terms</a>
+      <span class="legal-extra sep">·</span>
+      <a class="legal-extra" href="/privacy/">Privacy</a>
+      <span class="legal-extra sep">·</span>
+      <a class="legal-extra" href="/disclaimer/">Disclaimer</a>
+      <span class="legal-extra sep">·</span>
+      <a class="legal-extra" href="https://www.linkedin.com/in/anjanspatel/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       <span class="sep">·</span>
       <button class="mail-btn lbtn" id="contact-btn" type="button" aria-label="Contact">
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
