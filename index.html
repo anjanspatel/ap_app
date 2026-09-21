@@ -69,41 +69,32 @@ body{
 .split-shell{display:flex;min-height:100dvh;width:100%}
 
 .hero{
-  --hero-sky1:#0B111A;--hero-sky2:#111827;--hero-sky3:#151E2E;
-  --hero-glow:rgba(25,211,230,.20);--hero-glow-far:rgba(25,211,230,.09);
-  --hero-grid:rgba(25,211,230,.04);
   --hero-ink:#F3F4F6;--hero-ink-dim:#94A3B8;
-  --hero-line-soft:rgba(148,163,184,.18);
-  --hero-rig:#080B10;--hero-rig-rim:rgba(25,211,230,.55);
+  --hero-scrim-top:rgba(8,12,18,.80);--hero-scrim-mid:rgba(8,12,18,.30);--hero-scrim-bottom:rgba(8,12,18,.88);
   flex:0 0 56%;max-width:1100px;min-width:440px;
   position:relative;overflow:hidden;
   display:flex;flex-direction:column;justify-content:space-between;
   padding:48px 52px;
   border-right:1px solid var(--border-color);
-  background:
-    radial-gradient(ellipse 760px 260px at 62% 94%,var(--hero-glow),transparent 70%),
-    radial-gradient(ellipse at 26% 8%,var(--hero-glow-far),transparent 55%),
-    linear-gradient(180deg,var(--hero-sky1) 0%,var(--hero-sky2) 55%,var(--hero-sky3) 100%);
+  background:#0B111A;
   animation:fadeUp 900ms var(--anim-ease) both;
 }
-.hero::before{
-  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(var(--hero-grid) 1px,transparent 1px),linear-gradient(90deg,var(--hero-grid) 1px,transparent 1px);
-  background-size:42px 42px;
-  mask-image:linear-gradient(180deg,rgba(0,0,0,.95),rgba(0,0,0,.3));
-  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.95),rgba(0,0,0,.3));
+/* Real photo (see docs note in chat — a 428x240 source, upscaled; swap
+   hero-pumpjack.jpg for a higher-resolution version any time by
+   replacing the file, no CSS change needed). Deliberately not blurred
+   further — the softness from upscaling already reads as a soft-focus
+   cinematic treatment rather than a broken asset. */
+.hero-art{
+  position:absolute;inset:0;z-index:0;
+  background-image:url(/hero-pumpjack.jpg);
+  background-position:center 60%;background-size:cover;background-repeat:no-repeat;
 }
-.hero-art{position:absolute;inset:0;z-index:0}
-.hero-art svg{width:100%;height:100%;display:block}
-/* Rig sits as one solid dark silhouette (var(--hero-rig)) against the
-   dusk sky, with a soft cool rim-glow standing in for direct lighting —
-   cheaper and more robust across themes than per-edge highlights. */
-.pj-rig{filter:drop-shadow(0 0 18px var(--hero-rig-rim))}
-
-/* Static by request — the animated nod read as distracting/gimmicky
-   rather than "engineering visualization." transform-origin is left in
-   place (harmless with no animation) in case motion is ever revisited. */
-.pj-beam{transform-origin:160px 120px}
+/* Scrim: keeps the brand lockup (top) and baseline tag (bottom) legible
+   over a bright sky/sunset photo without flattening the image itself. */
+.hero-art::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,var(--hero-scrim-top) 0%,var(--hero-scrim-mid) 42%,var(--hero-scrim-bottom) 100%);
+}
 
 .hero-brand,.hero-baseline{position:relative;z-index:1}
 .hero-brand{display:flex;align-items:center;gap:16px}
@@ -115,35 +106,25 @@ body{
 .hero-baseline{display:flex;align-items:center;gap:14px;font:600 11px var(--font-mono);letter-spacing:.22em;color:var(--hero-ink-dim)}
 .baseline-rule{width:34px;height:2px;background:var(--precision-cyan);display:inline-block}
 
-/* Light theme: same silhouette, reinterpreted as a graphite rig against
-   an overcast blueprint-paper sky rather than a night scene — not a
-   different product, the same one in daylight instead of at dusk. */
+/* Light theme: same photo (photos don't recolor like vector art did),
+   but a lighter/warmer scrim so the panel doesn't read as mismatched
+   dark-in-light-mode. */
 [data-theme="light"] .hero{
-  --hero-sky1:#EEF3F7;--hero-sky2:#E2EAF1;--hero-sky3:#D8E3EC;
-  --hero-glow:rgba(7,123,151,.16);--hero-glow-far:rgba(7,123,151,.08);
-  --hero-grid:rgba(15,23,42,.05);
-  --hero-ink:#0F172A;--hero-ink-dim:#475569;
-  --hero-line-soft:rgba(15,23,42,.14);
-  --hero-rig:#1E293B;--hero-rig-rim:rgba(7,123,151,.45);
+  --hero-scrim-top:rgba(20,26,36,.55);--hero-scrim-mid:rgba(20,26,36,.12);--hero-scrim-bottom:rgba(20,26,36,.6);
 }
 
-.hero-mobile{
-  display:none;
-  --hero-rig:#0A0E15;--hero-rig-rim:rgba(25,211,230,.5);
-}
-[data-theme="light"] .hero-mobile{--hero-rig:#1E293B;--hero-rig-rim:rgba(7,123,151,.4)}
+.hero-mobile{display:none}
 @media(max-width:900px){
   .hero{display:none}
   .hero-mobile{
-    display:flex;align-items:center;gap:14px;
+    display:flex;align-items:center;gap:12px;
     width:100%;max-width:400px;margin-bottom:18px;
     padding:12px 16px;border-radius:var(--radius-lg);
     border:1px solid var(--border-color);background:var(--bg-panel);
     animation:fadeUp 900ms var(--anim-ease) both;
   }
-  .hero-mobile svg{flex-shrink:0}
   .hero-mobile .hero-word{gap:4px}
-  .hero-mobile .hero-name{font-size:16px;letter-spacing:.14em}
+  .hero-mobile .hero-name{font-size:16px;letter-spacing:.14em;color:var(--text)}
   .hero-mobile .hero-tag{font-size:8.5px}
 }
 
@@ -383,77 +364,7 @@ body{
 <div class="split-shell">
 
   <aside class="hero" aria-label="AP Workspace">
-    <div class="hero-art" aria-hidden="true">
-      <svg viewBox="0 0 320 400" preserveAspectRatio="xMidYMax meet" focusable="false">
-        <!-- Atmospheric CAD overlay: a section-view circle, a couple of
-             centerlines and a dimension stub. Decorative only — none of
-             this is a real measurement, so no numbers are attached. -->
-        <g class="hero-atmos" opacity=".2" fill="none" stroke="var(--hero-line-soft)" stroke-width="1">
-          <circle cx="262" cy="86" r="40"/>
-          <circle cx="262" cy="86" r="40" stroke-dasharray="2 6"/>
-          <line x1="262" y1="32" x2="262" y2="140"/>
-          <line x1="208" y1="86" x2="316" y2="86"/>
-          <line x1="16" y1="58" x2="80" y2="58"/>
-          <line x1="16" y1="58" x2="16" y2="94"/>
-          <line x1="40" y1="380" x2="300" y2="380" stroke-dasharray="1 6"/>
-        </g>
-
-        <ellipse cx="165" cy="382" rx="130" ry="10" fill="var(--hero-glow)"/>
-        <line x1="15" y1="380" x2="305" y2="380" stroke="var(--hero-line-soft)" stroke-width="1" stroke-dasharray="4 4"/>
-
-        <!-- Rig: one solid silhouette (var(--hero-rig)) with a soft cool
-             rim-glow (.pj-rig filter) standing in for direct lighting.
-             Proportions follow a standard pump-jack side-profile
-             reference (lattice samson post, comb-toothed horsehead,
-             rounded counterweight, coiled bridle cable) rather than a
-             simplified generic derrick — a flatter first pass read as
-             cartoonish and didn't say "pump jack" at a glance. -->
-        <g class="pj-rig">
-          <!-- lattice samson post: two tapered legs + rungs + X-braces -->
-          <g fill="none" stroke="var(--hero-rig)" stroke-linecap="round">
-            <line x1="110" y1="380" x2="160" y2="120" stroke-width="7"/>
-            <line x1="210" y1="380" x2="160" y2="120" stroke-width="7"/>
-            <line x1="145" y1="200" x2="175" y2="200" stroke-width="4"/>
-            <line x1="133" y1="260" x2="187" y2="260" stroke-width="4"/>
-            <line x1="122" y1="320" x2="199" y2="320" stroke-width="4"/>
-            <line x1="145" y1="200" x2="187" y2="260" stroke-width="3"/>
-            <line x1="175" y1="200" x2="133" y2="260" stroke-width="3"/>
-            <line x1="133" y1="260" x2="199" y2="320" stroke-width="3"/>
-            <line x1="187" y1="260" x2="122" y2="320" stroke-width="3"/>
-            <line x1="122" y1="320" x2="210" y2="380" stroke-width="3"/>
-            <line x1="199" y1="320" x2="110" y2="380" stroke-width="3"/>
-          </g>
-
-          <rect x="86" y="372" width="148" height="14" rx="3" fill="var(--hero-rig)" stroke="var(--hero-rig-rim)" stroke-width="1" stroke-opacity=".55"/>
-
-          <!-- wellhead: coiled bridle cable + valve stack, static — the
-               beam's own bridle line (inside .pj-beam below) swings to
-               meet it, same simplification real stylized icons make. -->
-          <g fill="none" stroke="var(--hero-rig)" stroke-width="3" stroke-linecap="round">
-            <path d="M252,150 q6,9 0,18 q-6,9 0,18 q6,9 0,18 q-6,9 0,18 q6,9 0,18 q-6,9 0,18"/>
-          </g>
-          <g fill="var(--hero-rig)" stroke="var(--hero-rig-rim)" stroke-width="1" stroke-opacity=".55">
-            <rect x="236" y="258" width="32" height="16" rx="2"/>
-            <rect x="244" y="274" width="16" height="98" rx="2"/>
-          </g>
-
-          <circle cx="160" cy="120" r="6" fill="var(--precision-cyan)"/>
-
-          <g class="pj-beam">
-            <rect x="65" y="113" width="190" height="14" rx="7" fill="var(--hero-rig)"/>
-            <!-- counterweight: larger rounded mass at the tail end -->
-            <rect x="72" y="118" width="52" height="54" rx="10" fill="var(--hero-rig)" stroke="var(--hero-rig-rim)" stroke-width="1" stroke-opacity=".6"/>
-            <!-- horsehead: hook curve with a ribbed/comb underside -->
-            <path d="M248,113 Q275,100 298,86 Q303,100 292,122 L286,150
-                     L276,150 L272,136 L266,150 L256,150 L252,136 L246,150 L238,150
-                     Q240,128 248,113 Z"
-                  fill="var(--hero-rig)" stroke="var(--hero-rig-rim)" stroke-width="1" stroke-opacity=".6" stroke-linejoin="round"/>
-            <circle cx="96" cy="145" r="2" fill="var(--precision-cyan)" fill-opacity=".6"/>
-            <circle cx="248" cy="120" r="2" fill="var(--precision-cyan)" fill-opacity=".6"/>
-          </g>
-        </g>
-      </svg>
-    </div>
+    <div class="hero-art" aria-hidden="true"></div>
     <div class="hero-brand">
       <svg class="hero-mark" width="56" height="56" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
       <div class="hero-word">
@@ -469,17 +380,7 @@ body{
   <div class="stage-center">
 
   <div class="hero-mobile" aria-hidden="true">
-    <svg width="44" height="44" viewBox="80 80 160 160" focusable="false">
-      <line x1="115" y1="190" x2="205" y2="190" stroke="var(--hero-rig)" stroke-width="6" stroke-linecap="round"/>
-      <line x1="115" y1="190" x2="160" y2="120" stroke="var(--hero-rig)" stroke-width="6" stroke-linecap="round"/>
-      <line x1="205" y1="190" x2="160" y2="120" stroke="var(--hero-rig)" stroke-width="6" stroke-linecap="round"/>
-      <circle cx="160" cy="120" r="5" fill="var(--precision-cyan)"/>
-      <g class="pj-beam">
-        <rect x="110" y="116" width="100" height="8" rx="4" fill="var(--hero-rig)"/>
-        <rect x="116" y="119" width="20" height="16" rx="2" fill="var(--hero-rig)" stroke="var(--hero-rig-rim)" stroke-width="1" stroke-opacity=".6"/>
-        <path d="M188,119 Q205,118 205,130 Q205,139 193,139 L184,139 Q181,128 188,119 Z" fill="var(--hero-rig)" stroke="var(--hero-rig-rim)" stroke-width="1" stroke-opacity=".6" stroke-linejoin="round"/>
-      </g>
-    </svg>
+    <svg width="36" height="36" viewBox="0 0 100 100" focusable="false"><rect width="100" height="100" rx="16" fill="#0B1D2D"/><text x="50" y="50" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" letter-spacing="-2">AP</text></svg>
     <div class="hero-word">
       <span class="hero-name">WORKSPACE</span>
       <span class="hero-tag">ENGINEERING<i>/</i>OIL &amp; GAS</span>
