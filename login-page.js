@@ -86,13 +86,6 @@ var REMEMBER_KEY='ap-remember-id';
   if(saved){q('inp-email').value=saved;q('chk-remember').checked=true}
 })();
 
-/* ── Secure Access (passkey): not built yet — say so instead of a dead
-   click. Remove this handler and wire real WebAuthn if it ships. ── */
-var secureAccessBtn=q('btn-secure-access');
-if(secureAccessBtn)secureAccessBtn.addEventListener('click',function(){
-  setNote('auth-note','Passkey sign-in isn’t set up yet — sign in with email and password below.','inf');
-});
-
 async function doSignOut(){try{await api.auth.signOut();}catch(e){}window.location.reload();}
 
 (async function boot(){

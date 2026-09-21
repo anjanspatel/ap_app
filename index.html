@@ -241,23 +241,6 @@ body{
 .cta-lbl.fade{opacity:0}
 .cta-arrow{transition:transform var(--motion-fast)}
 
-.or{display:flex;align-items:center;gap:10px;margin:18px 0 14px;font:700 10px var(--font-mono);letter-spacing:.12em;color:var(--dim)}
-.or::before,.or::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-color),transparent)}
-
-.ob{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  height:44px;background:var(--ob-bg);
-  border:1px solid var(--border2);border-radius:8px;
-  font:500 12px var(--font-ui);color:var(--muted);
-  cursor:pointer;letter-spacing:0.01em;
-  transition:border-color var(--ease),color var(--ease),background var(--ease),transform var(--ease);
-  -webkit-tap-highlight-color:transparent;
-}
-.ob:hover{border-color:var(--precision-cyan);color:var(--text);background:var(--ob-hover-bg);transform:translateY(-1px)}
-.ob:active{transform:none}
-.ob:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.ob svg{flex-shrink:0}
-.ob-full{grid-column:1/-1;width:100%}
 
 .back{margin-bottom:14px}
 .vhd{font:900 22px var(--font-ui);letter-spacing:-.01em;color:var(--text);margin-bottom:4px}
@@ -341,14 +324,11 @@ body{
   .field-meta-row{margin:0 0 8px}
   .card-divider{margin:8px 0 10px}
   .cta{height:42px}
-  .or{margin:8px 0 6px}
-  .ob{height:38px;font-size:11px}
   .legal{margin-top:6px}
 }
 @media(max-height:620px){
   .card{padding:16px 20px 12px}
   .field{margin-bottom:7px}
-  .or{margin:8px 0 6px}
 }
 @media(max-height:520px){
   .card-brand{margin-bottom:0}
@@ -366,8 +346,6 @@ body{
   box-shadow:0 0 0 1px rgba(0,0,0,0.04) inset,0 12px 70px rgba(0,0,0,0.12),0 0 30px rgba(25,211,230,0.06);
   border-color:rgba(200,212,232,0.75);
 }
-[data-theme="light"] .or::before,[data-theme="light"] .or::after{background:linear-gradient(90deg,transparent,var(--border),transparent)}
-
 /* Theme toggle button */
 .theme-btn{
   position:fixed;top:16px;right:16px;z-index:200;
@@ -465,13 +443,6 @@ body{
           <svg class="cta-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </form>
-
-      <div class="or" role="separator"><span>OR</span></div>
-
-      <button type="button" class="ob ob-full" id="btn-secure-access">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z"/></svg>
-        Secure Access
-      </button>
 
       <p class="vsub" style="text-align:center;margin-top:16px">Invitation only — <button type="button" class="link-btn" id="btn-request-access">request access</button> if you don't have an account.</p>
 
