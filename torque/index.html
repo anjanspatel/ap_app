@@ -70,9 +70,11 @@ html[data-theme="dark"] .brand-logo-wrap,
 .action-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent-fg)}
 .action-btn.primary:hover{filter:brightness(1.1)}
 .theme-toggle{appearance:none;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
-  min-height:44px;min-width:44px;width:44px;cursor:pointer;display:grid;place-items:center;
+  min-height:44px;min-width:0;width:auto;padding:0 12px;gap:6px;cursor:pointer;display:inline-flex;align-items:center;
+  font:600 12px var(--font-ui,'Inter',system-ui,sans-serif);
   color:var(--muted);transition:background var(--ease),border-color var(--ease),color var(--ease)}
 .theme-toggle:hover{border-color:var(--accent-fg);color:var(--text)}
+.theme-label-text{white-space:nowrap}
 .action-btn:focus-visible,.theme-toggle:focus-visible{outline:3px solid rgba(25,211,230,.35);outline-offset:2px}
 
 /* ── page ── */
@@ -199,6 +201,7 @@ h1{font-size:clamp(18px,2.2vw,24px);font-weight:800;letter-spacing:.025em;margin
 footer{max-width:980px;margin:14px auto 0;font-size:10.5px;line-height:1.6;
   color:var(--muted);text-align:center}
 .footer-legal{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:3px 8px}
+.footer-version{margin-top:4px;font-size:9.5px;opacity:.65}
 .footer-dot{opacity:.35;user-select:none}
 .footer-link{background:none;border:none;color:inherit;cursor:pointer;font-size:inherit;
   padding:0;font-family:inherit;text-decoration:underline;text-decoration-color:transparent;
@@ -301,6 +304,7 @@ footer a:hover{text-decoration:underline}
       </button>
       <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <span id="themeLabel" class="theme-label-text">Dark</span>
       </button>
     </div>
   </div>
@@ -523,6 +527,8 @@ footer a:hover{text-decoration:underline}
     <span class="footer-dot">·</span>
     <span style="font-family:var(--mono);font-size:9.5px;opacity:.45">Reference only — not for construction</span>
   </div>
+  <!-- Keep in sync with AP_BUILD in global-features.js. -->
+  <div class="footer-version">Version 2026.09.20</div>
 </footer>
 
 <!-- SAVE LOOKUP MODAL -->

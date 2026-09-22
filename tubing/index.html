@@ -89,11 +89,12 @@ body{
 .hub-link:hover{color:var(--text);border-color:var(--muted)}
 .theme-btn{
   appearance:none;background:var(--surface-2,rgba(0,0,0,.04));border:1px solid var(--border);
-  border-radius:8px;width:44px;height:44px;cursor:pointer;
-  display:grid;place-items:center;color:var(--muted);font-size:14px;
-  transition:background .15s,border-color .15s,color .15s;flex:0 0 auto;padding:0;
+  border-radius:8px;width:auto;height:44px;cursor:pointer;padding:0 12px;gap:6px;
+  display:inline-flex;align-items:center;color:var(--muted);font:600 12px var(--font-ui,'Inter',system-ui,sans-serif);
+  transition:background .15s,border-color .15s,color .15s;flex:0 0 auto;
 }
 .theme-btn:hover{border-color:var(--orange-fg);color:var(--orange-fg)}
+.theme-label-text{white-space:nowrap}
 
 /* ── page layout ── */
 main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
@@ -133,9 +134,13 @@ main{max-width:1140px;margin:0 auto;padding:40px 20px 80px}
 .card-label{
   font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
   color:var(--muted);margin-bottom:18px;
-  display:flex;align-items:center;gap:6px;
+  display:flex;align-items:center;gap:8px;
 }
-.card-label::after{content:'';flex:1;height:1px;background:var(--border)}
+/* Bracket-accent rule either side of the label — a drafting-title-block
+   feel that fits this tool's technical-reference tone, rather than a
+   plain divider line on one side only. */
+.card-label::before{content:'';width:3px;height:11px;flex:0 0 auto;background:var(--accent);border-radius:1px}
+.card-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--accent),var(--border) 55%)}
 
 /* ── unit toggle ── */
 .unit-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
@@ -270,6 +275,7 @@ footer{
 }
 footer a{color:var(--muted);text-decoration:none}
 footer a:hover{color:var(--text)}
+.footer-version{margin-top:6px;font-size:9.5px;opacity:.65}
 
 /* ── print ── */
 .print-footer{display:none}
@@ -321,7 +327,7 @@ footer a:hover{color:var(--text)}
     <div class="header-right">
       <button class="theme-btn" id="shareBtn" type="button" title="Copy shareable link to this calculation" style="position:relative"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
       <button class="theme-btn" id="saveLookupBtn" type="button" title="Save this lookup to your dashboard" style="gap:6px;display:flex;align-items:center;padding:0 12px;width:auto;font-size:13px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
-      <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle colour theme"><span id="themeIcon" aria-hidden="true"></span></button>
+      <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle colour theme"><span id="themeIcon" aria-hidden="true"></span><span id="themeLabel" class="theme-label-text">Dark</span></button>
     </div>
   </div>
 </header>
@@ -480,6 +486,8 @@ footer a:hover{color:var(--text)}
   <a href="/disclaimer/#standards">Standards</a>
   &nbsp;&middot;&nbsp;
   <a href="https://www.linkedin.com/in/anjanspatel" target="_blank" rel="noopener">LinkedIn</a>
+  <!-- Keep in sync with AP_BUILD in global-features.js. -->
+  <div class="footer-version">Version 2026.09.20</div>
 </footer>
 
 <script src="calc.js"></script>

@@ -165,16 +165,21 @@ $('unitMetric').addEventListener('click',function(){
 });
 
 /* ── theme ──
-   themeIcon must reflect the *current* theme, not just exist — it was
-   a static sun glyph that never updated after a click or on load,
-   unlike flange's and tubing's toggles (both correctly swap sun/moon).
+   themeIcon reflects the *current* theme: moon while dark, sun while
+   light — matching login's toggle and the Kings BC reference the
+   labeled-toggle request was modeled on. flange and tubing previously
+   showed the opposite (a sun glyph while already in dark mode, which
+   reads backwards) — fixed those the same way when adding text labels
+   here, since a label needs a convention it can agree with.
    Reuses the exact moon path from index.html's icon-moon for the same
    glyph shape across the site. */
 var SUN_PATHS='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
 var MOON_PATH='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
 function syncThemeIcon(){
   var dark=(document.documentElement.dataset.theme||'dark')==='dark';
-  $('themeIcon').innerHTML=dark?SUN_PATHS:MOON_PATH;
+  $('themeIcon').innerHTML=dark?MOON_PATH:SUN_PATHS;
+  var label=document.getElementById('themeLabel');
+  if(label)label.textContent=dark?'Dark':'Light';
 }
 syncThemeIcon();
 $('themeBtn').addEventListener('click',function(){

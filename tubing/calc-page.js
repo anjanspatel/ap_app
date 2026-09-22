@@ -1,13 +1,22 @@
-/* ── theme ── */
+/* ── theme ──
+   Icon (and now the text label) reflects the *current* theme — moon
+   while dark, sun while light — matching login's toggle. This used to
+   show a sun glyph while already in dark mode, which read backwards;
+   fixed while adding the label, since a label needs the icon to agree
+   with it. */
 (function(){
   var root = document.documentElement;
   var btn  = document.getElementById('themeBtn');
   var icon = document.getElementById('themeIcon');
+  var label = document.getElementById('themeLabel');
   function isDark(){
     var t = root.dataset.theme;
     return t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches);
   }
-  function syncIcon(){ icon.textContent = isDark() ? '\u2600' : '\u263e'; }
+  function syncIcon(){
+    icon.textContent = isDark() ? '\u263e' : '\u2600';
+    if(label) label.textContent = isDark() ? 'Dark' : 'Light';
+  }
   function apply(t){
     if(t){ root.dataset.theme = t; } else { delete root.dataset.theme; }
     syncIcon();

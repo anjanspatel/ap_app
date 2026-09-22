@@ -5,7 +5,7 @@
  const logo=document.querySelector('.brand-logo');
  function systemDark(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches}
  function effectiveTheme(){return root.dataset.theme||(systemDark()?'dark':'light')}
- function updateToggle(){const dark=effectiveTheme()==='dark';const icon=document.getElementById('themeIcon');if(icon)icon.textContent=dark?'☀':'☾';toggle.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');toggle.setAttribute('aria-pressed',dark?'true':'false');if(themeMeta)themeMeta.content=dark?'#0B111A':'#f0f4f8'}
+ function updateToggle(){const dark=effectiveTheme()==='dark';const icon=document.getElementById('themeIcon');if(icon)icon.textContent=dark?'☾':'☀';const label=document.getElementById('themeLabel');if(label)label.textContent=dark?'Dark':'Light';toggle.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');toggle.setAttribute('aria-pressed',dark?'true':'false');if(themeMeta)themeMeta.content=dark?'#0B111A':'#f0f4f8'}
  try{const saved=localStorage.getItem('ap-theme');root.dataset.theme=(saved==='light')?'light':'dark'}catch(e){root.dataset.theme='dark'}
  updateToggle();toggle.addEventListener('click',()=>{const next=effectiveTheme()==='dark'?'light':'dark';root.dataset.theme=next;try{localStorage.setItem('ap-theme',next)}catch(e){}updateToggle()});
  if(window.matchMedia){const mq=window.matchMedia('(prefers-color-scheme: dark)');if(mq.addEventListener)mq.addEventListener('change',()=>{if(!root.dataset.theme)updateToggle()})}
