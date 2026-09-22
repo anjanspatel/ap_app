@@ -65,60 +65,23 @@ body{
 }
 ::selection{background:var(--accent);color:#fff}
 
-/* ── Full-bleed shell: one hero visual fills the whole viewport; the
-   brand lockup sits over its left/open side, the sign-in card floats
-   on its right side. No split panel, no divider. ── */
+/* ── Full-bleed shell: a plain flat background fills the whole
+   viewport; the brand lockup sits over its left/open side, the
+   sign-in card floats on its right side. No split panel, no divider,
+   no illustration. ── */
 :root{
   --hero-ink:#F3F4F6;--hero-ink-dim:#94A3B8;
-  --hero-bg1:#0B111A;--hero-bg2:#111827;--hero-bg3:#151E2E;
-  --hero-line:rgba(148,163,184,.4);--hero-glow:rgba(25,211,230,.16);
+  --hero-bg1:#0B111A;
 }
 [data-theme="light"]{
   --hero-ink:#0F172A;--hero-ink-dim:#475569;
-  --hero-bg1:#EEF3F7;--hero-bg2:#E2EAF1;--hero-bg3:#D8E3EC;
-  --hero-line:rgba(15,23,42,.32);--hero-glow:rgba(7,123,151,.14);
+  --hero-bg1:#EEF3F7;
 }
-/* Flat-vector illustration, on-brand (Engineering Graphite + Precision
-   Cyan, not the indigo/purple of the reference this was modeled on) —
-   replaces the sunset photo per direct request. Same fixed full-bleed
-   layer the photo used, just different content behind the same
-   scaffolding. */
+/* Plain flat background — no illustration, no gradient, no motion.
+   Just the theme's own background color showing through. */
 .page-photo{
-  position:fixed;inset:0;z-index:0;overflow:hidden;
-  background:linear-gradient(160deg,var(--hero-bg1) 0%,var(--hero-bg2) 55%,var(--hero-bg3) 100%);
-}
-.page-photo::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background-image:linear-gradient(var(--hero-line) 1px,transparent 1px),linear-gradient(90deg,var(--hero-line) 1px,transparent 1px);
-  background-size:44px 44px;opacity:.06;
-  mask-image:radial-gradient(ellipse 70% 60% at 30% 40%,#000,transparent);
-  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 30% 40%,#000,transparent);
-}
-.page-photo::after{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 620px 620px at 18% 30%,var(--hero-glow),transparent 65%),
-    radial-gradient(ellipse 500px 500px at 78% 78%,var(--hero-glow),transparent 70%);
-}
-.hero-svg{position:absolute;inset:0;width:100%;height:100%}
-/* Drafting reveal: the main circles/centerlines trace themselves in
-   once on load, like a plotter drawing the sheet — not a looping
-   effect, and not a mechanism moving. stroke-dasharray is set inline
-   per-shape (--len) since a circle and a line don't share one length. */
-.cad-draw{
-  stroke-dasharray:var(--len);
-  stroke-dashoffset:var(--len);
-  animation:cadDraw 1.8s cubic-bezier(.16,1,.3,1) 200ms both;
-}
-@keyframes cadDraw{to{stroke-dashoffset:0}}
-/* Ambient: the bolt-circle ring turns very slowly, like a reference
-   indicator being dialed in — continuous, but slow and quiet enough
-   to read as "software is alive," not "machinery is running." */
-.cad-spin{transform-origin:400px 430px;animation:cadSpin 120s linear infinite}
-@keyframes cadSpin{to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){
-  .cad-draw{animation:none;stroke-dashoffset:0}
-  .cad-spin{animation:none}
+  position:fixed;inset:0;z-index:0;
+  background:var(--hero-bg1);
 }
 
 .split-shell{position:relative;z-index:1;display:flex;min-height:100dvh;width:100%}
@@ -143,20 +106,6 @@ body{
 
 @media(max-width:900px){
   .hero{display:none}
-}
-/* The background illustration uses preserveAspectRatio="slice", so on
-   a portrait viewport its horizontal edges get cropped — the closer a
-   text block sits to the center, the taller-and-narrower the screen
-   has to be before that crop reaches it. Abstract lines read fine cut
-   off; text sliced mid-word doesn't, so each text block hides once
-   its own crop point is reached, computed from its actual position in
-   the 900-wide viewBox (title block spans x 40–250; disclaimer spans
-   x ~180–620) rather than guessed from a device-width breakpoint. */
-@media(max-aspect-ratio:19/20){
-  .hero-titleblock{display:none}
-}
-@media(max-aspect-ratio:13/20){
-  .hero-disclaimer{display:none}
 }
 
 .stage{
@@ -420,72 +369,10 @@ body{
   <span class="theme-label-light">Light</span>
 </button>
 
-<div class="page-photo" aria-hidden="true">
-  <svg class="hero-svg" viewBox="0 0 900 900" preserveAspectRatio="xMidYMid slice" focusable="false">
-    <!-- AP Workspace monogram, drawn as a signage/fabrication spec
-         sheet — the real logo mark (same navy badge + "AP" text used
-         on every other page, not a redrawn version) with genuine
-         drafting conventions around it: centerlines, registration
-         crosshairs, dimension lines, a title block. No fabricated
-         numbers anywhere ("N.T.S." — Not To Scale — is itself the
-         standard drafting way of saying exactly that). -->
-
-    <!-- Slow-turning dashed orbit around the badge -->
-    <circle class="cad-spin" cx="400" cy="430" r="250" fill="none" stroke="var(--precision-cyan)" stroke-width="1" stroke-dasharray="2 8" opacity=".35"/>
-
-    <!-- Centerlines: dash-dot, the standard drafting convention -->
-    <g stroke="var(--hero-line)" stroke-width="1.5" opacity=".55">
-      <line x1="140" y1="430" x2="660" y2="430" stroke-dasharray="26 6 4 6"/>
-      <line x1="400" y1="150" x2="400" y2="710" stroke-dasharray="26 6 4 6"/>
-    </g>
-
-    <!-- Corner registration crosshairs — a real print/signage
-         fabrication convention, not decoration invented for this -->
-    <g stroke="var(--hero-line)" stroke-width="1.5" opacity=".6">
-      <path d="M230,260 h14 M237,253 v14"/>
-      <path d="M570,260 h-14 M563,253 v14"/>
-      <path d="M230,600 h14 M237,593 v14"/>
-      <path d="M570,600 h-14 M563,593 v14"/>
-    </g>
-
-    <!-- The real mark: same fixed navy badge + "AP" text as every
-         other page's logo, scaled up — not a reinterpretation. -->
-    <rect class="cad-draw" x="270" y="300" width="260" height="260" rx="42" fill="#0B1D2D" stroke="var(--precision-cyan)" stroke-width="3" style="--len:1080" pathLength="1080"/>
-    <text x="400" y="432" text-anchor="middle" dominant-baseline="central" font-family="'Inter',system-ui,-apple-system,sans-serif" font-weight="700" font-size="126" letter-spacing="-5" fill="#FFFFFF">AP</text>
-
-    <!-- Width dimension (numberless — this is a spec sheet, not a
-         claimed measurement) -->
-    <g stroke="var(--hero-line)" stroke-width="1" opacity=".7">
-      <line x1="270" y1="630" x2="530" y2="630"/>
-      <line x1="270" y1="562" x2="270" y2="638"/>
-      <line x1="530" y1="562" x2="530" y2="638"/>
-      <path d="M270,630 l14,-5 v10 z" fill="var(--hero-line)"/>
-      <path d="M530,630 l-14,-5 v10 z" fill="var(--hero-line)"/>
-    </g>
-    <!-- Height dimension -->
-    <g stroke="var(--hero-line)" stroke-width="1" opacity=".7">
-      <line x1="200" y1="300" x2="200" y2="560"/>
-      <line x1="208" y1="300" x2="192" y2="300"/>
-      <line x1="208" y1="560" x2="192" y2="560"/>
-      <path d="M200,300 l-5,14 h10 z" fill="var(--hero-line)"/>
-      <path d="M200,560 l-5,-14 h10 z" fill="var(--hero-line)"/>
-    </g>
-
-    <!-- Title block — the small spec table every real drawing sheet
-         carries in a corner. Kept clear of the card panel, which
-         floats over the right side of this illustration. -->
-    <g class="hero-titleblock" transform="translate(40,558)">
-      <rect width="210" height="88" fill="var(--hero-bg2)" stroke="var(--precision-cyan)" stroke-width="1.5" opacity=".9"/>
-      <line x1="0" y1="30" x2="210" y2="30" stroke="var(--hero-line)" stroke-width="1"/>
-      <line x1="0" y1="59" x2="210" y2="59" stroke="var(--hero-line)" stroke-width="1"/>
-      <text x="12" y="20" font-family="var(--font-mono)" font-size="12" letter-spacing="1" fill="var(--hero-ink)">AP WORKSPACE</text>
-      <text x="12" y="49" font-family="var(--font-mono)" font-size="10" letter-spacing="1" fill="var(--hero-ink-dim)">DWG: LOGO-MARK-01</text>
-      <text x="12" y="78" font-family="var(--font-mono)" font-size="10" letter-spacing="1" fill="var(--hero-ink-dim)">SCALE: N.T.S.&#160;&#160;REV: A</text>
-    </g>
-
-    <text class="hero-disclaimer" x="400" y="748" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--hero-line)" letter-spacing="2" opacity=".8">AP WORKSPACE — REFERENCE ONLY, NOT FOR CONSTRUCTION</text>
-  </svg>
-</div>
+<!-- Plain flat background — the animated technical-drawing
+     illustration that used to live here was dropped per direct
+     request for a plainer, more utilitarian login page. -->
+<div class="page-photo" aria-hidden="true"></div>
 
 <div class="split-shell">
 
